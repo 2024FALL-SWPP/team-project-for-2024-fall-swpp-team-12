@@ -1678,6 +1678,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnClock: 0
-  moveSpeedHor: 0.2
-  moveSpeedVer: 0.1
-  turnDistance: 0.2
+  moveSpeedHor: 6
+  moveSpeedVer: 3
+  turnDistance: 6

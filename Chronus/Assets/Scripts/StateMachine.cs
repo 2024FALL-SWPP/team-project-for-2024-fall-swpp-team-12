@@ -60,4 +60,14 @@ public class StateMachine<T>
         //Update
         CurState.OperateUpdate(m_sender);
     }
+
+    public void IsDoneAction()
+    {
+        if (m_sender == null)
+        {
+            Debug.LogError("invalid m_sener");
+            return;
+        }
+        CurState.DoneAction(m_sender);
+    }
 }
