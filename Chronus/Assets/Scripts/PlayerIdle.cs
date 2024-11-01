@@ -27,4 +27,8 @@ public class PlayerIdle : MonoBehaviour, IState<PlayerController>
     {
 
     }
+    public void DoneAction(PlayerController sender)
+    {
+
+    }
 }
