@@ -12,34 +12,32 @@ public class PlayerController : MonoBehaviour
         Hop
     }
 
-    // ¿ø·¡´Â ¿©·¯ ¿ÀºêÁ§Æ®µé ÀÏ°ýÀûÀ¸·Î °ü¸®ÇØ¾ß ÇØ¼­ ¿©±â¿¡ ÀÖÀ¸¸é ¾È µÇ´Â º¯¼öÁö¸¸
-    // ÀÏ´Ü ÇÃ·¹ÀÌ¾îºÎÅÍ µ¿ÀÛ½ÃÄÑºÁ¾ß ÇÏ´Ï ÀÓ½Ã·Î ¿©±â´Ù°¡ µÎ°Ú½À´Ï´Ù.
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û½ï¿½ï¿½Ñºï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½Ó½Ã·ï¿½ ï¿½ï¿½ï¿½ï¿½Ù°ï¿½ ï¿½Î°Ú½ï¿½ï¿½Ï´ï¿½.
     public bool turnClock = false;
-    //when turnClock false -> true  stateº¯È­¿¡ ´ëÇÑ ÆÇ´Ü ¹× ½ÇÇàÀ» ÁøÇàÇÔ.
+    //when turnClock false -> true  stateï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 
-    // turnClockÀÌ ÄÑÁú ½Ã¿¡ list¿¡ µé¾îÀÖ´Â ¼ø¼­´ë·Î Â÷·ÊÂ÷·Ê setState¸¦ ÇÏ±â À§ÇØ 1¾¿ Áõ°¡ÇÏ´Â °ª
+    // turnClockï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¿ï¿½ listï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ setStateï¿½ï¿½ ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½
     private int seq = 0;
-    // °¢ state¿¡¼­ÀÇ µ¿ÀÛÀÌ ³¡³µ´ÂÁö È®ÀÎÇÏ±â À§ÇÑ º¯¼ö. (³¡³ª¸é ÇØ´ç º¯¼ö°¡ true°¡ µÊ)
+    // ï¿½ï¿½ stateï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ trueï¿½ï¿½ ï¿½ï¿½)
     public bool doneAction = false;
 
 
-    //ÅÏ ´ÜÀ§·Î ÇöÀçÀÇ À§Ä¡,È¸ÀüÁ¤º¸ ±â·ÏÇÏ´Â º¯¼ö
+    //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡,È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
-
-    public float curTurnDir = 1.0f;
-    public float curTurnAngle = 90.0f;
+    public float curTurnAngle;
 
     public float moveSpeedHor = 6.0f;
     public float moveSpeedVer = 3.0f;
-    public float turnSpeed = 6.0f;
+    public float turnSpeed = 60.0f;
     public float curSpeed { get; set; }
     public float curRotSpeed { get; set; }
 
 
     private Dictionary<PlayerState, IState<PlayerController>> dicState = new Dictionary<PlayerState, IState<PlayerController>>();
     
-    //°¢ ÅÏ¿¡¼­ µ¿ÀÛÇÒ stateµéÀ» ¼ø¼­´ë·Î ¸ðÀº list¸¦ ´ãÀ» ±×¸©.
+    //ï¿½ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ stateï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ listï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½.
     private List<IState<PlayerController>> listCurTurn = new List<IState<PlayerController>>();
 
     private List<IState<PlayerController>> listStay = new List<IState<PlayerController>>();
@@ -56,113 +54,110 @@ public class PlayerController : MonoBehaviour
     {
         playerCurPos = this.transform.position;
 
-        //½ÇÁ¦ IState ¸ñ·Ï. ÀÌ°É SetStateÀÇ Argument·Î ³ÖÀ¸¸é state°¡ ÇØ´ç IState·Î ¹Ù²ï´Ù.
+        //ï¿½ï¿½ï¿½ï¿½ IState ï¿½ï¿½ï¿½. ï¿½Ì°ï¿½ SetStateï¿½ï¿½ Argumentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ stateï¿½ï¿½ ï¿½Ø´ï¿½ IStateï¿½ï¿½ ï¿½Ù²ï¿½ï¿½.
         IState<PlayerController> idle = new PlayerIdle();
         IState<PlayerController> move = new PlayerMove();
         IState<PlayerController> turn = new PlayerTurn();
         IState<PlayerController> hop = new PlayerHop();
 
-        //À§ÀÇ PlayerState ÀÌ¸§À¸·Î °Ë»öÇØ¼­ °¢°¢ÀÇ IState¸¦ ºÒ·¯¿Àµµ·Ï Dictionary¸¦ ¸¸µé¾ú´Ù.
+        //ï¿½ï¿½ï¿½ï¿½ PlayerState ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ IStateï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Dictionaryï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
         dicState.Add(PlayerState.Idle, idle);
         dicState.Add(PlayerState.Move, move);
         dicState.Add(PlayerState.Turn, turn);
         dicState.Add(PlayerState.Hop, hop);
 
-        //ÇÑ ÅÏ¿¡¼­ µ¿ÀÛÇÒ ¼ö ÀÖ´Â °æ¿ìµé¿¡ ´ëÇØ °¢°¢ List¸¦ ¸¸µé°í Çàµ¿¼ø¼­(State º¯È­ ¼ø¼­)¸¦ ±â·ÏÇß´Ù.
+        //ï¿½ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½é¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Listï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ï¿½ï¿½ï¿½ï¿½(State ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ß´ï¿½.
 
-        //°¡¸¸È÷ ¼­¼­ ÅÏ ³Ñ±â±â: idle -> idle
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ñ±ï¿½ï¿½: idle -> idle
         listStay.Add(idle);
-        //¾ÕÀ¸·Î ÇÑ Ä­ ÀÌµ¿ÇÏ±â: idle -> move(forward¹æÇâÀÌ´Ù.) -> idle
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ä­ ï¿½Ìµï¿½ï¿½Ï±ï¿½: idle -> move(forwardï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½.) -> idle
         listMoveForward.Add(move);
-        //¿·ÀÌ³ª µÚ·Î ÇÑ Ä­ ÀÌµ¿ÇÏ±â: idle -> turn(x) -> move -> idle  (x=f(i)) (i:input, f: ¾î´À¹æÇâÀ¸·Îµ¹Áö)
+        //ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½Ú·ï¿½ ï¿½ï¿½ Ä­ ï¿½Ìµï¿½ï¿½Ï±ï¿½: idle -> turn(x) -> move -> idle  (x=f(i)) (i:input, f: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îµï¿½ï¿½ï¿½)
         listMoveSideRear.Add(turn);
         listMoveSideRear.Add(move);
-        //¾ÕÀ¸·Î ÇÑ Ä­ Á¡ÇÁÇØ¼­ ¿Ã¶ó°¡±â: idle -> hop(+) -> move -> idle
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ä­ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ã¶ó°¡±ï¿½: idle -> hop(+) -> move -> idle
         listHopOverForward.Add(hop);
         listHopOverForward.Add(move);
-        //¿·ÀÌ³ª µÚ·Î ÇÑ Ä­ Á¡ÇÁÇØ¼­ ¿Ã¶ó°¡±â: idle -> turn(x) -> hop(+) -> move -> idle
+        //ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½Ú·ï¿½ ï¿½ï¿½ Ä­ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ã¶ó°¡±ï¿½: idle -> turn(x) -> hop(+) -> move -> idle
         listHopOverSideRear.Add(turn);
         listHopOverSideRear.Add(hop);
         listHopOverSideRear.Add(move);
-        //¾ÕÀ¸·Î ÇÑ Ä­ Á¡ÇÁÇØ¼­ ³»·Á°¡±â: idle -> move -> hop(-) -> idle
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ä­ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: idle -> move -> hop(-) -> idle
         listHopOverForward.Add(move);
         listHopOverForward.Add(hop);
-        //¿·ÀÌ³ª µÚ·Î ÇÑ Ä­ Á¡ÇÁÇØ¼­ ³»·Á°¡±â: idle -> turn(x) -> move -> hop(-) -> idle
+        //ï¿½ï¿½ï¿½Ì³ï¿½ ï¿½Ú·ï¿½ ï¿½ï¿½ Ä­ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: idle -> turn(x) -> move -> hop(-) -> idle
         listHopOverSideRear.Add(turn);
         listHopOverSideRear.Add(move);
         listHopOverSideRear.Add(hop);
 
-        //StateMachine classÀÇ Object¸¦ »ý¼ºÇÔ! //±âº» State´Â Idle.
+        //StateMachine classï¿½ï¿½ Objectï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½! //ï¿½âº» Stateï¿½ï¿½ Idle.
         sm = new StateMachine<PlayerController>(this, dicState[PlayerState.Idle]);
     }
 
     void Update()
     {
-        //¿©±â¼­ ¾î¶°ÇÑ list¸¦ ºÒ·¯¿Í¾ß ÇÏ´ÂÁö ÆÇ´ÜÇÏ´Â logic ÀÛ¼ºÇØ¾ß ÇÔ
+        //ï¿½ï¿½ï¿½â¼­ ï¿½î¶°ï¿½ï¿½ listï¿½ï¿½ ï¿½Ò·ï¿½ï¿½Í¾ï¿½ ï¿½Ï´ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ï¿½Ï´ï¿½ logic ï¿½Û¼ï¿½ï¿½Ø¾ï¿½ ï¿½ï¿½
         if (!turnClock) {
-            if (Input.GetKeyDown(KeyCode.W)) //ÀÏ´ÜÀº »ó´ëÀûÀÎ ¹æÇâÀ¸·Î...
+            if (Input.GetKeyDown(KeyCode.W)) //ï¿½Ï´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...
             {
-                //ÀÌ¹ø ÅÏ¿¡¼­ ¼öÇàÇÒ µ¿ÀÛµéÀ» ÁöÁ¤ÇÑ´Ù.
+                //ï¿½Ì¹ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ûµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
                 playerCurPos = this.transform.position;
                 listCurTurn = listMoveForward;
                 turnClock = true;
-                seq = 0; //¿©±â´Ù µÑ±î?
+                seq = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½?
                 sm.SetState(listCurTurn[seq]);
             }
             if (Input.GetKeyDown(KeyCode.S))
             {
-                //ÀÌ¹ø ÅÏ¿¡¼­ ¼öÇàÇÒ µ¿ÀÛµéÀ» ÁöÁ¤ÇÑ´Ù.
-                curTurnDir = 1.0f;
+                //ï¿½Ì¹ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ûµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
                 curTurnAngle = 180.0f;
                 playerCurRot = this.transform.rotation;
                 listCurTurn = listMoveSideRear;
                 turnClock = true;
-                seq = 0; //¿©±â´Ù µÑ±î?
+                seq = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½?
                 sm.SetState(listCurTurn[seq]);
             }
             if (Input.GetKeyDown(KeyCode.A))
             {
-                //ÀÌ¹ø ÅÏ¿¡¼­ ¼öÇàÇÒ µ¿ÀÛµéÀ» ÁöÁ¤ÇÑ´Ù.
-                curTurnDir = -1.0f;
+                //ï¿½Ì¹ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ûµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
                 curTurnAngle = -90.0f;
                 playerCurRot = this.transform.rotation;
                 listCurTurn = listMoveSideRear;
                 turnClock = true;
-                seq = 0; //¿©±â´Ù µÑ±î?
+                seq = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½?
                 sm.SetState(listCurTurn[seq]);
             }
             if (Input.GetKeyDown(KeyCode.D))
             {
-                //ÀÌ¹ø ÅÏ¿¡¼­ ¼öÇàÇÒ µ¿ÀÛµéÀ» ÁöÁ¤ÇÑ´Ù.
-                curTurnDir = 1.0f;
+                //ï¿½Ì¹ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ûµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
                 curTurnAngle = 90.0f;
                 playerCurRot = this.transform.rotation;
                 listCurTurn = listMoveSideRear;
                 turnClock = true;
-                seq = 0; //¿©±â´Ù µÑ±î?
+                seq = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½?
                 sm.SetState(listCurTurn[seq]);
             }
         }
         if (turnClock)
         {
-            // µ¿ÀÛÀÌ ¸¶¹«¸®µÇ¾ú´ÂÁöÀÇ ¿©ºÎ¸¦ ÆÇ´ÜÇÏ´Â logic
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½Ç´ï¿½ï¿½Ï´ï¿½ logic
             sm.IsDoneAction();
-            // µ¿ÀÛÀÌ ¸¶¹«¸®µÇ¾úÀ¸¸é doneAction: true.
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ doneAction: true.
             if (doneAction)
             {
-                //¿ì¼± seq¸¦ 1 Áõ°¡½ÃÅ°°í
+                //ï¿½ì¼± seqï¿½ï¿½ 1 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½
                 seq++;
-                if (seq < listCurTurn.Count) //¾ÆÁ÷ list¹üÀ§ ³»¸é ´ÙÀ½ state·Î setState
+                if (seq < listCurTurn.Count) //ï¿½ï¿½ï¿½ï¿½ listï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ stateï¿½ï¿½ setState
                 {
                     sm.SetState(listCurTurn[seq]);
                     doneAction = false;
                 }
-                else //list¸¦ ³¡±îÁö ÀÐ¾ú´Ù¸é Idle state·Î µ¹¾Æ¿À°í turnClock ²ö´Ù.
+                else //listï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½Ù¸ï¿½ Idle stateï¿½ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½ï¿½ï¿½ turnClock ï¿½ï¿½ï¿½ï¿½.
                 {
                     sm.SetState(dicState[PlayerState.Idle]);
                     doneAction = false;
                     turnClock = false;
-                    //seq = 0; //¾Æ´Ï¸é ¿©±â´Ù µÑ±î?
+                    //seq = 0; //ï¿½Æ´Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ±ï¿½?
                 }
             }
         }
