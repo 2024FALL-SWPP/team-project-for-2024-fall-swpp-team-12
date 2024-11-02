@@ -5,11 +5,28 @@ using UnityEngine;
 public class PlayerTurn : MonoBehaviour, IState<PlayerController>
 {
     private PlayerController _playerController;
+
+    private float currentYRotation;
+    private float targetYRotation;
+
     public void OperateEnter(PlayerController sender)
     {
         _playerController = sender;
-        _playerController.curRotSpeed = _playerController.turnSpeed;
-
+        _playerController.curRotSpeed = _playerController.turnSpeed * Mathf.Abs(_playerController.curTurnAngle) / 90.0f;
+        
+        targetYRotation = _playerController.playerCurRot.eulerAngles.y + _playerController.curTurnAngle;
+        if (targetYRotation == 360.0f)
+        {
+            targetYRotation = 0.0f;
+        }
+        else if (targetYRotation == -90.0f)
+        {
+            targetYRotation = 270.0f;
+        }
+        else if (targetYRotation == 450.0f)
+        {
+            targetYRotation = 90.0f;
+        }
     }
 
     public void OperateExit(PlayerController sender)
@@ -26,12 +43,11 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
     }
     public void DoneAction(PlayerController sender)
     {
-        float currentYRotation = _playerController.transform.eulerAngles.y;
-        float targetYRotation = _playerController.playerCurRot.eulerAngles.y + _playerController.curTurnAngle;
-
-        if (Mathf.Abs(Mathf.DeltaAngle(currentYRotation, targetYRotation)) < 1.0f) 
+        currentYRotation = _playerController.transform.eulerAngles.y;
+        if (Mathf.Abs(Mathf.DeltaAngle(currentYRotation, targetYRotation)) < 3.0f) 
         {
             CompleteRotation(targetYRotation);
+            _playerController.doneAction = true;
         }
     }
 
@@ -39,6 +55,5 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
     {
         _playerController.transform.rotation = Quaternion.Euler(0.0f, targetYRotation, 0.0f);
         _playerController.playerCurRot = _playerController.transform.rotation;
-        _playerController.doneAction = true;
     }
 }

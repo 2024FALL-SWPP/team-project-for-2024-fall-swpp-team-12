@@ -1681,8 +1681,8 @@ MonoBehaviour:
   doneAction: 0
   playerCurPos: {x: 0, y: 0, z: 0}
   playerCurRot: {x: 0, y: 0, z: 0, w: 0}
-  curTurnDir: 0
+  curHopDir: 0
   curTurnAngle: 0
-  moveSpeedHor: 6
-  moveSpeedVer: 3
-  turnSpeed: 60
+  moveSpeedHor: 9
+  moveSpeedVer: 4.5
+  turnSpeed: 360
