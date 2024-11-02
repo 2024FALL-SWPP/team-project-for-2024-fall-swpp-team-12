@@ -1678,6 +1678,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnClock: 0
+  doneAction: 0
+  playerCurPos: {x: 0, y: 0, z: 0}
+  playerCurRot: {x: 0, y: 0, z: 0, w: 0}
+  curTurnDir: 0
+  curTurnAngle: 0
   moveSpeedHor: 6
   moveSpeedVer: 3
-  turnDistance: 6
+  turnSpeed: 60
