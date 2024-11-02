@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     // �ϴ� �÷��̾���� ���۽��Ѻ��� �ϴ� �ӽ÷� ����ٰ� �ΰڽ��ϴ�.
     public bool turnClock = false;
     //when turnClock false -> true  state��ȭ�� ���� �Ǵ� �� ������ ������.
+    //next time: when turnClock false -> true: turn count +1!!!
 
     // turnClock�� ���� �ÿ� list�� ����ִ� ������� �������� setState�� �ϱ� ���� 1�� �����ϴ� ��
     private int seq = 0;
@@ -86,12 +87,12 @@ public class PlayerController : MonoBehaviour
         listHopOverSideRear.Add(hop);
         listHopOverSideRear.Add(move);
         //������ �� ĭ �����ؼ� ��������: idle -> move -> hop(-) -> idle
-        listHopOverForward.Add(move);
-        listHopOverForward.Add(hop);
+        listHopUnderForward.Add(move);
+        listHopUnderForward.Add(hop);
         //���̳� �ڷ� �� ĭ �����ؼ� ��������: idle -> turn(x) -> move -> hop(-) -> idle
-        listHopOverSideRear.Add(turn);
-        listHopOverSideRear.Add(move);
-        listHopOverSideRear.Add(hop);
+        listHopUnderSideRear.Add(turn);
+        listHopUnderSideRear.Add(move);
+        listHopUnderSideRear.Add(hop);
 
         //StateMachine class�� Object�� ������! //�⺻ State�� Idle.
         sm = new StateMachine<PlayerController>(this, dicState[PlayerState.Idle]);
@@ -188,22 +189,38 @@ public class PlayerController : MonoBehaviour
                 playerCurPos = this.transform.position;
                 if (curTurnAngle == 0.0f)
                 {
-                    listCurTurn = listMoveForward;
+                    if (Input.GetKey(KeyCode.R))
+                    {
+                        curHopDir = 1.0f;
+                        listCurTurn = listHopOverForward;
+                    }
+                    else if (Input.GetKey(KeyCode.F))
+                    {
+                        curHopDir = -1.0f;
+                        listCurTurn = listHopUnderForward;
+                    }
+                    else
+                    {
+                        listCurTurn = listMoveForward;
+                    }
                 }
-                else if (curTurnAngle == 180.0f)
+                else if (curTurnAngle == 180.0f || curTurnAngle == -90.0f || curTurnAngle == 90.0f)
                 {
                     playerCurRot = this.transform.rotation;
-                    listCurTurn = listMoveSideRear;
-                }
-                else if (curTurnAngle == -90.0f)
-                {
-                    playerCurRot = this.transform.rotation;
-                    listCurTurn = listMoveSideRear;
-                }
-                else if (curTurnAngle == 90.0f)
-                {
-                    playerCurRot = this.transform.rotation;
-                    listCurTurn = listMoveSideRear;
+                    if (Input.GetKey(KeyCode.R))
+                    {
+                        curHopDir = 1.0f;
+                        listCurTurn = listHopOverSideRear;
+                    }
+                    else if (Input.GetKey(KeyCode.F))
+                    {
+                        curHopDir = -1.0f;
+                        listCurTurn = listHopUnderSideRear;
+                    }
+                    else
+                    {
+                        listCurTurn = listMoveSideRear;
+                    }
                 }
                 doSelectAction = false;
                 turnClock = true;
