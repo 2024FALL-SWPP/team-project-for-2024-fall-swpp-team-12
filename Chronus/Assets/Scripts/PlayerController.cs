@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
         Hop
     }
 
+    private bool doSelectAction = false;
+
     // ������ ���� ������Ʈ�� �ϰ������� �����ؾ� �ؼ� ���⿡ ������ �� �Ǵ� ��������
     // �ϴ� �÷��̾���� ���۽��Ѻ��� �ϴ� �ӽ÷� ����ٰ� �ΰڽ��ϴ�.
     public bool turnClock = false;
@@ -26,11 +28,12 @@ public class PlayerController : MonoBehaviour
     //�� ������ ������ ��ġ,ȸ������ ����ϴ� ����
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
+    public float curHopDir;
     public float curTurnAngle;
 
     public float moveSpeedHor = 6.0f;
     public float moveSpeedVer = 3.0f;
-    public float turnSpeed = 60.0f;
+    public float turnSpeed = 240.0f;
     public float curSpeed { get; set; }
     public float curRotSpeed { get; set; }
 
@@ -96,73 +99,142 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        //���⼭ ��� list�� �ҷ��;� �ϴ��� �Ǵ��ϴ� logic �ۼ��ؾ� ��
+        
         if (!turnClock) {
-            if (Input.GetKeyDown(KeyCode.W)) //�ϴ��� ������� ��������...
+            if(Input.GetKeyDown(KeyCode.W)) //orientation: 0 degree
             {
-                //�̹� �Ͽ��� ������ ���۵��� �����Ѵ�.
+                if(this.transform.eulerAngles.y == 0.0f)
+                {
+                    curTurnAngle = 0.0f;
+                }
+                else if (this.transform.eulerAngles.y == 180.0f)
+                {
+                    curTurnAngle = 180.0f;
+                }
+                else if (this.transform.eulerAngles.y == 270.0f)
+                {
+                    curTurnAngle = 90.0f;
+                }
+                else if (this.transform.eulerAngles.y == 90.0f)
+                {
+                    curTurnAngle = -90.0f;
+                }
+                doSelectAction = true;
+            }
+            else if (Input.GetKeyDown(KeyCode.S)) //orientation: 180 degree
+            {
+                if (this.transform.eulerAngles.y == 0.0f)
+                {
+                    curTurnAngle = 180.0f;
+                }
+                else if (this.transform.eulerAngles.y == 180.0f)
+                {
+                    curTurnAngle = 0.0f;
+                }
+                else if (this.transform.eulerAngles.y == 270.0f)
+                {
+                    curTurnAngle = -90.0f;
+                }
+                else if (this.transform.eulerAngles.y == 90.0f)
+                {
+                    curTurnAngle = 90.0f;
+                }
+                doSelectAction = true;
+            }
+            else if (Input.GetKeyDown(KeyCode.A)) //orientation: -90 degree
+            {
+                if (this.transform.eulerAngles.y == 0.0f)
+                {
+                    curTurnAngle = -90.0f;
+                }
+                else if (this.transform.eulerAngles.y == 180.0f)
+                {
+                    curTurnAngle = 90.0f;
+                }
+                else if (this.transform.eulerAngles.y == 270.0f)
+                {
+                    curTurnAngle = 0.0f;
+                }
+                else if (this.transform.eulerAngles.y == 90.0f)
+                {
+                    curTurnAngle = 180.0f;
+                }
+                doSelectAction = true;
+            }
+            else if (Input.GetKeyDown(KeyCode.D)) //orientation: 90 degree
+            {
+                if (this.transform.eulerAngles.y == 0.0f)
+                {
+                    curTurnAngle = 90.0f;
+                }
+                else if (this.transform.eulerAngles.y == 180.0f)
+                {
+                    curTurnAngle = -90.0f;
+                }
+                else if (this.transform.eulerAngles.y == 270.0f)
+                {
+                    curTurnAngle = 180.0f;
+                }
+                else if (this.transform.eulerAngles.y == 90.0f)
+                {
+                    curTurnAngle = 0.0f;
+                }
+                doSelectAction = true;
+            }
+
+            // select action which is towarding the orientation (curTurnAngle: Relative orientation)
+            if (doSelectAction)
+            {
                 playerCurPos = this.transform.position;
-                listCurTurn = listMoveForward;
+                if (curTurnAngle == 0.0f)
+                {
+                    listCurTurn = listMoveForward;
+                }
+                else if (curTurnAngle == 180.0f)
+                {
+                    playerCurRot = this.transform.rotation;
+                    listCurTurn = listMoveSideRear;
+                }
+                else if (curTurnAngle == -90.0f)
+                {
+                    playerCurRot = this.transform.rotation;
+                    listCurTurn = listMoveSideRear;
+                }
+                else if (curTurnAngle == 90.0f)
+                {
+                    playerCurRot = this.transform.rotation;
+                    listCurTurn = listMoveSideRear;
+                }
+                doSelectAction = false;
                 turnClock = true;
-                seq = 0; //����� �ѱ�?
-                sm.SetState(listCurTurn[seq]);
-            }
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                //�̹� �Ͽ��� ������ ���۵��� �����Ѵ�.
-                curTurnAngle = 180.0f;
-                playerCurRot = this.transform.rotation;
-                listCurTurn = listMoveSideRear;
-                turnClock = true;
-                seq = 0; //����� �ѱ�?
-                sm.SetState(listCurTurn[seq]);
-            }
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                //�̹� �Ͽ��� ������ ���۵��� �����Ѵ�.
-                curTurnAngle = -90.0f;
-                playerCurRot = this.transform.rotation;
-                listCurTurn = listMoveSideRear;
-                turnClock = true;
-                seq = 0; //����� �ѱ�?
-                sm.SetState(listCurTurn[seq]);
-            }
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                //�̹� �Ͽ��� ������ ���۵��� �����Ѵ�.
-                curTurnAngle = 90.0f;
-                playerCurRot = this.transform.rotation;
-                listCurTurn = listMoveSideRear;
-                turnClock = true;
-                seq = 0; //����� �ѱ�?
+                seq = 0;
                 sm.SetState(listCurTurn[seq]);
             }
         }
-        if (turnClock)
+        else //if (turnClock)
         {
-            // ������ �������Ǿ������� ���θ� �Ǵ��ϴ� logic
+            //update when turnClock is ON
             sm.IsDoneAction();
-            // ������ �������Ǿ����� doneAction: true.
+
             if (doneAction)
             {
-                //�켱 seq�� 1 ������Ű��
                 seq++;
-                if (seq < listCurTurn.Count) //���� list���� ���� ���� state�� setState
+                if (seq < listCurTurn.Count)
                 {
                     sm.SetState(listCurTurn[seq]);
                     doneAction = false;
                 }
-                else //list�� ������ �о��ٸ� Idle state�� ���ƿ��� turnClock ����.
+                else
                 {
                     sm.SetState(dicState[PlayerState.Idle]);
                     doneAction = false;
                     turnClock = false;
-                    //seq = 0; //�ƴϸ� ����� �ѱ�?
+                    //seq = 0;
                 }
             }
         }
-
-        //update always 
+        print(curTurnAngle);
+        //update always ~
         sm.DoOperateUpdate();
     }
 
