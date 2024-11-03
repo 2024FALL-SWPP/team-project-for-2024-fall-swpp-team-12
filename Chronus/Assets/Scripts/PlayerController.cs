@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
 
     // ������ ���� ������Ʈ�� �ϰ������� �����ؾ� �ؼ� ���⿡ ������ �� �Ǵ� ��������
     // �ϴ� �÷��̾���� ���۽��Ѻ��� �ϴ� �ӽ÷� ����ٰ� �ΰڽ��ϴ�.
-    public bool turnClock = false;
+    private bool turnClock = false;
     //when turnClock false -> true  state��ȭ�� ���� �Ǵ� �� ������ ������.
     //next time: when turnClock false -> true: turn count +1!!!
 
@@ -29,13 +29,15 @@ public class PlayerController : MonoBehaviour
     //�� ������ ������ ��ġ,ȸ������ ����ϴ� ����
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
+
     public float curHopDir;
     public float curTurnAngle;
 
-    public float moveSpeedHor = 6.0f;
-    public float moveSpeedVer = 3.0f;
-    public float turnSpeed = 240.0f;
+    public float moveSpeedHor;
+    public float moveSpeedVer;
+    public float turnSpeed;
     public float curSpeed { get; set; }
+    public float curHopSpeed { get; set; }
     public float curRotSpeed { get; set; }
 
 
@@ -44,19 +46,37 @@ public class PlayerController : MonoBehaviour
     //�� �Ͽ��� ������ state���� ������� ���� list�� ���� �׸�.
     private List<IState<PlayerController>> listCurTurn = new List<IState<PlayerController>>();
 
+
     private List<IState<PlayerController>> listStay = new List<IState<PlayerController>>();
+
     private List<IState<PlayerController>> listMoveForward = new List<IState<PlayerController>>();
     private List<IState<PlayerController>> listMoveSideRear = new List<IState<PlayerController>>();
-    private List<IState<PlayerController>> listHopOverForward = new List<IState<PlayerController>>();
-    private List<IState<PlayerController>> listHopOverSideRear = new List<IState<PlayerController>>();
-    private List<IState<PlayerController>> listHopUnderForward = new List<IState<PlayerController>>();
-    private List<IState<PlayerController>> listHopUnderSideRear = new List<IState<PlayerController>>();
+
+    private List<IState<PlayerController>> listHopForward = new List<IState<PlayerController>>();
+    private List<IState<PlayerController>> listHopSideRear = new List<IState<PlayerController>>();
+
     private StateMachine<PlayerController> sm;
+
+    private RaycastHit hitWall;
+    private RaycastHit hitFloor;
+    private RaycastHit hitOverFloor;
+    private RaycastHit hitUnderFloor;
+    private float rayDistance;
+    private float rayJumpInterval;
+    private int layerMask;
+
+    private bool isUnderJump = false;
 
     // Start is called before the first frame update
     void Start()
     {
         playerCurPos = this.transform.position;
+        playerCurRot = this.transform.rotation;
+
+        moveSpeedHor = 6.0f;
+        moveSpeedVer = 0.5f * moveSpeedHor;
+        turnSpeed = 480.0f;
+
 
         //���� IState ���. �̰� SetState�� Argument�� ������ state�� �ش� IState�� �ٲ��.
         IState<PlayerController> idle = new PlayerIdle();
@@ -79,153 +99,312 @@ public class PlayerController : MonoBehaviour
         //���̳� �ڷ� �� ĭ �̵��ϱ�: idle -> turn(x) -> move -> idle  (x=f(i)) (i:input, f: ����������ε���)
         listMoveSideRear.Add(turn);
         listMoveSideRear.Add(move);
-        //������ �� ĭ �����ؼ� �ö󰡱�: idle -> hop(+) -> move -> idle
-        listHopOverForward.Add(hop);
-        listHopOverForward.Add(move);
-        //���̳� �ڷ� �� ĭ �����ؼ� �ö󰡱�: idle -> turn(x) -> hop(+) -> move -> idle
-        listHopOverSideRear.Add(turn);
-        listHopOverSideRear.Add(hop);
-        listHopOverSideRear.Add(move);
-        //������ �� ĭ �����ؼ� ��������: idle -> move -> hop(-) -> idle
-        listHopUnderForward.Add(move);
-        listHopUnderForward.Add(hop);
-        //���̳� �ڷ� �� ĭ �����ؼ� ��������: idle -> turn(x) -> move -> hop(-) -> idle
-        listHopUnderSideRear.Add(turn);
-        listHopUnderSideRear.Add(move);
-        listHopUnderSideRear.Add(hop);
+
+        listHopForward.Add(hop);
+
+        listHopSideRear.Add(turn);
+        listHopSideRear.Add(hop);
 
         //StateMachine class�� Object�� ������! //�⺻ State�� Idle.
         sm = new StateMachine<PlayerController>(this, dicState[PlayerState.Idle]);
+
+        hitWall = new RaycastHit();
+        hitFloor = new RaycastHit();
+        hitOverFloor = new RaycastHit();
+        hitUnderFloor = new RaycastHit();
+        rayDistance = 1.0f;
+        rayJumpInterval = 1.0f;
+        layerMask = 1 << 0;
     }
 
     void Update()
     {
+
         
         if (!turnClock) {
             if(Input.GetKeyDown(KeyCode.W)) //orientation: 0 degree
             {
-                if(this.transform.eulerAngles.y == 0.0f)
+                playerCurPos = this.transform.position;
+
+                Debug.DrawRay(playerCurPos + new Vector3(0, 0, 2.0f), transform.up * -rayDistance, Color.red, 0.8f);
+                if (Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, 2.0f), -transform.up, out hitUnderFloor, rayDistance+rayJumpInterval+ 0.1f, layerMask))
                 {
-                    curTurnAngle = 0.0f;
+                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, 2.0f), -transform.up, out hitFloor, rayDistance+ 0.1f, layerMask))
+                    {
+                        isUnderJump = true;
+                    }
+                    else
+                    {
+                        isUnderJump = false;
+                    }
+
+                    if (this.transform.eulerAngles.y == 0.0f)
+                    {
+                        curTurnAngle = 0.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 180.0f)
+                    {
+                        curTurnAngle = 180.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 270.0f)
+                    {
+                        curTurnAngle = 90.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 90.0f)
+                    {
+                        curTurnAngle = -90.0f;
+                    }
+                    doSelectAction = true;
                 }
-                else if (this.transform.eulerAngles.y == 180.0f)
-                {
-                    curTurnAngle = 180.0f;
-                }
-                else if (this.transform.eulerAngles.y == 270.0f)
-                {
-                    curTurnAngle = 90.0f;
-                }
-                else if (this.transform.eulerAngles.y == 90.0f)
-                {
-                    curTurnAngle = -90.0f;
-                }
-                doSelectAction = true;
             }
             else if (Input.GetKeyDown(KeyCode.S)) //orientation: 180 degree
             {
-                if (this.transform.eulerAngles.y == 0.0f)
+                playerCurPos = this.transform.position;
+
+                Debug.DrawRay(playerCurPos + new Vector3(0, 0, -2.0f), transform.up * -rayDistance, Color.red, 0.8f);
+                if (Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, -2.0f), -transform.up, out hitUnderFloor, rayDistance+rayJumpInterval+0.1f, layerMask))
                 {
-                    curTurnAngle = 180.0f;
+                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, -2.0f), -transform.up, out hitFloor, rayDistance+0.1f, layerMask))
+                    {
+                        isUnderJump = true;
+                    }
+                    else
+                    {
+                        isUnderJump = false;
+                    }
+
+                    if (this.transform.eulerAngles.y == 0.0f)
+                    {
+                        curTurnAngle = 180.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 180.0f)
+                    {
+                        curTurnAngle = 0.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 270.0f)
+                    {
+                        curTurnAngle = -90.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 90.0f)
+                    {
+                        curTurnAngle = 90.0f;
+                    }
+                    doSelectAction = true;
                 }
-                else if (this.transform.eulerAngles.y == 180.0f)
-                {
-                    curTurnAngle = 0.0f;
-                }
-                else if (this.transform.eulerAngles.y == 270.0f)
-                {
-                    curTurnAngle = -90.0f;
-                }
-                else if (this.transform.eulerAngles.y == 90.0f)
-                {
-                    curTurnAngle = 90.0f;
-                }
-                doSelectAction = true;
             }
             else if (Input.GetKeyDown(KeyCode.A)) //orientation: -90 degree
             {
-                if (this.transform.eulerAngles.y == 0.0f)
+                playerCurPos = this.transform.position;
+
+                Debug.DrawRay(playerCurPos + new Vector3(-2.0f, 0, 0), transform.up * -rayDistance, Color.red, 0.8f);
+                if (Physics.Raycast(playerCurPos + new Vector3(-2.0f, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance+rayJumpInterval+ 0.1f, layerMask))
                 {
-                    curTurnAngle = -90.0f;
+                    if (!Physics.Raycast(playerCurPos + new Vector3(-2.0f, 0.1f, 0), -transform.up, out hitFloor, rayDistance+ 0.1f, layerMask))
+                    {
+                        isUnderJump = true;
+                    }
+                    else
+                    {
+                        isUnderJump = false;
+                    }
+
+                    if (this.transform.eulerAngles.y == 0.0f)
+                    {
+                        curTurnAngle = -90.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 180.0f)
+                    {
+                        curTurnAngle = 90.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 270.0f)
+                    {
+                        curTurnAngle = 0.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 90.0f)
+                    {
+                        curTurnAngle = 180.0f;
+                    }
+                    doSelectAction = true;
                 }
-                else if (this.transform.eulerAngles.y == 180.0f)
-                {
-                    curTurnAngle = 90.0f;
-                }
-                else if (this.transform.eulerAngles.y == 270.0f)
-                {
-                    curTurnAngle = 0.0f;
-                }
-                else if (this.transform.eulerAngles.y == 90.0f)
-                {
-                    curTurnAngle = 180.0f;
-                }
-                doSelectAction = true;
             }
             else if (Input.GetKeyDown(KeyCode.D)) //orientation: 90 degree
             {
-                if (this.transform.eulerAngles.y == 0.0f)
+                playerCurPos = this.transform.position;
+
+                Debug.DrawRay(playerCurPos + new Vector3(2.0f, 0, 0), transform.up * -rayDistance, Color.red, 0.8f);
+                if (Physics.Raycast(playerCurPos + new Vector3(2.0f, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance+rayJumpInterval+0.1f, layerMask))
                 {
-                    curTurnAngle = 90.0f;
+                    if (!Physics.Raycast(playerCurPos + new Vector3(2.0f, 0.1f, 0), -transform.up, out hitFloor, rayDistance+0.1f, layerMask))
+                    {
+                        isUnderJump = true;
+                    }
+                    else
+                    {
+                        isUnderJump = false;
+                    }
+
+                    if (this.transform.eulerAngles.y == 0.0f)
+                    {
+                        curTurnAngle = 90.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 180.0f)
+                    {
+                        curTurnAngle = -90.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 270.0f)
+                    {
+                        curTurnAngle = 180.0f;
+                    }
+                    else if (this.transform.eulerAngles.y == 90.0f)
+                    {
+                        curTurnAngle = 0.0f;
+                    }
+                    doSelectAction = true;
                 }
-                else if (this.transform.eulerAngles.y == 180.0f)
-                {
-                    curTurnAngle = -90.0f;
-                }
-                else if (this.transform.eulerAngles.y == 270.0f)
-                {
-                    curTurnAngle = 180.0f;
-                }
-                else if (this.transform.eulerAngles.y == 90.0f)
-                {
-                    curTurnAngle = 0.0f;
-                }
-                doSelectAction = true;
             }
 
             // select action which is towarding the orientation (curTurnAngle: Relative orientation)
             if (doSelectAction)
             {
-                playerCurPos = this.transform.position;
                 if (curTurnAngle == 0.0f)
                 {
-                    if (Input.GetKey(KeyCode.R))
+                    Debug.DrawRay(playerCurPos, transform.forward * rayDistance, Color.blue, 0.8f);
+                    if (Physics.Raycast(playerCurPos, transform.forward, out hitWall, rayDistance, layerMask))
                     {
-                        curHopDir = 1.0f;
-                        listCurTurn = listHopOverForward;
-                    }
-                    else if (Input.GetKey(KeyCode.F))
-                    {
-                        curHopDir = -1.0f;
-                        listCurTurn = listHopUnderForward;
+                        if (!Physics.Raycast(playerCurPos + new Vector3(0,0.5f,0), transform.forward, out hitOverFloor, rayDistance, layerMask))
+                        {
+                            curHopDir = 1.0f;
+                            listCurTurn = listHopForward;
+
+                            turnClock = true;
+                            seq = 0;
+                            sm.SetState(listCurTurn[seq]);
+                        }
                     }
                     else
                     {
-                        listCurTurn = listMoveForward;
+                        if (isUnderJump)
+                        {
+                            curHopDir = -1.0f;
+                            listCurTurn = listHopForward;
+
+                            isUnderJump = false;
+                        }
+                        else
+                        {
+                            listCurTurn = listMoveForward;
+                        }
+                        turnClock = true;
+                        seq = 0;
+                        sm.SetState(listCurTurn[seq]);
                     }
                 }
-                else if (curTurnAngle == 180.0f || curTurnAngle == -90.0f || curTurnAngle == 90.0f)
+                else if (curTurnAngle == 180.0f)
                 {
                     playerCurRot = this.transform.rotation;
-                    if (Input.GetKey(KeyCode.R))
+
+                    Debug.DrawRay(playerCurPos, transform.forward * -rayDistance, Color.blue, 0.8f);
+                    if (Physics.Raycast(playerCurPos, -transform.forward, out hitWall, rayDistance, layerMask))
                     {
-                        curHopDir = 1.0f;
-                        listCurTurn = listHopOverSideRear;
-                    }
-                    else if (Input.GetKey(KeyCode.F))
-                    {
-                        curHopDir = -1.0f;
-                        listCurTurn = listHopUnderSideRear;
+                        if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), -transform.forward, out hitOverFloor, rayDistance, layerMask))
+                        {
+                            curHopDir = 1.0f;
+                            listCurTurn = listHopSideRear;
+
+                            turnClock = true;
+                            seq = 0;
+                            sm.SetState(listCurTurn[seq]);
+                        }
                     }
                     else
                     {
-                        listCurTurn = listMoveSideRear;
+                        if (isUnderJump)
+                        {
+                            curHopDir = -1.0f;
+                            listCurTurn = listHopSideRear;
+
+                            isUnderJump = false;
+                        }
+                        else
+                        {
+                            listCurTurn = listMoveSideRear;
+                        }
+                        turnClock = true;
+                        seq = 0;
+                        sm.SetState(listCurTurn[seq]);
                     }
                 }
+                else if (curTurnAngle == -90.0f)
+                {
+                    playerCurRot = this.transform.rotation;
+
+                    Debug.DrawRay(playerCurPos, transform.right * -rayDistance, Color.blue, 0.8f);
+                    if (Physics.Raycast(playerCurPos, -transform.right, out hitWall, rayDistance, layerMask))
+                    {
+                        if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), -transform.right, out hitOverFloor, rayDistance, layerMask))
+                        {
+                            curHopDir = 1.0f;
+                            listCurTurn = listHopSideRear;
+
+                            turnClock = true;
+                            seq = 0;
+                            sm.SetState(listCurTurn[seq]);
+                        }
+                    }
+                    else
+                    {
+                        if (isUnderJump)
+                        {
+                            curHopDir = -1.0f;
+                            listCurTurn = listHopSideRear;
+
+                            isUnderJump = false;
+                        }
+                        else
+                        {
+                            listCurTurn = listMoveSideRear;
+                        }
+                        turnClock = true;
+                        seq = 0;
+                        sm.SetState(listCurTurn[seq]);
+                    }
+                }
+                else if (curTurnAngle == 90.0f)
+                {
+                    playerCurRot = this.transform.rotation;
+
+                    Debug.DrawRay(playerCurPos, transform.right * rayDistance, Color.blue, 0.8f);
+                    if (Physics.Raycast(playerCurPos, transform.right, out hitWall, rayDistance, layerMask))
+                    {
+                        if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), transform.right, out hitOverFloor, rayDistance, layerMask))
+                        {
+                            curHopDir = 1.0f;
+                            listCurTurn = listHopSideRear;
+
+                            turnClock = true;
+                            seq = 0;
+                            sm.SetState(listCurTurn[seq]);
+                        }
+                    }
+                    else
+                    {
+                        if (isUnderJump)
+                        {
+                            curHopDir = -1.0f;
+                            listCurTurn = listHopSideRear;
+
+                            isUnderJump = false;
+                        }
+                        else
+                        {
+                            listCurTurn = listMoveSideRear;
+                        }
+                        turnClock = true;
+                        seq = 0;
+                        sm.SetState(listCurTurn[seq]);
+                    } 
+                }
                 doSelectAction = false;
-                turnClock = true;
-                seq = 0;
-                sm.SetState(listCurTurn[seq]);
             }
         }
         else //if (turnClock)
@@ -251,6 +430,7 @@ public class PlayerController : MonoBehaviour
             }
         }
         print(curTurnAngle);
+
         //update always ~
         sm.DoOperateUpdate();
     }
