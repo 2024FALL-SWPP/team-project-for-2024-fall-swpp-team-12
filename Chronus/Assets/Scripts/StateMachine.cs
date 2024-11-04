@@ -19,9 +19,9 @@ public class StateMachine<T>
     //State Replacement!
     public void SetState(IState<T> state)
     {
-        //Debug.Log("SetState : " + state);
+        Debug.Log("SetState : " + state);
 
-        // null error
+        // null에러출력
         if (m_sender == null)
         {
             Debug.LogError("m_sender ERROR");
@@ -30,7 +30,7 @@ public class StateMachine<T>
 
         if (CurState == state)
         {
-            //Debug.LogWarningFormat("Same state : ", state);
+            Debug.LogWarningFormat("Same state : ", state);
             return;
         }
 
@@ -45,7 +45,7 @@ public class StateMachine<T>
         if (CurState != null)
             CurState.OperateEnter(m_sender);
 
-        //Debug.Log("SetNextState : " + state);
+        Debug.Log("SetNextState : " + state);
 
     }
 
@@ -59,15 +59,5 @@ public class StateMachine<T>
         }
         //Update
         CurState.OperateUpdate(m_sender);
-    }
-
-    public void IsDoneAction()
-    {
-        if (m_sender == null)
-        {
-            Debug.LogError("invalid m_sener");
-            return;
-        }
-        CurState.DoneAction(m_sender);
     }
 }
