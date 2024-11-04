@@ -5,10 +5,39 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour, IState<PlayerController>
 {
     private PlayerController _playerController;
+
+    private Vector3 targetTranslation;
+
+    private float smallHopRate;
+    private float speedVer;
+    private bool meetLocalMax;
+
+
     public void OperateEnter(PlayerController sender)
     {
         _playerController = sender;
         _playerController.curSpeed = _playerController.moveSpeedHor;
+
+        if (_playerController.playerCurRot.eulerAngles.y == 0.0f)
+        {
+            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, 2.0f); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
+        }
+        else if (_playerController.playerCurRot.eulerAngles.y == 90.0f)
+        {
+            targetTranslation = _playerController.playerCurPos + new Vector3(2.0f, 0, 0); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
+        }
+        else if (_playerController.playerCurRot.eulerAngles.y == 270.0f)
+        {
+            targetTranslation = _playerController.playerCurPos + new Vector3(-2.0f, 0, 0); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
+        }
+        else if (_playerController.playerCurRot.eulerAngles.y == 180.0f)
+        {
+            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, -2.0f); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
+        }
+
+        smallHopRate = 2.0f;
+        speedVer = _playerController.moveSpeedVer * smallHopRate;
+        meetLocalMax = false;
     }
 
     public void OperateExit(PlayerController sender)
@@ -17,12 +46,47 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
 
     public void OperateUpdate(PlayerController sender)
     {
+        if (!meetLocalMax)
+        {
+            speedVer -= Mathf.Log(speedVer + 1.0f) * 0.01f;
+        }
+        else
+        {
+            speedVer -= Mathf.Log(-speedVer + 1.0f) * 0.01f;
+        }
+
         if (_playerController)
         {
-            if (_playerController.curSpeed > 0)
+            float moveStep = _playerController.curSpeed * Time.deltaTime;
+            _playerController.transform.Translate(Vector3.forward * moveStep);
+
+            float smallHopStep = speedVer * Time.deltaTime;
+            _playerController.transform.Translate(Vector3.up * smallHopStep);
+            if (!meetLocalMax)
             {
-                _playerController.transform.Translate(Vector3.forward * _playerController.curSpeed);
+                Vector3 currentTranslation = _playerController.transform.position;
+                float planeDistance = Mathf.Sqrt((targetTranslation.x - currentTranslation.x)*(targetTranslation.x - currentTranslation.x) + (targetTranslation.z - currentTranslation.z)*(targetTranslation.z - currentTranslation.z));
+                if (planeDistance < 0.5f * 2.0f)
+                {//less than half distance
+                    meetLocalMax = true;
+                    speedVer = -3.0f * smallHopRate;
+                }
             }
         }
+    }
+    public void DoneAction(PlayerController sender)
+    {
+        Vector3 currentTranslation = _playerController.transform.position;
+        float planeDistance = Mathf.Sqrt((targetTranslation.x - currentTranslation.x)*(targetTranslation.x - currentTranslation.x) + (targetTranslation.z - currentTranslation.z)*(targetTranslation.z - currentTranslation.z));
+        if (planeDistance < 0.1f)
+        {
+            CompleteTranslation(targetTranslation);
+            _playerController.doneAction = true;
+        }
+    }
+    private void CompleteTranslation(Vector3 targetTranslation)
+    {
+        _playerController.transform.position = targetTranslation;
+        _playerController.playerCurPos = _playerController.transform.position; //현재 위치정보 갱신
     }
 }
