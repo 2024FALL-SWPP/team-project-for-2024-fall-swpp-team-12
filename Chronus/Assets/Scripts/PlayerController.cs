@@ -125,144 +125,7 @@ public class PlayerController : MonoBehaviour
             // select action which is towarding the orientation (curTurnAngle: Relative orientation)
             if (doSelectAction)
             {
-                if (curTurnAngle == 0.0f)
-                {
-                    Debug.DrawRay(playerCurPos, transform.forward * rayDistance, Color.blue, 0.8f);
-                    if (Physics.Raycast(playerCurPos, transform.forward, out hitWall, rayDistance, layerMask))
-                    {
-                        if (!Physics.Raycast(playerCurPos + new Vector3(0,0.5f,0), transform.forward, out hitOverFloor, rayDistance, layerMask))
-                        {
-                            curHopDir = 1.0f;
-                            listCurTurn = listHopForward;
-
-                            turnClock = true;
-                            seq = 0;
-                            sm.SetState(listCurTurn[seq]);
-                        }
-                    }
-                    else
-                    {
-                        if (isUnderJump)
-                        {
-                            curHopDir = -1.0f;
-                            listCurTurn = listHopForward;
-
-                            isUnderJump = false;
-                        }
-                        else
-                        {
-                            listCurTurn = listMoveForward;
-                        }
-                        turnClock = true;
-                        seq = 0;
-                        sm.SetState(listCurTurn[seq]);
-                    }
-                }
-                else if (curTurnAngle == 180.0f)
-                {
-                    playerCurRot = this.transform.rotation;
-
-                    Debug.DrawRay(playerCurPos, transform.forward * -rayDistance, Color.blue, 0.8f);
-                    if (Physics.Raycast(playerCurPos, -transform.forward, out hitWall, rayDistance, layerMask))
-                    {
-                        if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), -transform.forward, out hitOverFloor, rayDistance, layerMask))
-                        {
-                            curHopDir = 1.0f;
-                            listCurTurn = listHopSideRear;
-
-                            turnClock = true;
-                            seq = 0;
-                            sm.SetState(listCurTurn[seq]);
-                        }
-                    }
-                    else
-                    {
-                        if (isUnderJump)
-                        {
-                            curHopDir = -1.0f;
-                            listCurTurn = listHopSideRear;
-
-                            isUnderJump = false;
-                        }
-                        else
-                        {
-                            listCurTurn = listMoveSideRear;
-                        }
-                        turnClock = true;
-                        seq = 0;
-                        sm.SetState(listCurTurn[seq]);
-                    }
-                }
-                else if (curTurnAngle == -90.0f)
-                {
-                    playerCurRot = this.transform.rotation;
-
-                    Debug.DrawRay(playerCurPos, transform.right * -rayDistance, Color.blue, 0.8f);
-                    if (Physics.Raycast(playerCurPos, -transform.right, out hitWall, rayDistance, layerMask))
-                    {
-                        if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), -transform.right, out hitOverFloor, rayDistance, layerMask))
-                        {
-                            curHopDir = 1.0f;
-                            listCurTurn = listHopSideRear;
-
-                            turnClock = true;
-                            seq = 0;
-                            sm.SetState(listCurTurn[seq]);
-                        }
-                    }
-                    else
-                    {
-                        if (isUnderJump)
-                        {
-                            curHopDir = -1.0f;
-                            listCurTurn = listHopSideRear;
-
-                            isUnderJump = false;
-                        }
-                        else
-                        {
-                            listCurTurn = listMoveSideRear;
-                        }
-                        turnClock = true;
-                        seq = 0;
-                        sm.SetState(listCurTurn[seq]);
-                    }
-                }
-                else if (curTurnAngle == 90.0f)
-                {
-                    playerCurRot = this.transform.rotation;
-
-                    Debug.DrawRay(playerCurPos, transform.right * rayDistance, Color.blue, 0.8f);
-                    if (Physics.Raycast(playerCurPos, transform.right, out hitWall, rayDistance, layerMask))
-                    {
-                        if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), transform.right, out hitOverFloor, rayDistance, layerMask))
-                        {
-                            curHopDir = 1.0f;
-                            listCurTurn = listHopSideRear;
-
-                            turnClock = true;
-                            seq = 0;
-                            sm.SetState(listCurTurn[seq]);
-                        }
-                    }
-                    else
-                    {
-                        if (isUnderJump)
-                        {
-                            curHopDir = -1.0f;
-                            listCurTurn = listHopSideRear;
-
-                            isUnderJump = false;
-                        }
-                        else
-                        {
-                            listCurTurn = listMoveSideRear;
-                        }
-                        turnClock = true;
-                        seq = 0;
-                        sm.SetState(listCurTurn[seq]);
-                    } 
-                }
+                HandleActionBasedOnAngle();
                 doSelectAction = false;
             }
         }
@@ -328,5 +191,46 @@ public class PlayerController : MonoBehaviour
             
             doSelectAction = true;
         }
+    }
+
+    private void HandleActionBasedOnAngle()
+    {
+        Vector3 rayDirection = Vector3.zero;
+
+        if (curTurnAngle == 0.0f)
+            rayDirection = transform.forward;
+        else if (curTurnAngle == 180.0f)
+            rayDirection = -transform.forward;
+        else if (curTurnAngle == -90.0f)
+            rayDirection = -transform.right;
+        else if (curTurnAngle == 90.0f)
+            rayDirection = transform.right;
+
+        Debug.DrawRay(playerCurPos, rayDirection * rayDistance, Color.blue, 0.8f);
+        if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance, layerMask))
+        {
+            if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask))
+            {
+                curHopDir = 1.0f;
+                listCurTurn = listHopSideRear;
+            }
+        }
+        else
+        {
+            if (isUnderJump)
+            {
+                curHopDir = -1.0f;
+                listCurTurn = listHopSideRear;
+                isUnderJump = false;
+            }
+            else
+            {
+                listCurTurn = curTurnAngle == 0.0f ? listMoveForward : listMoveSideRear;
+            }
+        }
+
+        turnClock = true;
+        seq = 0;
+        sm.SetState(listCurTurn[seq]);
     }
 }
