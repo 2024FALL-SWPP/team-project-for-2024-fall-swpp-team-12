@@ -14,19 +14,18 @@ public class PlayerController : MonoBehaviour
 
     private bool doSelectAction = false;
 
-    // ������ ���� ������Ʈ�� �ϰ������� �����ؾ� �ؼ� ���⿡ ������ �� �Ǵ� ��������
-    // �ϴ� �÷��̾���� ���۽��Ѻ��� �ϴ� �ӽ÷� ����ٰ� �ΰڽ��ϴ�.
+
     private bool turnClock = false;
-    //when turnClock false -> true  state��ȭ�� ���� �Ǵ� �� ������ ������.
+    //when turnClock false -> true  state list reading~~
     //next time: when turnClock false -> true: turn count +1!!!
 
-    // turnClock�� ���� �ÿ� list�� ����ִ� ������� �������� setState�� �ϱ� ���� 1�� �����ϴ� ��
+    // index of state list
     private int seq = 0;
-    // �� state������ ������ �������� Ȯ���ϱ� ���� ����. (������ �ش� ������ true�� ��)
+    // task of a state ended, need to jump to next state (next index of the state list)
     public bool doneAction = false;
 
 
-    //�� ������ ������ ��ġ,ȸ������ ����ϴ� ����
+    //current transformation write.
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
 
@@ -43,7 +42,7 @@ public class PlayerController : MonoBehaviour
 
     private Dictionary<PlayerState, IState<PlayerController>> dicState = new Dictionary<PlayerState, IState<PlayerController>>();
     
-    //�� �Ͽ��� ������ state���� ������� ���� list�� ���� �׸�.
+    //state list write.
     private List<IState<PlayerController>> listCurTurn = new List<IState<PlayerController>>();
 
 
@@ -78,34 +77,34 @@ public class PlayerController : MonoBehaviour
         turnSpeed = 480.0f;
 
 
-        //���� IState ���. �̰� SetState�� Argument�� ������ state�� �ش� IState�� �ٲ��.
+        //state names!
         IState<PlayerController> idle = new PlayerIdle();
         IState<PlayerController> move = new PlayerMove();
         IState<PlayerController> turn = new PlayerTurn();
         IState<PlayerController> hop = new PlayerHop();
 
-        //���� PlayerState �̸����� �˻��ؼ� ������ IState�� �ҷ������� Dictionary�� �������.
+        //dictionary. (not useful this time yet lol)
         dicState.Add(PlayerState.Idle, idle);
         dicState.Add(PlayerState.Move, move);
         dicState.Add(PlayerState.Turn, turn);
         dicState.Add(PlayerState.Hop, hop);
 
-        //�� �Ͽ��� ������ �� �ִ� ���鿡 ���� ���� List�� ����� �ൿ����(State ��ȭ ����)�� ����ߴ�.
+        //State List!!
 
-        //������ ���� �� �ѱ��: idle -> idle
+        //idle -> idle
         listStay.Add(idle);
-        //������ �� ĭ �̵��ϱ�: idle -> move(forward�����̴�.) -> idle
+        //idle -> move(forward.) -> idle
         listMoveForward.Add(move);
-        //���̳� �ڷ� �� ĭ �̵��ϱ�: idle -> turn(x) -> move -> idle  (x=f(i)) (i:input, f: ����������ε���)
+        //idle -> turn(x) -> move -> idle    (x=f(i)) (i:input, f: how much to rotate)
         listMoveSideRear.Add(turn);
         listMoveSideRear.Add(move);
-
+        //idle -> hop(over or under) -> idle
         listHopForward.Add(hop);
-
+        //idle -> turn(x) -> hop(over or under) -> idle    (x=f(i)) (i:input, f: how much to rotate)
         listHopSideRear.Add(turn);
         listHopSideRear.Add(hop);
 
-        //StateMachine class�� Object�� ������! //�⺻ State�� Idle.
+        //StateMachine we handle.
         sm = new StateMachine<PlayerController>(this, dicState[PlayerState.Idle]);
 
         hitWall = new RaycastHit();
@@ -187,7 +186,7 @@ public class PlayerController : MonoBehaviour
             isUnderJump = !Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitFloor, rayDistance + 0.1f, layerMask);
 
             int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
-            curTurnAngle = angles[angleIndex];
+            curTurnAngle = angles[angleIndex]; //orientation!!
             
             doSelectAction = true;
         }
@@ -213,6 +212,9 @@ public class PlayerController : MonoBehaviour
             {
                 curHopDir = 1.0f;
                 listCurTurn = listHopSideRear;
+                turnClock = true;
+                seq = 0;
+                sm.SetState(listCurTurn[seq]);
             }
         }
         else
@@ -227,10 +229,9 @@ public class PlayerController : MonoBehaviour
             {
                 listCurTurn = curTurnAngle == 0.0f ? listMoveForward : listMoveSideRear;
             }
+            turnClock = true;
+            seq = 0;
+            sm.SetState(listCurTurn[seq]);
         }
-
-        turnClock = true;
-        seq = 0;
-        sm.SetState(listCurTurn[seq]);
     }
 }
