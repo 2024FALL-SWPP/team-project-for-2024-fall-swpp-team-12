@@ -119,149 +119,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
-        
         if (!turnClock) {
-            if(Input.GetKeyDown(KeyCode.W)) //orientation: 0 degree
-            {
-                playerCurPos = this.transform.position;
-
-                Debug.DrawRay(playerCurPos + new Vector3(0, 0, 2.0f), transform.up * -rayDistance, Color.red, 0.8f);
-                if (Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, 2.0f), -transform.up, out hitUnderFloor, rayDistance+rayJumpInterval+ 0.1f, layerMask))
-                {
-                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, 2.0f), -transform.up, out hitFloor, rayDistance+ 0.1f, layerMask))
-                    {
-                        isUnderJump = true;
-                    }
-                    else
-                    {
-                        isUnderJump = false;
-                    }
-
-                    if (this.transform.eulerAngles.y == 0.0f)
-                    {
-                        curTurnAngle = 0.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 180.0f)
-                    {
-                        curTurnAngle = 180.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 270.0f)
-                    {
-                        curTurnAngle = 90.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 90.0f)
-                    {
-                        curTurnAngle = -90.0f;
-                    }
-                    doSelectAction = true;
-                }
-            }
-            else if (Input.GetKeyDown(KeyCode.S)) //orientation: 180 degree
-            {
-                playerCurPos = this.transform.position;
-
-                Debug.DrawRay(playerCurPos + new Vector3(0, 0, -2.0f), transform.up * -rayDistance, Color.red, 0.8f);
-                if (Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, -2.0f), -transform.up, out hitUnderFloor, rayDistance+rayJumpInterval+0.1f, layerMask))
-                {
-                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, -2.0f), -transform.up, out hitFloor, rayDistance+0.1f, layerMask))
-                    {
-                        isUnderJump = true;
-                    }
-                    else
-                    {
-                        isUnderJump = false;
-                    }
-
-                    if (this.transform.eulerAngles.y == 0.0f)
-                    {
-                        curTurnAngle = 180.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 180.0f)
-                    {
-                        curTurnAngle = 0.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 270.0f)
-                    {
-                        curTurnAngle = -90.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 90.0f)
-                    {
-                        curTurnAngle = 90.0f;
-                    }
-                    doSelectAction = true;
-                }
-            }
-            else if (Input.GetKeyDown(KeyCode.A)) //orientation: -90 degree
-            {
-                playerCurPos = this.transform.position;
-
-                Debug.DrawRay(playerCurPos + new Vector3(-2.0f, 0, 0), transform.up * -rayDistance, Color.red, 0.8f);
-                if (Physics.Raycast(playerCurPos + new Vector3(-2.0f, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance+rayJumpInterval+ 0.1f, layerMask))
-                {
-                    if (!Physics.Raycast(playerCurPos + new Vector3(-2.0f, 0.1f, 0), -transform.up, out hitFloor, rayDistance+ 0.1f, layerMask))
-                    {
-                        isUnderJump = true;
-                    }
-                    else
-                    {
-                        isUnderJump = false;
-                    }
-
-                    if (this.transform.eulerAngles.y == 0.0f)
-                    {
-                        curTurnAngle = -90.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 180.0f)
-                    {
-                        curTurnAngle = 90.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 270.0f)
-                    {
-                        curTurnAngle = 0.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 90.0f)
-                    {
-                        curTurnAngle = 180.0f;
-                    }
-                    doSelectAction = true;
-                }
-            }
-            else if (Input.GetKeyDown(KeyCode.D)) //orientation: 90 degree
-            {
-                playerCurPos = this.transform.position;
-
-                Debug.DrawRay(playerCurPos + new Vector3(2.0f, 0, 0), transform.up * -rayDistance, Color.red, 0.8f);
-                if (Physics.Raycast(playerCurPos + new Vector3(2.0f, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance+rayJumpInterval+0.1f, layerMask))
-                {
-                    if (!Physics.Raycast(playerCurPos + new Vector3(2.0f, 0.1f, 0), -transform.up, out hitFloor, rayDistance+0.1f, layerMask))
-                    {
-                        isUnderJump = true;
-                    }
-                    else
-                    {
-                        isUnderJump = false;
-                    }
-
-                    if (this.transform.eulerAngles.y == 0.0f)
-                    {
-                        curTurnAngle = 90.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 180.0f)
-                    {
-                        curTurnAngle = -90.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 270.0f)
-                    {
-                        curTurnAngle = 180.0f;
-                    }
-                    else if (this.transform.eulerAngles.y == 90.0f)
-                    {
-                        curTurnAngle = 0.0f;
-                    }
-                    doSelectAction = true;
-                }
-            }
+            HandleMovementInput();
 
             // select action which is towarding the orientation (curTurnAngle: Relative orientation)
             if (doSelectAction)
@@ -435,4 +294,39 @@ public class PlayerController : MonoBehaviour
         sm.DoOperateUpdate();
     }
 
+    private void HandleMovementInput()
+    {
+        if (Input.GetKeyDown(KeyCode.W)) 
+        {
+            HandleDirection(Vector3.forward, new float[] { 0.0f, -90.0f, 180.0f, 90.0f }, new Vector3(0, 0, 2.0f));
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            HandleDirection(Vector3.back, new float[] { 180.0f, 90.0f, 0.0f, -90.0f }, new Vector3(0, 0, -2.0f));
+        }
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+            HandleDirection(Vector3.left, new float[] { -90.0f, 180.0f, 90.0f, 0.0f }, new Vector3(-2.0f, 0, 0));
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            HandleDirection(Vector3.right, new float[] { 90.0f, 0.0f, -90.0f, 180.0f }, new Vector3(2.0f, 0, 0));
+        }
+    }
+
+    private void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset)
+    {
+        playerCurPos = this.transform.position;
+
+        Debug.DrawRay(playerCurPos + rayOffset, transform.up * -rayDistance, Color.red, 0.8f);
+        if (Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask))
+        {
+            isUnderJump = !Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitFloor, rayDistance + 0.1f, layerMask);
+
+            int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
+            curTurnAngle = angles[angleIndex];
+            
+            doSelectAction = true;
+        }
+    }
 }
