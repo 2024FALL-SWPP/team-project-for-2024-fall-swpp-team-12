@@ -12,7 +12,7 @@ public class StateMachine<T>
     //기본 상태를 설정하는 Constructer
     public StateMachine(T sender, IState<T> state)
     {
-        m_sender = sender;
+        m_sender = sender; //can set variables(position, rotation, etc) of sender in this script
         SetState(state);
     }
 

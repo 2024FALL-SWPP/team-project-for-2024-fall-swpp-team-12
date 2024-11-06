@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController playerController; //public accessibility using Singleton
+
     public enum PlayerState
     {
         Idle,
@@ -13,32 +15,40 @@ public class PlayerController : MonoBehaviour
     }
 
     public Animator animator;
+    //2 separated parts of 'input and spatial condition check'
     private bool doSelectAction = false;
 
-
-    private bool turnClock = false;
-    //when turnClock false -> true  state list reading~~
-    //next time: when turnClock false -> true: turn count +1!!!
+    //when turnClock false -> true  state list reading (DoneAction <-> next state ...)
+    public bool turnClock = false;
+    //when turnClock true -> false: turn check for player: true -> for turn count +1
 
     // index of state list
     private int seq = 0;
+
     // task of a state ended, need to jump to next state (next index of the state list)
+        //can be changed from state's DoneAction func, through sender
     public bool doneAction = false;
 
+    public List<string> listCommandLog; //command log for time reverse and phantom action
 
-    //current transformation write.
+
+    //Current transformation write.
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
 
+    //condition -> rotate or hop direction
     public float curHopDir;
     public float curTurnAngle;
 
+    //act speed.
     public float moveSpeedHor;
     public float moveSpeedVer;
     public float turnSpeed;
+    //sender get & set. (speed)
     public float curSpeed { get; set; }
     public float curHopSpeed { get; set; }
     public float curRotSpeed { get; set; }
+
 
 
     private Dictionary<PlayerState, IState<PlayerController>> dicState = new Dictionary<PlayerState, IState<PlayerController>>();
@@ -55,8 +65,12 @@ public class PlayerController : MonoBehaviour
     private List<IState<PlayerController>> listHopForward = new List<IState<PlayerController>>();
     private List<IState<PlayerController>> listHopSideRear = new List<IState<PlayerController>>();
 
+    private Dictionary<string, List<IState<PlayerController>>> dicCommand = new Dictionary<string, List<IState<PlayerController>>>();
+
+    //the state machine of player.
     private StateMachine<PlayerController> sm;
 
+    //for spatial condition check
     private RaycastHit hitWall;
     private RaycastHit hitFloor;
     private RaycastHit hitOverFloor;
@@ -65,11 +79,23 @@ public class PlayerController : MonoBehaviour
     private float rayJumpInterval;
     private int layerMask;
 
+    //for state decision 'branch' from spatial condition check
     private bool isUnderJump = false;
+
+
+    private void Awake() //Singleton
+    {
+        if (PlayerController.playerController == null)
+        {
+            PlayerController.playerController = this;
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        List<List<IState<PlayerController>>> listCommandLog = new List<List<IState<PlayerController>>>();
+
         animator = transform.Find("MainCharacter").GetComponent<Animator>();
         
         playerCurPos = this.transform.position;
@@ -107,6 +133,14 @@ public class PlayerController : MonoBehaviour
         listHopSideRear.Add(turn);
         listHopSideRear.Add(hop);
 
+        
+        dicCommand.Add("Stay", listStay);
+        dicCommand.Add("MoveForward", listMoveForward);
+        dicCommand.Add("MoveSideRear", listMoveSideRear);
+        dicCommand.Add("HopForward", listHopForward);
+        dicCommand.Add("HopSideRear", listHopSideRear);
+        
+
         //StateMachine we handle.
         sm = new StateMachine<PlayerController>(this, dicState[PlayerState.Idle]);
 
@@ -119,7 +153,7 @@ public class PlayerController : MonoBehaviour
         layerMask = 1 << 0;
     }
 
-    void Update()
+    void Update() //Input&Condition Check <-> State Change
     {
         if (!turnClock) {
             HandleMovementInput();
@@ -136,9 +170,9 @@ public class PlayerController : MonoBehaviour
             //update when turnClock is ON
             sm.IsDoneAction();
 
-            if (doneAction)
+            if (doneAction) //next state in the state list
             {
-                seq++;
+                seq++; //next index
                 if (seq < listCurTurn.Count)
                 {
                     sm.SetState(listCurTurn[seq]);
@@ -148,18 +182,19 @@ public class PlayerController : MonoBehaviour
                 {
                     sm.SetState(dicState[PlayerState.Idle]);
                     doneAction = false;
+
                     turnClock = false;
-                    //seq = 0;
+                    TurnManager.turnManager.dicTurnCheck["Player"] = true;
                 }
             }
         }
-        print(curTurnAngle);
+        //print(curTurnAngle);
 
         //update always ~
         sm.DoOperateUpdate();
     }
 
-    private void HandleMovementInput()
+    private void HandleMovementInput() //global direction and check whether 'void or floor(plain or below 1.0)' is in front of player
     {
         if (Input.GetKeyDown(KeyCode.W)) 
         {
@@ -177,9 +212,22 @@ public class PlayerController : MonoBehaviour
         {
             HandleDirection(Vector3.right, new float[] { 90.0f, 0.0f, -90.0f, 180.0f }, new Vector3(2.0f, 0, 0));
         }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            KeepIdleAndPassTurn();
+        }
     }
 
-    private void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset)
+    private void KeepIdleAndPassTurn()
+    {
+        listCurTurn = listStay;
+        listCommandLog.Add("Stay");
+        turnClock = true; // start current turn!!!
+        seq = 0;
+        sm.SetState(listCurTurn[seq]);
+    }
+
+    private void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset) //from HandleMovementInput() with local direction Array
     {
         playerCurPos = this.transform.position;
 
@@ -191,11 +239,11 @@ public class PlayerController : MonoBehaviour
             int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
             curTurnAngle = angles[angleIndex]; //orientation!!
             
-            doSelectAction = true;
+            doSelectAction = true; //need to check more things. go to HandleActionBasedOnAngle()
         }
     }
 
-    private void HandleActionBasedOnAngle()
+    private void HandleActionBasedOnAngle()  //local direction and check whether 'wall or jumpable stair(over 1.0)' is in front of player's oriented direction
     {
         Vector3 rayDirection = Vector3.zero;
 
@@ -214,8 +262,10 @@ public class PlayerController : MonoBehaviour
             if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask))
             {
                 curHopDir = 1.0f;
-                listCurTurn = listHopSideRear;
-                turnClock = true;
+                listCurTurn = curTurnAngle == 0.0f ? listHopForward : listHopSideRear;
+                string s = curTurnAngle == 0.0f ? "HopForward" : "HopSideRear";
+                listCommandLog.Add(s);
+                turnClock = true; // start current turn!!!
                 seq = 0;
                 sm.SetState(listCurTurn[seq]);
             }
@@ -226,13 +276,24 @@ public class PlayerController : MonoBehaviour
             {
                 curHopDir = -1.0f;
                 listCurTurn = listHopSideRear;
+                listCommandLog.Add("HopSideRear");
                 isUnderJump = false;
             }
             else
             {
-                listCurTurn = curTurnAngle == 0.0f ? listMoveForward : listMoveSideRear;
+                if (curTurnAngle == 0.0f)
+                {
+                    listCurTurn = listMoveForward;
+                    listCommandLog.Add("MoveForward");
+                }
+                else
+                {
+                    listCurTurn = listMoveSideRear;
+                    listCommandLog.Add("MoveSideRear");
+                }
+
             }
-            turnClock = true;
+            turnClock = true; // start current turn!!!
             seq = 0;
             sm.SetState(listCurTurn[seq]);
         }
