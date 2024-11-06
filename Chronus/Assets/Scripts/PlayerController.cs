@@ -73,6 +73,7 @@ public class PlayerController : MonoBehaviour
     private IState<PlayerController> turn;
     private IState<PlayerController> hop;
 
+
     private Dictionary<PlayerState, IState<PlayerController>> dicState = new Dictionary<PlayerState, IState<PlayerController>>();
     
     //State List!!!
