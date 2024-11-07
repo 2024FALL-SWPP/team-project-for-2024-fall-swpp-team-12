@@ -16,9 +16,19 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
     public void OperateEnter(PlayerController sender)
     {
         _playerController = sender;
+        //turn left or right speed  x 2   =   turn behind speed
         _playerController.curRotSpeed = _playerController.turnSpeed * Mathf.Abs(_playerController.curTurnAngle) / 90.0f;
         
         targetYRotation = _playerController.playerCurRot.eulerAngles.y + _playerController.curTurnAngle;
+        if (targetYRotation >= 360.0f)
+        {
+            targetYRotation -= 360.0f;
+        }
+        else if (targetYRotation < 0.0f)
+        {
+            targetYRotation += 360.0f;
+        }
+        /*
         if (targetYRotation == 360.0f)
         {
             targetYRotation = 0.0f;
@@ -31,7 +41,9 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
         {
             targetYRotation = 90.0f;
         }
+        */
 
+        //small hop motion (part of animation yeah)
         smallHopRate = 1.0f;
         speedVer = _playerController.moveSpeedVer * smallHopRate;
         meetLocalMax = false;
@@ -43,6 +55,7 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
 
     public void OperateUpdate(PlayerController sender)
     {
+        //small hop motion (log graph shape, non-linear it is.) (part of animation yeah)
         if (!meetLocalMax)
         {
             speedVer -= Mathf.Log(speedVer + 1.0f) * 0.01f;
@@ -57,6 +70,7 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
             float rotationStep = _playerController.curRotSpeed * Time.deltaTime;
             _playerController.transform.Rotate(0f, Mathf.Sign(_playerController.curTurnAngle) * rotationStep, 0f);
 
+            //small hop motion (part of animation yeah)
             float smallHopStep = speedVer * Time.deltaTime;
             _playerController.transform.Translate(Vector3.up * smallHopStep);
             if (!meetLocalMax)
@@ -74,8 +88,9 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
     public void DoneAction(PlayerController sender)
     {
         float currentYRotation = _playerController.transform.eulerAngles.y;
+        float gap = Mathf.DeltaAngle(_playerController.playerCurRot.eulerAngles.y, currentYRotation);
         float angle = Mathf.Abs(Mathf.DeltaAngle(currentYRotation, targetYRotation));
-        if (angle < 2.0f) 
+        if (angle < 1.0f || (gap >= Mathf.Abs(_playerController.curTurnAngle) && gap >= 0) || (gap <= -90.0f && gap < 0)) 
         {
             CompleteRotation(targetYRotation);
             CompleteTranslation();
@@ -88,7 +103,7 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
         _playerController.transform.rotation = Quaternion.Euler(0.0f, targetYRotation, 0.0f);
         _playerController.playerCurRot = _playerController.transform.rotation;
     }
-    private void CompleteTranslation()
+    private void CompleteTranslation() 
     {
         _playerController.transform.position = _playerController.playerCurPos;
     }

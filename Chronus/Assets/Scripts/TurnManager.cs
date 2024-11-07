@@ -39,6 +39,12 @@ public class TurnManager : MonoBehaviour
 
         dicTurnCheck = new Dictionary<string, bool>();
         dicTurnCheck.Add("Player", false);
+        dicTurnCheck.Add("Phantom", true);
+        dicTurnCheck.Add("MirrorPhantom", true);
+        dicTurnCheck.Add("Button", true);
+        dicTurnCheck.Add("Lever", true);
+        dicTurnCheck.Add("Platform", true);
+        dicTurnCheck.Add("Box", true);
 
         savePoint_pos = new Vector3(1, 1, 1);
         savePoint_rot = Quaternion.Euler(new Vector3(0,0,0));
@@ -48,10 +54,19 @@ public class TurnManager : MonoBehaviour
     void Update()
     {
         print(turn);
-        if (dicTurnCheck["Player"])
+        if (dicTurnCheck["Player"]) //Player Leads Turn Control.
         {
-            turn += 1; //this turn ended, wait for the next turn!
-            dicTurnCheck["Player"] = false;
+            bool ph = dicTurnCheck["Phantom"];
+            bool mph = dicTurnCheck["MirrorPhantom"];
+            bool bt = dicTurnCheck["Button"];
+            bool l = dicTurnCheck["Lever"];
+            bool pf = dicTurnCheck["Platform"];
+            bool bx = dicTurnCheck["Box"];
+            if (ph && mph && bt && l && pf && bx)
+            {
+                turn += 1; //this turn ended, wait for the next turn!
+                dicTurnCheck["Player"] = false;
+            }
         }
     }
 }
