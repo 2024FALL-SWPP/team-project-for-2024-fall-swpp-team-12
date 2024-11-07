@@ -25,7 +25,8 @@ public class PlayerIdle : MonoBehaviour, IState<PlayerController>
     // Always Do something when the current state is this state
     public void OperateUpdate(PlayerController sender)
     {
-
+        //need "fall" condition
+        //game over by fell condition also.
     }
     public void DoneAction(PlayerController sender)
     {

@@ -35,6 +35,7 @@ public class PlayerHop : MonoBehaviour, IState<PlayerController>
             targetTranslation = _playerController.playerCurPos + new Vector3(0, 1.0f * _playerController.curHopDir, -2.0f); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
         }
 
+        //small hop motion (part of animation yeah)
         smallHopRate = 3.0f;
         speedVer = _playerController.moveSpeedVer * smallHopRate;
         meetLocalMax = false;
@@ -46,6 +47,7 @@ public class PlayerHop : MonoBehaviour, IState<PlayerController>
 
     public void OperateUpdate(PlayerController sender)
     {
+        //small hop motion (log graph shape, non-linear it is.) (part of animation yeah)
         if (!meetLocalMax)
         {
             speedVer -= Mathf.Log(speedVer + 1.0f) * 0.01f;
@@ -63,6 +65,7 @@ public class PlayerHop : MonoBehaviour, IState<PlayerController>
             float moveStep = _playerController.curSpeed * Time.deltaTime;
             _playerController.transform.Translate(Vector3.forward * moveStep);
 
+            //small hop motion (part of animation yeah)
             float smallHopStep = speedVer * Time.deltaTime;
             _playerController.transform.Translate(Vector3.up * smallHopStep);
             if (!meetLocalMax)
@@ -77,11 +80,12 @@ public class PlayerHop : MonoBehaviour, IState<PlayerController>
             }
         }
     }
-    public void DoneAction(PlayerController sender)
+    public void DoneAction(PlayerController sender) //just check for x and z (no need to check y gap)
     {
         Vector3 currentTranslation = _playerController.transform.position;
+        float gap = Mathf.Sqrt((_playerController.playerCurPos.x - currentTranslation.x) * (_playerController.playerCurPos.x - currentTranslation.x) + (_playerController.playerCurPos.z - currentTranslation.z) * (_playerController.playerCurPos.z - currentTranslation.z));
         float planeDistance = Mathf.Sqrt((targetTranslation.x - currentTranslation.x)*(targetTranslation.x - currentTranslation.x) + (targetTranslation.z - currentTranslation.z)*(targetTranslation.z - currentTranslation.z));
-        if (planeDistance < 0.1f)
+        if (planeDistance < 0.1f || gap >= 2.0f)
         {
             CompleteTranslation(targetTranslation);
             _playerController.doneAction = true;

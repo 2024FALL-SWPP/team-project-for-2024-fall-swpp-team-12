@@ -4191,6 +4191,7 @@ MonoBehaviour:
   turnClock: 0
   animator: {fileID: 0}
   doneAction: 0
+  listCommandLog: []
   playerCurPos: {x: 0, y: 0, z: 0}
   playerCurRot: {x: 0, y: 0, z: 0, w: 0}
   curHopDir: 0
