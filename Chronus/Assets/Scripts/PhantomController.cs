@@ -2,10 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneManager : MonoBehaviour
+public class PhantomController : MonoBehaviour
 {
-    //prefab Instantiate
-
     // Start is called before the first frame update
     void Start()
     {
