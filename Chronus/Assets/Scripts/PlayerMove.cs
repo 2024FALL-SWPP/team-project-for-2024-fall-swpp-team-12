@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour, IState<PlayerController>
 {
     private PlayerController _playerController;
-
     private Vector3 targetTranslation;
 
     private float smallHopRate;
@@ -17,22 +16,27 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
     {
         _playerController = sender;
         _playerController.curSpeed = _playerController.moveSpeedHor;
+        
+        if (_playerController.animator != null)
+        {
+            _playerController.animator.SetBool("isMoving", true);
+        }
 
         if (_playerController.playerCurRot.eulerAngles.y == 0.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, 2.0f); //È¤½Ã³ªÀÇ ¿ÀÂ÷ °¡´É¼º ¶§¹®¿¡ Á¤È®ÇÑ À§Ä¡ ÀÔ·ÂÇØÁÜ
+            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, 2.0f); //È¤ï¿½Ã³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È®ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½Ô·ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 90.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(2.0f, 0, 0); //È¤½Ã³ªÀÇ ¿ÀÂ÷ °¡´É¼º ¶§¹®¿¡ Á¤È®ÇÑ À§Ä¡ ÀÔ·ÂÇØÁÜ
+            targetTranslation = _playerController.playerCurPos + new Vector3(2.0f, 0, 0); //È¤ï¿½Ã³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È®ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½Ô·ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 270.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(-2.0f, 0, 0); //È¤½Ã³ªÀÇ ¿ÀÂ÷ °¡´É¼º ¶§¹®¿¡ Á¤È®ÇÑ À§Ä¡ ÀÔ·ÂÇØÁÜ
+            targetTranslation = _playerController.playerCurPos + new Vector3(-2.0f, 0, 0); //È¤ï¿½Ã³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È®ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½Ô·ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 180.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, -2.0f); //È¤½Ã³ªÀÇ ¿ÀÂ÷ °¡´É¼º ¶§¹®¿¡ Á¤È®ÇÑ À§Ä¡ ÀÔ·ÂÇØÁÜ
+            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, -2.0f); //È¤ï¿½Ã³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È®ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½Ô·ï¿½ï¿½ï¿½ï¿½ï¿½
         }
 
         smallHopRate = 2.0f;
@@ -42,6 +46,10 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
 
     public void OperateExit(PlayerController sender)
     {
+          if (_playerController.animator != null)
+        {
+            _playerController.animator.SetBool("isMoving", false);
+        }
     }
 
     public void OperateUpdate(PlayerController sender)
@@ -87,6 +95,6 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
     private void CompleteTranslation(Vector3 targetTranslation)
     {
         _playerController.transform.position = targetTranslation;
-        _playerController.playerCurPos = _playerController.transform.position; //ÇöÀç À§Ä¡Á¤º¸ °»½Å
+        _playerController.playerCurPos = _playerController.transform.position; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 }

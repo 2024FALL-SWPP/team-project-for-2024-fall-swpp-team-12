@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
         Hop
     }
 
+    public Animator animator;
     private bool doSelectAction = false;
 
 
@@ -69,6 +70,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        animator = transform.Find("MainCharacter").GetComponent<Animator>();
+        
         playerCurPos = this.transform.position;
         playerCurRot = this.transform.rotation;
 
