@@ -6,10 +6,10 @@ public class StateMachine<T>
 {
     private T m_sender;
 
-    //current State는 이 public Property에 담긴다. CurState!!!
+    //current State in this public Property. CurState!!!
     public IState<T> CurState { get; set; }
 
-    //기본 상태를 설정하는 Constructer
+    //Constructer for setting default state (mostly Idle State is the default.)
     public StateMachine(T sender, IState<T> state)
     {
         m_sender = sender; //can set variables(position, rotation, etc) of sender in this script

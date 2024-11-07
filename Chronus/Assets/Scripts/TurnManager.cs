@@ -53,7 +53,7 @@ public class TurnManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        print(turn);
+        //print(turn);
         if (dicTurnCheck["Player"]) //Player Leads Turn Control.
         {
             bool ph = dicTurnCheck["Phantom"];
@@ -65,6 +65,7 @@ public class TurnManager : MonoBehaviour
             if (ph && mph && bt && l && pf && bx)
             {
                 turn += 1; //this turn ended, wait for the next turn!
+                PlayerController.playerController.turnClock = false;
                 dicTurnCheck["Player"] = false;
             }
         }

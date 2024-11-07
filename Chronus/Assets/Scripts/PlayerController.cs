@@ -6,21 +6,35 @@ public class PlayerController : MonoBehaviour
 {
     public static PlayerController playerController; //public accessibility using Singleton
 
-    public enum PlayerState
+    public enum PlayerState //just naming for matching key of state dictionary(dicState), not that important.
     {
         Idle,
         Move,
         Turn,
         Hop
-    }
+    } //honestly it seems better just to use string type lol (but I'm too lazy to change this)
+    //(and you are not lazy for writing this long useless comments lmao)
 
     public Animator animator;
-    //2 separated parts of 'input and spatial condition check'
+    //2 separated parts of 'input and spatial condition check' this bool variable for switching between two sides.
     private bool doSelectAction = false;
 
-    //when turnClock false -> true  state list reading (DoneAction <-> next state ...)
+    //when turnClock false -> true:  state list reading (DoneAction <-> next state ...)
     public bool turnClock = false;
-    //when turnClock true -> false: turn check for player: true -> for turn count +1
+    //when player action ended -> turn check for player(true) -> when all objects true: turn count +1
+    //-> turnClock true -> false: can detect input
+    //object-player interaction rules:
+    //turnClock = true -> objects also do their own action for this turn.
+    //turnClock = false -> do condition check (collide, in the area, etc)
+    //-> need condition check Sequence, Before player input check, After turn update
+
+    //that means: Player have Initiative Role of turn update(action execution) == player is the manager.
+
+
+
+    public bool isTimeReversing = false;
+
+    private int maxTurn = 0;
 
     // index of state list
     private int seq = 0;
@@ -29,8 +43,8 @@ public class PlayerController : MonoBehaviour
         //can be changed from state's DoneAction func, through sender
     public bool doneAction = false;
 
-    public List<string> listCommandLog; //command log for time reverse and phantom action
-
+    public List<string> listCommandLog; //command log for time reverse(objects) and phantom action(copy commands)
+    public List<(Vector3, Quaternion)> listPosLog; //position tracking log for time reverse(reset position)
 
     //Current transformation write.
     public Vector3 playerCurPos;
@@ -49,28 +63,37 @@ public class PlayerController : MonoBehaviour
     public float curHopSpeed { get; set; }
     public float curRotSpeed { get; set; }
 
-
+    public GameObject playerStates;
+    private PlayerIdle playerIdle;
+    private PlayerMove playerMove;
+    private PlayerTurn playerTurn;
+    private PlayerHop playerHop;
+    private IState<PlayerController> idle;
+    private IState<PlayerController> move;
+    private IState<PlayerController> turn;
+    private IState<PlayerController> hop;
 
     private Dictionary<PlayerState, IState<PlayerController>> dicState = new Dictionary<PlayerState, IState<PlayerController>>();
     
-    //state list write.
+    //State List!!!
     private List<IState<PlayerController>> listCurTurn = new List<IState<PlayerController>>();
 
-
     private List<IState<PlayerController>> listStay = new List<IState<PlayerController>>();
-
     private List<IState<PlayerController>> listMoveForward = new List<IState<PlayerController>>();
     private List<IState<PlayerController>> listMoveSideRear = new List<IState<PlayerController>>();
-
     private List<IState<PlayerController>> listHopForward = new List<IState<PlayerController>>();
     private List<IState<PlayerController>> listHopSideRear = new List<IState<PlayerController>>();
 
+    //don't need for Player, need for Phantom (currently I just wrote this on this .cs file sorry)
+    //command order list for phantom action(copy commands)
+    public List<string> listCommandOrderForPhantom;
+    //for matching String(impormation of State List & HopDir & TurnAngle) -> State List
     private Dictionary<string, List<IState<PlayerController>>> dicCommand = new Dictionary<string, List<IState<PlayerController>>>();
 
     //the state machine of player.
     private StateMachine<PlayerController> sm;
 
-    //for spatial condition check
+    //Raycast for spatial condition check
     private RaycastHit hitWall;
     private RaycastHit hitFloor;
     private RaycastHit hitOverFloor;
@@ -81,7 +104,6 @@ public class PlayerController : MonoBehaviour
 
     //for state decision 'branch' from spatial condition check
     private bool isUnderJump = false;
-
 
     private void Awake() //Singleton
     {
@@ -94,23 +116,31 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        List<List<IState<PlayerController>>> listCommandLog = new List<List<IState<PlayerController>>>();
+        listCommandLog = new List<string>(); //command log for time reverse(objects) and phantom action(copy commands)
+        listPosLog = new List<(Vector3, Quaternion)>(); //position tracking log for time reverse(reset position)
 
         animator = transform.Find("MainCharacter").GetComponent<Animator>();
         
         playerCurPos = this.transform.position;
         playerCurRot = this.transform.rotation;
 
+        listPosLog.Add((playerCurPos, playerCurRot)); //position tracking log update!
+        // always: listPosLog.Count = 1 + listCommandLog.Count ***
+
         moveSpeedHor = 6.0f;
         moveSpeedVer = 0.5f * moveSpeedHor;
         turnSpeed = 480.0f;
 
+        playerIdle = playerStates.GetComponent<PlayerIdle>();
+        playerMove = playerStates.GetComponent<PlayerMove>();
+        playerTurn = playerStates.GetComponent<PlayerTurn>();
+        playerHop = playerStates.GetComponent<PlayerHop>();
 
         //state names!
-        IState<PlayerController> idle = new PlayerIdle();
-        IState<PlayerController> move = new PlayerMove();
-        IState<PlayerController> turn = new PlayerTurn();
-        IState<PlayerController> hop = new PlayerHop();
+        IState <PlayerController> idle = playerIdle;
+        IState<PlayerController> move = playerMove;
+        IState<PlayerController> turn = playerTurn;
+        IState<PlayerController> hop = playerHop;
 
         //dictionary. (not useful this time yet lol)
         dicState.Add(PlayerState.Idle, idle);
@@ -118,8 +148,7 @@ public class PlayerController : MonoBehaviour
         dicState.Add(PlayerState.Turn, turn);
         dicState.Add(PlayerState.Hop, hop);
 
-        //State List!!
-
+        //State List write!!
         //idle -> idle
         listStay.Add(idle);
         //idle -> move(forward.) -> idle
@@ -133,17 +162,36 @@ public class PlayerController : MonoBehaviour
         listHopSideRear.Add(turn);
         listHopSideRear.Add(hop);
 
-        
+        //don't need for Player, need for Phantom (currently I just wrote this on this .cs file sorry)
+        //command order list for phantom action(copy commands)
+        listCommandOrderForPhantom = new List<string>();
+        //for matching String(impormation of State List & HopDir & TurnAngle) -> State List
         dicCommand.Add("Stay", listStay);
         dicCommand.Add("MoveForward", listMoveForward);
-        dicCommand.Add("MoveSideRear", listMoveSideRear);
-        dicCommand.Add("HopForward", listHopForward);
-        dicCommand.Add("HopSideRear", listHopSideRear);
-        
+        dicCommand.Add("MoveRear", listMoveSideRear);
+        dicCommand.Add("MoveLeft", listMoveSideRear);
+        dicCommand.Add("MoveRight", listMoveSideRear);
+        dicCommand.Add("HopOverForward", listHopForward);
+        dicCommand.Add("HopUnderForward", listHopForward);
+        dicCommand.Add("HopOverRear", listHopSideRear);
+        dicCommand.Add("HopOverLeft", listHopSideRear);
+        dicCommand.Add("HopOverRight", listHopSideRear);
+        dicCommand.Add("HopUnderRear", listHopSideRear);
+        dicCommand.Add("HopUnderLeft", listHopSideRear);
+        dicCommand.Add("HopUnderRight", listHopSideRear);
+        //Over: curHopDir = 1
+        //Under: curHopDir = -1
+        //Left: curTurnAngle; = -90.0f
+        //Right: curTurnAngle; = 90.0f
+        //Rear: curTurnAngle; = 180.0f
+        //required logic above.
 
-        //StateMachine we handle.
+
+
+        //StateMachine for Player, which we handle all the time.
         sm = new StateMachine<PlayerController>(this, dicState[PlayerState.Idle]);
 
+        //Raycast for spatial condition check
         hitWall = new RaycastHit();
         hitFloor = new RaycastHit();
         hitOverFloor = new RaycastHit();
@@ -153,16 +201,78 @@ public class PlayerController : MonoBehaviour
         layerMask = 1 << 0;
     }
 
-    void Update() //Input&Condition Check <-> State Change
+    //Input&Condition Check <-> Action of this Turn(State Change) <-> Time Reverse ((not yet) <-> save-load)
+    void Update() //it's good to think that Update function is an StateMachine too. (if-else grammer)
     {
         if (!turnClock) {
-            HandleMovementInput();
-
-            // select action which is towarding the orientation (curTurnAngle: Relative orientation)
-            if (doSelectAction)
+            if (!isTimeReversing)
+            {   // from Absolute orientation (wsad) -> get Relative orientation (curTurnAngle)
+                HandleMovementInput();
+                // select action which is towarding the orientation (curTurnAngle: Relative orientation)
+                if (doSelectAction)
+                {
+                    HandleActionBasedOnAngle();
+                    doSelectAction = false;
+                }
+            }
+            else
             {
-                HandleActionBasedOnAngle();
-                doSelectAction = false;
+                if (Input.GetKeyDown(KeyCode.Q)) //go to the Past (turn -1)
+                {
+                    if (TurnManager.turnManager.turn >= 1)
+                    {
+                        TurnManager.turnManager.turn -= 1;
+                        print(TurnManager.turnManager.turn);
+                        //position tracking log -> preview the current position(and rotation)
+                        this.transform.position = listPosLog[TurnManager.turnManager.turn].Item1;
+                        this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;
+                        playerCurPos = this.transform.position;
+                        playerCurRot = this.transform.rotation;
+                    }
+                    else
+                    {
+                        print("Cannot go further to the Past!!!");
+                    }
+
+                    
+                }
+                else if (Input.GetKeyDown(KeyCode.E)) //go to the Future (turn +1)
+                {
+                    if (TurnManager.turnManager.turn <= maxTurn - 1)
+                    {
+                        TurnManager.turnManager.turn += 1;
+                        print(TurnManager.turnManager.turn);
+                        //position tracking log -> preview the current position(and rotation)
+                        this.transform.position = listPosLog[TurnManager.turnManager.turn].Item1;
+                        this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;
+                        playerCurPos = this.transform.position;
+                        playerCurRot = this.transform.rotation;
+                    }
+                    else
+                    {
+                        print("Cannot go further to the Future!!!");
+                    }
+                }
+                else if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    if (TurnManager.turnManager.turn < maxTurn)
+                    {
+                        //make list of Command Orders for phantom!!
+                        for (int index = TurnManager.turnManager.turn; index <= listCommandLog.Count - 1; index++)
+                        {
+                            listCommandOrderForPhantom.Add(listCommandLog[index]);
+                        }
+                        for (int index = listCommandLog.Count - 1; index >= TurnManager.turnManager.turn; index--)
+                        {
+                            listCommandLog.RemoveAt(index); //turn 0 : no element in listCommandLog
+                        }
+                        for (int index = listPosLog.Count - 1; index >= TurnManager.turnManager.turn + 1; index--)
+                        {
+                            listPosLog.RemoveAt(index); //turn 0 : one initial element in listPosLog
+                        }
+                    }
+                    isTimeReversing = false;
+                }
             }
         }
         else //if (turnClock)
@@ -183,8 +293,10 @@ public class PlayerController : MonoBehaviour
                     sm.SetState(dicState[PlayerState.Idle]);
                     doneAction = false;
 
-                    turnClock = false;
+                    listPosLog.Add((playerCurPos, playerCurRot)); //position tracking log update!
+                    //print(listPosLog[TurnManager.turnManager.turn+1]);
                     TurnManager.turnManager.dicTurnCheck["Player"] = true;
+                    //turnClock = false;
                 }
             }
         }
@@ -196,7 +308,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovementInput() //global direction and check whether 'void or floor(plain or below 1.0)' is in front of player
     {
-        if (Input.GetKeyDown(KeyCode.W)) 
+        if (Input.GetKeyDown(KeyCode.W))
         {
             HandleDirection(Vector3.forward, new float[] { 0.0f, -90.0f, 180.0f, 90.0f }, new Vector3(0, 0, 2.0f));
         }
@@ -212,9 +324,15 @@ public class PlayerController : MonoBehaviour
         {
             HandleDirection(Vector3.right, new float[] { 90.0f, 0.0f, -90.0f, 180.0f }, new Vector3(2.0f, 0, 0));
         }
-        else if (Input.GetKeyDown(KeyCode.R))
+        else if (Input.GetKeyDown(KeyCode.R)) //Stay and Other objects act. turn +1
         {
             KeepIdleAndPassTurn();
+        }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            listCommandOrderForPhantom.Clear();
+            maxTurn = TurnManager.turnManager.turn;
+            isTimeReversing = true;
         }
     }
 
@@ -229,8 +347,6 @@ public class PlayerController : MonoBehaviour
 
     private void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset) //from HandleMovementInput() with local direction Array
     {
-        playerCurPos = this.transform.position;
-
         Debug.DrawRay(playerCurPos + rayOffset, transform.up * -rayDistance, Color.red, 0.8f);
         if (Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask))
         {
@@ -262,9 +378,21 @@ public class PlayerController : MonoBehaviour
             if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask))
             {
                 curHopDir = 1.0f;
-                listCurTurn = curTurnAngle == 0.0f ? listHopForward : listHopSideRear;
-                string s = curTurnAngle == 0.0f ? "HopForward" : "HopSideRear";
-                listCommandLog.Add(s);
+                if (curTurnAngle == 0.0f)
+                {
+                    listCurTurn = listHopForward;
+                    listCommandLog.Add("HopOverForward"); //command log update
+                }
+                else
+                {
+                    listCurTurn = listHopSideRear;
+                    if (curTurnAngle == 180.0f) //command log update
+                        listCommandLog.Add("HopOverRear");
+                    else if (curTurnAngle == -90.0f)
+                        listCommandLog.Add("HopOverLeft");
+                    else if (curTurnAngle == 90.0f)
+                        listCommandLog.Add("HopOverRight");
+                }
                 turnClock = true; // start current turn!!!
                 seq = 0;
                 sm.SetState(listCurTurn[seq]);
@@ -275,8 +403,21 @@ public class PlayerController : MonoBehaviour
             if (isUnderJump)
             {
                 curHopDir = -1.0f;
-                listCurTurn = listHopSideRear;
-                listCommandLog.Add("HopSideRear");
+                if (curTurnAngle == 0.0f)
+                {
+                    listCurTurn = listHopForward;
+                    listCommandLog.Add("HopUnderForward"); //command log update
+                }
+                else 
+                {
+                    listCurTurn = listHopSideRear;
+                    if (curTurnAngle == 180.0f) //command log update
+                        listCommandLog.Add("HopUnderRear");
+                    else if (curTurnAngle == -90.0f)
+                        listCommandLog.Add("HopUnderLeft");
+                    else if (curTurnAngle == 90.0f)
+                        listCommandLog.Add("HopUnderRight");
+                }
                 isUnderJump = false;
             }
             else
@@ -284,14 +425,18 @@ public class PlayerController : MonoBehaviour
                 if (curTurnAngle == 0.0f)
                 {
                     listCurTurn = listMoveForward;
-                    listCommandLog.Add("MoveForward");
+                    listCommandLog.Add("MoveForward"); //command log update
                 }
                 else
                 {
                     listCurTurn = listMoveSideRear;
-                    listCommandLog.Add("MoveSideRear");
+                    if (curTurnAngle == 180.0f) //command log update
+                        listCommandLog.Add("MoveRear");
+                    else if (curTurnAngle == -90.0f)
+                        listCommandLog.Add("MoveLeft");
+                    else if (curTurnAngle == 90.0f)
+                        listCommandLog.Add("MoveRight");
                 }
-
             }
             turnClock = true; // start current turn!!!
             seq = 0;
