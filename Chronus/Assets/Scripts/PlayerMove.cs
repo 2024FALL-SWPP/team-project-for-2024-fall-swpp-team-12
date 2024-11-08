@@ -47,7 +47,7 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
 
     public void OperateExit(PlayerController sender)
     {
-          if (_playerController.animator != null)
+        if (_playerController.animator != null)
         {
             _playerController.animator.SetBool("isMoving", false);
         }
