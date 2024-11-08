@@ -18,6 +18,11 @@ public class PlayerHop : MonoBehaviour, IState<PlayerController>
         _playerController.curHopSpeed = _playerController.moveSpeedVer;
         _playerController.curSpeed = _playerController.moveSpeedHor;
 
+        if (_playerController.animator != null)
+        {
+            _playerController.animator.SetBool("isMoving", true);
+        }
+
         if (_playerController.playerCurRot.eulerAngles.y == 0.0f)
         {
             targetTranslation = _playerController.playerCurPos + new Vector3(0, 1.0f * _playerController.curHopDir, 2.0f); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
@@ -43,6 +48,10 @@ public class PlayerHop : MonoBehaviour, IState<PlayerController>
 
     public void OperateExit(PlayerController sender)
     {
+        if (_playerController.animator != null)
+        {
+            _playerController.animator.SetBool("isMoving", false);
+        }
     }
 
     public void OperateUpdate(PlayerController sender)
