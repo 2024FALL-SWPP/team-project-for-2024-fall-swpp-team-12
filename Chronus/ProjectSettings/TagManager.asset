@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Button
+  - LeverTile
+  - Box
+  - Obstacle
+  - GroundFloor
+  - FirstFloor
   layers:
   - Default
   - TransparentFX
@@ -12,8 +17,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - GroundFloor
+  - FirstFloor
   - 
   - 
   - 
