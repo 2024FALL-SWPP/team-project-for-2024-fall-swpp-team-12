@@ -451,7 +451,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &606684608
 Light:
   m_ObjectHideFlags: 0
@@ -1268,7 +1268,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5664397843930143027, guid: 0682e12e42931c64190a8be5d9368307, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5664397843930143027, guid: 0682e12e42931c64190a8be5d9368307, type: 3}
       propertyPath: m_TagString
@@ -1603,7 +1603,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &1557537175
 AudioListener:
   m_ObjectHideFlags: 0
@@ -2173,7 +2173,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
       propertyPath: m_Name
-      value: Tile
+      value: GoalTile
+      objectReference: {fileID: 0}
+    - target: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
+      propertyPath: m_TagString
+      value: GoalTile
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}

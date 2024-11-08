@@ -4,11 +4,9 @@ using System.Collections;
 
 public class LevelManager : MonoBehaviour
 {
-    // There may be an error saying:
-    // There are 2 audio listeners in the scene. Please ensure there is always exactly one audio listener in the scene. 
-    // This can be handled, but doesn't effect the game, so I'll just pass.
     public Transform goalTile;   
-    public string nextLevelSceneName;
+    public string[] levelScenes;
+    private int currentLevelIndex = 0;
     private PlayerController player;   
     private float playerTileDiff = 1.2f;
     // 1.2f because right now, if the player is at (1, 1, 1),
@@ -19,6 +17,13 @@ public class LevelManager : MonoBehaviour
     private void Start()
     {
         player = FindObjectOfType<PlayerController>();  
+        LoadLevel(currentLevelIndex);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        // sceneLoaded = a event called when a scene is loaded
+    }
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void Update()
@@ -27,7 +32,7 @@ public class LevelManager : MonoBehaviour
         // clear logic should be called once after the player movement, to check if the player is at the goal tile. 
         // -> To avoid this from being called multiple times, I introduced "isLevelCompleted" bool (temporary)
         // This "must be" fixed when integrating with refactored PlayerController!!
-        if (player != null && IsPlayerAtGoal() && !isLevelCompleted) 
+        if (player != null && goalTile != null && IsPlayerAtGoal() && !isLevelCompleted) 
         {
             LevelComplete();
         }
@@ -44,19 +49,37 @@ public class LevelManager : MonoBehaviour
     {
         isLevelCompleted = true;
         Debug.Log("Level Clear!");
-        StartCoroutine(LoadNextLevel());
+        StartCoroutine(FinishLevel());
     }
 
-    private IEnumerator LoadNextLevel()
+    private IEnumerator FinishLevel() 
     {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(nextLevelSceneName, LoadSceneMode.Additive);
+        string currentLevelScene = levelScenes[currentLevelIndex];
+        yield return SceneManager.UnloadSceneAsync(currentLevelScene);
 
-        while (!asyncLoad.isDone)
+        currentLevelIndex++;
+        LoadLevel(currentLevelIndex);
+    }
+
+    private void LoadLevel(int index)
+    {
+        if (index < levelScenes.Length)
         {
-            yield return null;
+            SceneManager.LoadSceneAsync(levelScenes[index], LoadSceneMode.Additive);
+            isLevelCompleted = false;  
         }
+    }
 
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.UnloadSceneAsync(currentScene);
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (mode == LoadSceneMode.Additive)
+        {
+            // automatically finds GoalTile in every level
+            GameObject goalObject = GameObject.FindWithTag("GoalTile"); 
+            if (goalObject != null)
+            {
+                goalTile = goalObject.transform;
+            }
+        }
     }
 }

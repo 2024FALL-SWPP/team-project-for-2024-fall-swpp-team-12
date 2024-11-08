@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goalTile: {fileID: 1669539249}
-  nextLevelSceneName: L-001-2
+  levelScenes: []
 --- !u!1001 &14100614
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -619,7 +619,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &705507994
 Light:
   m_ObjectHideFlags: 0
@@ -776,7 +776,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &963194226
 AudioListener:
   m_ObjectHideFlags: 0
@@ -897,6 +897,10 @@ PrefabInstance:
     - target: {fileID: 5664397843930143027, guid: 0682e12e42931c64190a8be5d9368307, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5664397843930143027, guid: 0682e12e42931c64190a8be5d9368307, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5664397843930143027, guid: 0682e12e42931c64190a8be5d9368307, type: 3}
       propertyPath: m_TagString
@@ -1434,6 +1438,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
       propertyPath: m_Name
+      value: GoalTile
+      objectReference: {fileID: 0}
+    - target: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
+      propertyPath: m_TagString
       value: GoalTile
       objectReference: {fileID: 0}
     m_RemovedComponents: []
