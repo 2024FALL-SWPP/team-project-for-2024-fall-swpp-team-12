@@ -7,8 +7,9 @@ public class ButtonSwitch : MonoBehaviour
     public GameObject platform; 
     public Transform plate; 
     private Vector3 initialPlatePosition;
-    private bool isResetting = false;
-    private bool isPressing = false;
+    private bool isPressed = false;
+    private int resetTurnCount = 4; 
+    private int turnActivated;
 
     private void Start()
     {
@@ -16,60 +17,35 @@ public class ButtonSwitch : MonoBehaviour
         initialPlatePosition = plate.position;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void Update()
     {
-        if (other.CompareTag("Player"))
+        if (isPressed && TurnManager.turnManager.turn >= turnActivated + resetTurnCount)
         {
-            StartCoroutine(DelayedPressButton());
-        }
-    }
-    
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.CompareTag("Player") && !platform.activeSelf && !isPressing)
-        {
-            StartCoroutine(DelayedPressButton());
-        }
-    }
-    
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player") && !isResetting)
-        {
-            StartCoroutine(ResetPlatePositionAfterDelay());
+            ResetButton();
         }
     }
 
-    private IEnumerator DelayedPressButton()
+    private void OnTriggerEnter(Collider other)
     {
-        isPressing = true;
-        PressButton();
-        isPressing = false;
-        yield break;
+        if ((other.CompareTag("Player") || other.CompareTag("Box")) && !isPressed)
+        {
+            PressButton();
+        }
     }
 
     private void PressButton()
     {
         platform.SetActive(true);
-        
-        // Move the plate down slightly to simulate pressing
-        plate.position = initialPlatePosition - new Vector3(0, 0.1f, 0);
+        plate.position = initialPlatePosition - new Vector3(0, 0.1f, 0); 
+        isPressed = true;
 
-        // Cancel any reset process if the player is still standing on the button
-        if (isResetting)
-        {
-            StopCoroutine(ResetPlatePositionAfterDelay());
-            isResetting = false;
-        }
+        turnActivated = TurnManager.turnManager.turn;
     }
 
-    private IEnumerator ResetPlatePositionAfterDelay()
+    private void ResetButton()
     {
-        isResetting = true; // Mark that reset is in progress
-        yield return new WaitForSeconds(3f);
-        
-        plate.position = initialPlatePosition;
         platform.SetActive(false);
-        isResetting = false;
+        plate.position = initialPlatePosition; 
+        isPressed = false; 
     }
 }
