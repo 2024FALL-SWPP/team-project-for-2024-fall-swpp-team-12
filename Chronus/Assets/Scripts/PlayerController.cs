@@ -16,6 +16,9 @@ public class PlayerController : MonoBehaviour
     //(and you are not lazy for writing this long useless comments lmao)
 
     public Animator animator;
+
+    private string curKey = "r";
+
     //2 separated parts of 'input and spatial condition check' this bool variable for switching between two sides.
     private bool doSelectAction = false;
 
@@ -80,6 +83,7 @@ public class PlayerController : MonoBehaviour
     private List<IState<PlayerController>> listCurTurn = new List<IState<PlayerController>>();
 
     private List<IState<PlayerController>> listStay = new List<IState<PlayerController>>();
+    private List<IState<PlayerController>> listTurn = new List<IState<PlayerController>>();
     private List<IState<PlayerController>> listMoveForward = new List<IState<PlayerController>>();
     private List<IState<PlayerController>> listMoveSideRear = new List<IState<PlayerController>>();
     private List<IState<PlayerController>> listHopForward = new List<IState<PlayerController>>();
@@ -152,6 +156,8 @@ public class PlayerController : MonoBehaviour
         //State List write!!
         //idle -> idle
         listStay.Add(idle);
+        //idle -> turn -> idle
+        listTurn.Add(turn);
         //idle -> move(forward.) -> idle
         listMoveForward.Add(move);
         //idle -> turn(x) -> move -> idle    (x=f(i)) (i:input, f: how much to rotate)
@@ -166,27 +172,7 @@ public class PlayerController : MonoBehaviour
         //don't need for Player, need for Phantom (currently I just wrote this on this .cs file sorry)
         //command order list for phantom action(copy commands)
         listCommandOrderForPhantom = new List<string>();
-        //for matching String(impormation of State List & HopDir & TurnAngle) -> State List
-        dicCommand.Add("Stay", listStay);
-        dicCommand.Add("MoveForward", listMoveForward);
-        dicCommand.Add("MoveRear", listMoveSideRear);
-        dicCommand.Add("MoveLeft", listMoveSideRear);
-        dicCommand.Add("MoveRight", listMoveSideRear);
-        dicCommand.Add("HopOverForward", listHopForward);
-        dicCommand.Add("HopUnderForward", listHopForward);
-        dicCommand.Add("HopOverRear", listHopSideRear);
-        dicCommand.Add("HopOverLeft", listHopSideRear);
-        dicCommand.Add("HopOverRight", listHopSideRear);
-        dicCommand.Add("HopUnderRear", listHopSideRear);
-        dicCommand.Add("HopUnderLeft", listHopSideRear);
-        dicCommand.Add("HopUnderRight", listHopSideRear);
-        //Over: curHopDir = 1
-        //Under: curHopDir = -1
-        //Left: curTurnAngle; = -90.0f
-        //Right: curTurnAngle; = 90.0f
-        //Rear: curTurnAngle; = 180.0f
-        //required logic above.
-
+        //w, s, a, d, r
 
 
         //StateMachine for Player, which we handle all the time.
@@ -207,7 +193,8 @@ public class PlayerController : MonoBehaviour
     {
         if (!turnClock) {
             if (!isTimeReversing)
-            {   // from Absolute orientation (wsad) -> get Relative orientation (curTurnAngle)
+            {
+                // from Absolute orientation (wsad) -> get Relative orientation (curTurnAngle)
                 HandleInput();
                 // select action which is towarding the orientation (curTurnAngle: Relative orientation)
                 if (doSelectAction)
@@ -255,22 +242,27 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
+            curKey = "w";
             HandleDirection(Vector3.forward, new float[] { 0.0f, -90.0f, 180.0f, 90.0f }, new Vector3(0, 0, 2.0f));
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
+            curKey = "s";
             HandleDirection(Vector3.back, new float[] { 180.0f, 90.0f, 0.0f, -90.0f }, new Vector3(0, 0, -2.0f));
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
+            curKey = "a";
             HandleDirection(Vector3.left, new float[] { -90.0f, 180.0f, 90.0f, 0.0f }, new Vector3(-2.0f, 0, 0));
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
+            curKey = "d";
             HandleDirection(Vector3.right, new float[] { 90.0f, 0.0f, -90.0f, 180.0f }, new Vector3(2.0f, 0, 0));
         }
         else if (Input.GetKeyDown(KeyCode.R)) //Stay and Other objects act. turn +1
         {
+            curKey = "r";
             KeepIdleAndPassTurn();
         }
         else if (Input.GetKeyDown(KeyCode.Space))
@@ -282,7 +274,7 @@ public class PlayerController : MonoBehaviour
     private void KeepIdleAndPassTurn()
     {
         listCurTurn = listStay;
-        listCommandLog.Add("Stay");
+        listCommandLog.Add(curKey);
         turnClock = true; // start current turn!!!
         seq = 0;
         sm.SetState(listCurTurn[seq]);
@@ -297,17 +289,25 @@ public class PlayerController : MonoBehaviour
 
     private void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset) //from HandleMovementInput() with local direction Array
     {
+        int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
+        curTurnAngle = angles[angleIndex]; //relative orientation!!
+
         Debug.DrawRay(playerCurPos + rayOffset, transform.up * -rayDistance, Color.red, 0.8f);
         if (Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask)) //void check
         {
             isUnderJump = !Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitFloor, rayDistance + 0.1f, layerMask); //can jump under?
 
-            int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
-            curTurnAngle = angles[angleIndex]; //orientation!!
-            
             doSelectAction = true; //need to check more things. go to HandleActionBasedOnAngle()
         }
-        //if void, don't do action (no turn update)
+        else //if void
+        {
+            if (curTurnAngle != 0.0f) //if void is not in front of player, just turn(rotate) in its place (turn update happens.)
+            {
+                listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
+                StartAction(); //cycle starts!!!
+            }
+            //if void is in front of player, no action and no turn update.
+        }
     }
 
 
@@ -328,49 +328,54 @@ public class PlayerController : MonoBehaviour
         Debug.DrawRay(playerCurPos, rayDirection * rayDistance, Color.blue, 0.8f);
         if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance, layerMask)) //wall check
         {
-            if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask)) //whether it is available to jump over or not
+            if (/*tag is Lever  AND  can push lever by this side*/false) //lever.
             {
-                curHopDir = 1.0f;
-                ChooseCommand(listHopForward, listHopSideRear, "HopOverForward", "HopOverRear", "HopOverLeft", "HopOverRight"); //Jump Over
-                StartAction();
+                ChooseAction(listStay, listTurn); //we should set animation trigger on Enter and Exit of PlayerIdle state.
+                StartAction(); //cycle starts!!!
             }
-            //if not, don't do action (no turn update)
+            else if (/*tag is box  AND  can push box by this side*/false) //box.
+            {
+                ChooseAction(listMoveForward, listMoveSideRear); //we should set animation trigger on Enter and Exit of PlayerMove state.
+                StartAction(); //cycle starts!!!
+            }
+            else if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask)) //available to jump over
+            {
+                curHopDir = 1.0f; //Jump Over
+                ChooseAction(listHopForward, listHopSideRear);
+                StartAction(); //cycle starts!!!
+            }
+            else //if not
+            {
+                if (curTurnAngle != 0.0f) //if wall is not in front of player, just turn(rotate) in its place (turn update happens.)
+                {
+                    listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
+                    StartAction(); //cycle starts!!!
+                }
+                //if wall is in front of player, no action and no turn update.
+            }
         }
         else
         {
             if (isUnderJump)
             {
-                curHopDir = -1.0f;
-                ChooseCommand(listHopForward, listHopSideRear, "HopUnderForward", "HopUnderRear", "HopUnderLeft", "HopUnderRight"); //Jump Under
+                curHopDir = -1.0f; //Jump Under
+                ChooseAction(listHopForward, listHopSideRear);
                 isUnderJump = false;
             }
             else
             {
-                ChooseCommand(listMoveForward, listMoveSideRear, "MoveForward", "MoveRear", "MoveLeft", "MoveRight"); //Horizontal Move
+                ChooseAction(listMoveForward, listMoveSideRear); //Horizontal Move
             }
-            StartAction();
+            StartAction(); //cycle starts!!!
         }
     }
-    private void ChooseCommand(List<IState<PlayerController>> statelist1, List<IState<PlayerController>> statelist2, string command1, string command2, string command3, string command4)
+    private void ChooseAction(List<IState<PlayerController>> statelist1, List<IState<PlayerController>> statelist2)
     {
-        if (curTurnAngle == 0.0f)
-        {
-            listCurTurn = statelist1; //forward
-            listCommandLog.Add(command1); //command log update
-        }
-        else
-        {
-            listCurTurn = statelist2; //side or rear
-            if (curTurnAngle == 180.0f) //command log update
-                listCommandLog.Add(command2);
-            else if (curTurnAngle == -90.0f)
-                listCommandLog.Add(command3);
-            else if (curTurnAngle == 90.0f)
-                listCommandLog.Add(command4);
-        }
+        listCurTurn = curTurnAngle == 0.0f ? statelist1 : statelist2; //?  forward  :  side or rear
     }
-    private void StartAction() //global effect.
+    private void StartAction() //***** when it is executed, that means the global cycle starts.
     {
+        listCommandLog.Add(curKey); //command log update
         turnClock = true; // all objects, including player, will start action of current turn!!!
         seq = 0; //of player
         sm.SetState(listCurTurn[seq]); //of player
