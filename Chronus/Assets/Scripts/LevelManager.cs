@@ -4,17 +4,14 @@ using System.Collections;
 
 public class LevelManager : MonoBehaviour
 {
-    // Problem: after passing 2 levels, camera moves "too much".
-    // maybe camera offset should be introduced?
-
     public string[] levelScenes;
     private int currentLevelIndex = 0;
     private PlayerController player;
     private Transform currentGoal;
     private Transform currentStart;
     private Camera mainCamera;
-    private float transitionSpeed = 8.0f;
     private Vector3 levelOffset = Vector3.zero;
+    private Vector3 cameraOffset = Vector3.zero;
 
     private float playerTileDiff = 1.2f;
     // 1.2f because right now, if the player is at (1, 1, 1),
@@ -40,7 +37,7 @@ public class LevelManager : MonoBehaviour
         // I think this clear logic should not be "updated" per frame.
         // clear logic should be called once after the player movement, to check if the player is at the goal tile. 
         // -> To avoid this from being called multiple times, I introduced "isLevelCompleted" bool (temporary)
-        // This "must be" fixed when integrating with refactored PlayerController!!
+        // This should be fixed when integrating with refactored PlayerController!
         if (player != null && currentGoal != null && IsPlayerAtGoal() && !isLevelCompleted)
         {
             LevelComplete();
@@ -92,20 +89,20 @@ public class LevelManager : MonoBehaviour
             GameObject nextGoal = GameObject.FindWithTag("GoalTile");
             GameObject nextStart = GameObject.FindWithTag("StartTile");
             if (nextGoal != null && nextStart != null)
-            {
+            {   
+                Vector3 previousLevelOffset = levelOffset;
                 if (currentGoal != null) // passing the first level
                 {
                     Vector3 nextStartPosition = nextStart.transform.position;
-                    //if (Vector3.Distance(goalObject.transform.position, previousGoalPosition) < 0.01f) Debug.Log(currentGoal);
-
                     levelOffset = currentGoal.position - nextStartPosition;
                 }
                 currentGoal = nextGoal.transform;
-                nextGoal.tag = "Untagged"; // to prevent multiple "GoalTile"s in one scene
                 currentStart = nextStart.transform;
+                nextGoal.tag = "Untagged"; // to prevent multiple "GoalTile"s in one scene
                 nextStart.tag = "Untagged";
                 ApplyOffsetToScene(scene);
-                StartCoroutine(MoveCameraWithTransition(levelOffset));
+                // for camera, offset is "accumulated", so need to be controlled like this.
+                StartCoroutine(MoveCameraWithTransition(levelOffset - previousLevelOffset)); 
             }
         }
     }
