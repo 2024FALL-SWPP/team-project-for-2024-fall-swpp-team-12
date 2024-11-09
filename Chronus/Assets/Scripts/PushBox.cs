@@ -6,6 +6,7 @@ public class PushBox : MonoBehaviour
 {
     public float moveDistance = 2.0f;
     private Rigidbody rb;
+    public float checkDistance = 1.5f;
 
     private void Start()
     {
@@ -21,7 +22,7 @@ public class PushBox : MonoBehaviour
     private void Update()
     {
         // Raycast downward to check if there's a "Ground Floor" or "First Floor" tile beneath the box
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.0f))
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance))
         {
             if (hit.collider.CompareTag("GroundFloor") || hit.collider.CompareTag("FirstFloor"))
             {
