@@ -27,7 +27,7 @@ public class PushBox : MonoBehaviour
             {
                 // Tile detected, keep Y position constraint to keep the box stable
                 rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                return; // Exit to avoid unfreezing if a tile is below
+                return;
             }
         }
         
