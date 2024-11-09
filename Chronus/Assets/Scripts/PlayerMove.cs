@@ -24,19 +24,19 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
 
         if (_playerController.playerCurRot.eulerAngles.y == 0.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, 2.0f); //Ȥ�ó��� ���� ���ɼ� ������ ��Ȯ�� ��ġ �Է�����
+            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, 2.0f); //exact target position.
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 90.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(2.0f, 0, 0); //Ȥ�ó��� ���� ���ɼ� ������ ��Ȯ�� ��ġ �Է�����
+            targetTranslation = _playerController.playerCurPos + new Vector3(2.0f, 0, 0); //exact target position.
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 270.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(-2.0f, 0, 0); //Ȥ�ó��� ���� ���ɼ� ������ ��Ȯ�� ��ġ �Է�����
+            targetTranslation = _playerController.playerCurPos + new Vector3(-2.0f, 0, 0); //exact target position.
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 180.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, -2.0f); //Ȥ�ó��� ���� ���ɼ� ������ ��Ȯ�� ��ġ �Է�����
+            targetTranslation = _playerController.playerCurPos + new Vector3(0, 0, -2.0f); //exact target position.
         }
 
         //small hop motion (part of animation yeah)
@@ -85,7 +85,7 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
             }
         }
     }
-    public void DoneAction(PlayerController sender)
+    public void DoneAction(PlayerController sender) //just check for x and z (no need to check y gap)
     {
         Vector3 currentTranslation = _playerController.transform.position;
         float gap = Mathf.Sqrt((_playerController.playerCurPos.x - currentTranslation.x) * (_playerController.playerCurPos.x - currentTranslation.x) + (_playerController.playerCurPos.z - currentTranslation.z) * (_playerController.playerCurPos.z - currentTranslation.z));
@@ -99,6 +99,6 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
     private void CompleteTranslation(Vector3 targetTranslation)
     {
         _playerController.transform.position = targetTranslation;
-        _playerController.playerCurPos = _playerController.transform.position; //���� ��ġ���� ����
+        _playerController.playerCurPos = _playerController.transform.position; //update current position information
     }
 }
