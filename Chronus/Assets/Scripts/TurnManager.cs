@@ -4,70 +4,46 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-    public static TurnManager turnManager; //public accessibility using Singleton
-
-    public int turn; //The turn, starting from savePoint!!! //also index of "player command list"
-
-    /* List of Objects for Turn Check (dunno how to get public enum by singleton so let's just handwrite all lol)
-        Player,
-        Phantom,
-        MirrorPhantom,
-        Button,
-        Lever,
-        Platform,
-        Box
-    */
+    public static TurnManager turnManager; 
+    public int turn = 0; 
+    public bool turnClock;
+    // removed object control for simplicity: this will be done in other branch.
 
     public Dictionary<string, bool> dicTurnCheck;
-
-    public Vector3 savePoint_pos;
-    public Quaternion savePoint_rot;
-    // Start is called before the first frame update
-
-    private void Awake() //Singleton
+    private void Awake() // Singleton
     {
-        if(TurnManager.turnManager == null)
-        {
-            TurnManager.turnManager = this;
-        }
+        if (TurnManager.turnManager == null) { TurnManager.turnManager = this; }
     }
 
     void Start()
     {
-
-        turn = 0; //0 means player is at the savePoint
-
         dicTurnCheck = new Dictionary<string, bool>();
         dicTurnCheck.Add("Player", false);
-        dicTurnCheck.Add("Phantom", true);
-        dicTurnCheck.Add("MirrorPhantom", true);
-        dicTurnCheck.Add("Button", true);
-        dicTurnCheck.Add("Lever", true);
-        dicTurnCheck.Add("Platform", true);
-        dicTurnCheck.Add("Box", true);
-
-        savePoint_pos = new Vector3(1, 1, 1);
-        savePoint_rot = Quaternion.Euler(new Vector3(0,0,0));
+        dicTurnCheck.Add("Phantom", false);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //print(turn);
-        if (dicTurnCheck["Player"]) //Player Leads Turn Control.
+        if (dicTurnCheck["Player"])// && dicTurnCheck["Phantom"]) 
+        // temporary... need to check if all actions are done.
         {
-            bool ph = dicTurnCheck["Phantom"];
-            bool mph = dicTurnCheck["MirrorPhantom"];
-            bool bt = dicTurnCheck["Button"];
-            bool l = dicTurnCheck["Lever"];
-            bool pf = dicTurnCheck["Platform"];
-            bool bx = dicTurnCheck["Box"];
-            if (ph && mph && bt && l && pf && bx)
-            {
-                turn += 1; //this turn ended, wait for the next turn!
-                PlayerController.playerController.turnClock = false;
-                dicTurnCheck["Player"] = false;
-            }
+            EndTurn();
+            dicTurnCheck["Player"] = false;
+            dicTurnCheck["Phantom"] = false;
+        }
+    }
+
+    public void StartTurn() // This is called at PlayerController
+    {
+        if (!turnClock) { turnClock = true; }
+    }
+
+    private void EndTurn()
+    {
+        if (turnClock)
+        {
+            turnClock = false;
+            turn++;
         }
     }
 }
