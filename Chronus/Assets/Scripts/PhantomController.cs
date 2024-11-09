@@ -4,15 +4,7 @@ using UnityEngine;
 
 public class PhantomController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Transform startPoint;
+    public List<string> commands;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
