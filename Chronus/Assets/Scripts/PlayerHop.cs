@@ -25,19 +25,19 @@ public class PlayerHop : MonoBehaviour, IState<PlayerController>
 
         if (_playerController.playerCurRot.eulerAngles.y == 0.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(0, 1.0f * _playerController.curHopDir, 2.0f); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
+            targetTranslation = _playerController.playerCurPos + new Vector3(0, 1.0f * _playerController.curHopDir, 2.0f); //exact target position.
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 90.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(2.0f, 1.0f * _playerController.curHopDir, 0); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
+            targetTranslation = _playerController.playerCurPos + new Vector3(2.0f, 1.0f * _playerController.curHopDir, 0); //exact target position.
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 270.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(-2.0f, 1.0f * _playerController.curHopDir, 0); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
+            targetTranslation = _playerController.playerCurPos + new Vector3(-2.0f, 1.0f * _playerController.curHopDir, 0); //exact target position.
         }
         else if (_playerController.playerCurRot.eulerAngles.y == 180.0f)
         {
-            targetTranslation = _playerController.playerCurPos + new Vector3(0, 1.0f * _playerController.curHopDir, -2.0f); //혹시나의 오차 가능성 때문에 정확한 위치 입력해줌
+            targetTranslation = _playerController.playerCurPos + new Vector3(0, 1.0f * _playerController.curHopDir, -2.0f); //exact target position.
         }
 
         //small hop motion (part of animation yeah)
@@ -103,6 +103,6 @@ public class PlayerHop : MonoBehaviour, IState<PlayerController>
     private void CompleteTranslation(Vector3 targetTranslation)
     {
         _playerController.transform.position = targetTranslation;
-        _playerController.playerCurPos = _playerController.transform.position; //현재 위치정보 갱신
+        _playerController.playerCurPos = _playerController.transform.position; //update current position information
     }
 }

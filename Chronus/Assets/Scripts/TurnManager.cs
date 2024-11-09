@@ -8,7 +8,7 @@ public class TurnManager : MonoBehaviour
 
     public int turn; //The turn, starting from savePoint!!! //also index of "player command list"
 
-    /* List of Objects for Turn Check yeah (dunno how to make enum public so let's just handwrite all lol)
+    /* List of Objects for Turn Check (dunno how to get public enum by singleton so let's just handwrite all lol)
         Player,
         Phantom,
         MirrorPhantom,

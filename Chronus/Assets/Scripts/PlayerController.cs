@@ -207,7 +207,7 @@ public class PlayerController : MonoBehaviour
         if (!turnClock) {
             if (!isTimeReversing)
             {   // from Absolute orientation (wsad) -> get Relative orientation (curTurnAngle)
-                HandleMovementInput();
+                HandleInput();
                 // select action which is towarding the orientation (curTurnAngle: Relative orientation)
                 if (doSelectAction)
                 {
@@ -217,62 +217,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (Input.GetKeyDown(KeyCode.Q)) //go to the Past (turn -1)
-                {
-                    if (TurnManager.turnManager.turn >= 1)
-                    {
-                        TurnManager.turnManager.turn -= 1;
-                        print(TurnManager.turnManager.turn);
-                        //position tracking log -> preview the current position(and rotation)
-                        this.transform.position = listPosLog[TurnManager.turnManager.turn].Item1;
-                        this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;
-                        playerCurPos = this.transform.position;
-                        playerCurRot = this.transform.rotation;
-                    }
-                    else
-                    {
-                        print("Cannot go further to the Past!!!");
-                    }
-
-                    
-                }
-                else if (Input.GetKeyDown(KeyCode.E)) //go to the Future (turn +1)
-                {
-                    if (TurnManager.turnManager.turn <= maxTurn - 1)
-                    {
-                        TurnManager.turnManager.turn += 1;
-                        print(TurnManager.turnManager.turn);
-                        //position tracking log -> preview the current position(and rotation)
-                        this.transform.position = listPosLog[TurnManager.turnManager.turn].Item1;
-                        this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;
-                        playerCurPos = this.transform.position;
-                        playerCurRot = this.transform.rotation;
-                    }
-                    else
-                    {
-                        print("Cannot go further to the Future!!!");
-                    }
-                }
-                else if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    if (TurnManager.turnManager.turn < maxTurn)
-                    {
-                        //make list of Command Orders for phantom!!
-                        for (int index = TurnManager.turnManager.turn; index <= listCommandLog.Count - 1; index++)
-                        {
-                            listCommandOrderForPhantom.Add(listCommandLog[index]);
-                        }
-                        for (int index = listCommandLog.Count - 1; index >= TurnManager.turnManager.turn; index--)
-                        {
-                            listCommandLog.RemoveAt(index); //turn 0 : no element in listCommandLog
-                        }
-                        for (int index = listPosLog.Count - 1; index >= TurnManager.turnManager.turn + 1; index--)
-                        {
-                            listPosLog.RemoveAt(index); //turn 0 : one initial element in listPosLog
-                        }
-                    }
-                    isTimeReversing = false;
-                }
+                UpdateTimeReversingMode();
             }
         }
         else //if (turnClock)
@@ -294,19 +239,18 @@ public class PlayerController : MonoBehaviour
                     doneAction = false;
 
                     listPosLog.Add((playerCurPos, playerCurRot)); //position tracking log update!
-                    //print(listPosLog[TurnManager.turnManager.turn+1]);
                     TurnManager.turnManager.dicTurnCheck["Player"] = true;
-                    //turnClock = false;
                 }
             }
         }
-        //print(curTurnAngle);
 
         //update always ~
         sm.DoOperateUpdate();
     }
 
-    private void HandleMovementInput() //global direction and check whether 'void or floor(plain or below 1.0)' is in front of player
+
+
+    private void HandleInput() //global direction and check whether 'void or floor(plain or below 1.0)' is in front of player
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -330,9 +274,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
-            listCommandOrderForPhantom.Clear();
-            maxTurn = TurnManager.turnManager.turn;
-            isTimeReversing = true;
+            ActivateTimeReversingMode();
         }
     }
 
@@ -345,19 +287,29 @@ public class PlayerController : MonoBehaviour
         sm.SetState(listCurTurn[seq]);
     }
 
+    private void ActivateTimeReversingMode()
+    {
+        listCommandOrderForPhantom.Clear();
+        maxTurn = TurnManager.turnManager.turn;
+        isTimeReversing = true;
+    }
+
     private void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset) //from HandleMovementInput() with local direction Array
     {
         Debug.DrawRay(playerCurPos + rayOffset, transform.up * -rayDistance, Color.red, 0.8f);
-        if (Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask))
+        if (Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask)) //void check
         {
-            isUnderJump = !Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitFloor, rayDistance + 0.1f, layerMask);
+            isUnderJump = !Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitFloor, rayDistance + 0.1f, layerMask); //can jump under?
 
             int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
             curTurnAngle = angles[angleIndex]; //orientation!!
             
             doSelectAction = true; //need to check more things. go to HandleActionBasedOnAngle()
         }
+        //if void, don't do action (no turn update)
     }
+
+
 
     private void HandleActionBasedOnAngle()  //local direction and check whether 'wall or jumpable stair(over 1.0)' is in front of player's oriented direction
     {
@@ -373,74 +325,112 @@ public class PlayerController : MonoBehaviour
             rayDirection = transform.right;
 
         Debug.DrawRay(playerCurPos, rayDirection * rayDistance, Color.blue, 0.8f);
-        if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance, layerMask))
+        if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance, layerMask)) //wall check
         {
-            if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask))
+            if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask)) //whether it is available to jump over or not
             {
                 curHopDir = 1.0f;
-                if (curTurnAngle == 0.0f)
-                {
-                    listCurTurn = listHopForward;
-                    listCommandLog.Add("HopOverForward"); //command log update
-                }
-                else
-                {
-                    listCurTurn = listHopSideRear;
-                    if (curTurnAngle == 180.0f) //command log update
-                        listCommandLog.Add("HopOverRear");
-                    else if (curTurnAngle == -90.0f)
-                        listCommandLog.Add("HopOverLeft");
-                    else if (curTurnAngle == 90.0f)
-                        listCommandLog.Add("HopOverRight");
-                }
-                turnClock = true; // start current turn!!!
-                seq = 0;
-                sm.SetState(listCurTurn[seq]);
+                ChooseCommand(listHopForward, listHopSideRear, "HopOverForward", "HopOverRear", "HopOverLeft", "HopOverRight"); //Jump Over
+                StartAction();
             }
+            //if not, don't do action (no turn update)
         }
         else
         {
             if (isUnderJump)
             {
                 curHopDir = -1.0f;
-                if (curTurnAngle == 0.0f)
-                {
-                    listCurTurn = listHopForward;
-                    listCommandLog.Add("HopUnderForward"); //command log update
-                }
-                else 
-                {
-                    listCurTurn = listHopSideRear;
-                    if (curTurnAngle == 180.0f) //command log update
-                        listCommandLog.Add("HopUnderRear");
-                    else if (curTurnAngle == -90.0f)
-                        listCommandLog.Add("HopUnderLeft");
-                    else if (curTurnAngle == 90.0f)
-                        listCommandLog.Add("HopUnderRight");
-                }
+                ChooseCommand(listHopForward, listHopSideRear, "HopUnderForward", "HopUnderRear", "HopUnderLeft", "HopUnderRight"); //Jump Under
                 isUnderJump = false;
             }
             else
             {
-                if (curTurnAngle == 0.0f)
+                ChooseCommand(listMoveForward, listMoveSideRear, "MoveForward", "MoveRear", "MoveLeft", "MoveRight"); //Horizontal Move
+            }
+            StartAction();
+        }
+    }
+    private void ChooseCommand(List<IState<PlayerController>> statelist1, List<IState<PlayerController>> statelist2, string command1, string command2, string command3, string command4)
+    {
+        if (curTurnAngle == 0.0f)
+        {
+            listCurTurn = statelist1; //forward
+            listCommandLog.Add(command1); //command log update
+        }
+        else
+        {
+            listCurTurn = statelist2; //side or rear
+            if (curTurnAngle == 180.0f) //command log update
+                listCommandLog.Add(command2);
+            else if (curTurnAngle == -90.0f)
+                listCommandLog.Add(command3);
+            else if (curTurnAngle == 90.0f)
+                listCommandLog.Add(command4);
+        }
+    }
+    private void StartAction() //global effect.
+    {
+        turnClock = true; // all objects, including player, will start action of current turn!!!
+        seq = 0; //of player
+        sm.SetState(listCurTurn[seq]); //of player
+    }
+
+
+
+    private void UpdateTimeReversingMode()
+    {
+        if (Input.GetKeyDown(KeyCode.Q)) //go to the Past (turn -1)
+        {
+            if (TurnManager.turnManager.turn >= 1)
+            {
+                GoToThePastOrFuture(-1);
+            }
+            else
+            {
+                print("Cannot go further to the Past!!!");
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.E)) //go to the Future (turn +1)
+        {
+            if (TurnManager.turnManager.turn <= maxTurn - 1)
+            {
+                GoToThePastOrFuture(1);
+            }
+            else
+            {
+                print("Cannot go further to the Future!!!");
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (TurnManager.turnManager.turn < maxTurn)
+            {
+                //make list of Command Orders for phantom!!
+                for (int index = TurnManager.turnManager.turn; index <= listCommandLog.Count - 1; index++)
                 {
-                    listCurTurn = listMoveForward;
-                    listCommandLog.Add("MoveForward"); //command log update
+                    listCommandOrderForPhantom.Add(listCommandLog[index]);
                 }
-                else
+                for (int index = listCommandLog.Count - 1; index >= TurnManager.turnManager.turn; index--)
                 {
-                    listCurTurn = listMoveSideRear;
-                    if (curTurnAngle == 180.0f) //command log update
-                        listCommandLog.Add("MoveRear");
-                    else if (curTurnAngle == -90.0f)
-                        listCommandLog.Add("MoveLeft");
-                    else if (curTurnAngle == 90.0f)
-                        listCommandLog.Add("MoveRight");
+                    listCommandLog.RemoveAt(index); //turn 0 : no element in listCommandLog
+                }
+                for (int index = listPosLog.Count - 1; index >= TurnManager.turnManager.turn + 1; index--)
+                {
+                    listPosLog.RemoveAt(index); //turn 0 : one initial element in listPosLog
                 }
             }
-            turnClock = true; // start current turn!!!
-            seq = 0;
-            sm.SetState(listCurTurn[seq]);
+            isTimeReversing = false;
         }
+    }
+
+    private void GoToThePastOrFuture(int deltaturn)
+    {
+        TurnManager.turnManager.turn += deltaturn;
+        print(TurnManager.turnManager.turn);
+        //position tracking log -> preview the current position(and rotation)
+        this.transform.position = listPosLog[TurnManager.turnManager.turn].Item1;
+        this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;
+        playerCurPos = this.transform.position;
+        playerCurRot = this.transform.rotation;
     }
 }

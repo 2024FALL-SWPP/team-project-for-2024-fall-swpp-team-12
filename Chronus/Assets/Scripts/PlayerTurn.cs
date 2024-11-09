@@ -28,20 +28,6 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
         {
             targetYRotation += 360.0f;
         }
-        /*
-        if (targetYRotation == 360.0f)
-        {
-            targetYRotation = 0.0f;
-        }
-        else if (targetYRotation == -90.0f)
-        {
-            targetYRotation = 270.0f;
-        }
-        else if (targetYRotation == 450.0f)
-        {
-            targetYRotation = 90.0f;
-        }
-        */
 
         //small hop motion (part of animation yeah)
         smallHopRate = 1.0f;
@@ -101,10 +87,10 @@ public class PlayerTurn : MonoBehaviour, IState<PlayerController>
     private void CompleteRotation(float targetYRotation)
     {
         _playerController.transform.rotation = Quaternion.Euler(0.0f, targetYRotation, 0.0f);
-        _playerController.playerCurRot = _playerController.transform.rotation;
+        _playerController.playerCurRot = _playerController.transform.rotation; //update current rotation information
     }
     private void CompleteTranslation() 
     {
-        _playerController.transform.position = _playerController.playerCurPos;
+        _playerController.transform.position = _playerController.playerCurPos; //initial position is the target position.
     }
 }
