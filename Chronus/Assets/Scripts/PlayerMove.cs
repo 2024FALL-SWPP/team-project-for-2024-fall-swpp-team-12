@@ -40,17 +40,6 @@ public class PlayerMove : MonoBehaviour, IState<PlayerController>
         }
 
         //small hop motion (part of animation yeah)
-        // Check if target tile is a LeverTile
-        Collider[] hitColliders = Physics.OverlapSphere(targetTranslation, 0.1f);
-        foreach (Collider hitCollider in hitColliders)
-        {
-            if (hitCollider.CompareTag("LeverTile"))
-            {
-                Debug.Log("Cannot move to LeverTile!");
-                return; // Stop movement if the target is a LeverTile
-            }
-        }
-        
         smallHopRate = 2.0f;
         speedVer = _playerController.moveSpeedVer * smallHopRate;
         meetLocalMax = false;
