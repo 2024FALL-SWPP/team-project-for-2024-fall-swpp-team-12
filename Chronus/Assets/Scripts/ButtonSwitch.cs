@@ -1,10 +1,11 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ButtonSwitch : MonoBehaviour
 {
-    public GameObject platform; 
+    public GameObject[] platforms; 
     public Transform plate; 
     private Vector3 initialPlatePosition;
     private bool isPressed = false;
@@ -13,13 +14,16 @@ public class ButtonSwitch : MonoBehaviour
 
     private void Start()
     {
-        platform.SetActive(false); 
+        foreach (GameObject platform in platforms)
+        {
+            platform.SetActive(false);
+        }
         initialPlatePosition = plate.position;
     }
 
     private void Update()
     {
-        if (isPressed && TurnManager.turnManager.turn >= turnActivated + resetTurnCount)
+        if (isPressed && TurnManager.turnManager.turn > turnActivated + resetTurnCount)
         {
             ResetButton();
         }
@@ -35,7 +39,10 @@ public class ButtonSwitch : MonoBehaviour
 
     private void PressButton()
     {
-        platform.SetActive(true);
+        foreach (GameObject platform in platforms)
+        {
+            platform.SetActive(true);
+        }
         plate.position = initialPlatePosition - new Vector3(0, 0.1f, 0); 
         isPressed = true;
 
@@ -44,7 +51,10 @@ public class ButtonSwitch : MonoBehaviour
 
     private void ResetButton()
     {
-        platform.SetActive(false);
+        foreach (GameObject platform in platforms)
+        {
+            platform.SetActive(false);
+        }
         plate.position = initialPlatePosition; 
         isPressed = false; 
     }
