@@ -10,6 +10,7 @@ TagManager:
   - GroundFloor
   - FirstFloor
   - GoalTile
+  - StartTile
   layers:
   - Default
   - TransparentFX

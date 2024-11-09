@@ -344,11 +344,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d20da8b8ee8c6f94a84748fcba20ec41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goalTile: {fileID: 0}
   levelScenes:
   - L-001-1
   - L-001-2
   - L-001-3
+  transitionSpeed: 2
 --- !u!1001 &1123355529
 PrefabInstance:
   m_ObjectHideFlags: 0
