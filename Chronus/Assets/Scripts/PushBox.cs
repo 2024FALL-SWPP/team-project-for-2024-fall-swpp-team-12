@@ -15,24 +15,44 @@ public class PushBox : MonoBehaviour
         {
             rb = gameObject.AddComponent<Rigidbody>();
         }
-        rb.useGravity = true;
-        rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+        rb.useGravity = false;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+
+        TickManager.OnTick += OnTickEvent;
     }
 
+    private void OnDestroy()
+    {
+        TickManager.OnTick -= OnTickEvent;
+    }
+
+    /*
     private void Update()
     {
-        // Raycast downward to check if there's a "Ground Floor" or "First Floor" tile beneath the box
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance))
+        CheckIfFloating();
+    }
+    */
+
+    public void CheckIfFloating()
+    {
+        bool isGroundDetected = Physics.Raycast(transform.position, Vector3.down, out RaycastHit groundHit, checkDistance);
+
+        if (isGroundDetected && (groundHit.collider.CompareTag("GroundFloor") || groundHit.collider.CompareTag("FirstFloor")))
         {
-            if (hit.collider.CompareTag("GroundFloor") || hit.collider.CompareTag("FirstFloor"))
-            {
-                // Tile detected, keep Y position constraint to keep the box stable
-                rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                return;
-            }
+            // Keep Y constraint to prevent the box from falling
+            rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+            TurnManager.turnManager.dicTurnCheck["Box"] = true;
         }
-        
-        // If no tile is detected or the tile is not GroundFloor/FirstFloor, allow the box to fall
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        else
+        {
+            // Release Y constraint if no ground detected to allow falling
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb.useGravity = true;
+        }
+    }
+
+    private void OnTickEvent()
+    {
+        CheckIfFloating();
     }
 }

@@ -11,6 +11,7 @@ TagManager:
   - FirstFloor
   - GoalTile
   - StartTile
+  - Wall
   layers:
   - Default
   - TransparentFX
