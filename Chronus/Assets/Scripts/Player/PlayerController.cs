@@ -5,13 +5,17 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController playerController; // singleton
+    //public GameObject phantomPrefab;
+    //public GameObject phantomInstance;
+    //public PhantomController phantomScript;
+    public bool isPhantomExists = false;
 
     public Animator animator; // animator.
 
     
     //Input
     private string curKey = "r"; //Command Log, it will be written on.
-    private bool isTimeRewinding = false; //Time Rewinding Mode Toggle
+    public bool isTimeRewinding = false; //Time Rewinding Mode Toggle
     private int maxTurn = 0; //Time Rewinding Mode
     
 
@@ -139,7 +143,7 @@ public class PlayerController : MonoBehaviour
         turnSpeed = 480.0f;
 
 
-
+        playerStates = GameObject.Find("PlayerStates");
         //get state scripts. (empty object PlayerStates)
         playerIdle = playerStates.GetComponent<PlayerIdle>();
         playerMove = playerStates.GetComponent<PlayerMove>();
@@ -329,9 +333,9 @@ public class PlayerController : MonoBehaviour
     private void StartAction() //********** when it is executed, that means the global cycle starts.
     {
         listCommandLog.Add(curKey); //command log update
-        TurnManager.turnManager.turnClock = true;
         seq = 0; //of player
         sm.SetState(listCurTurn[seq]); //of player
+        TurnManager.turnManager.turnClock = true;
     }
 
 
@@ -346,6 +350,13 @@ public class PlayerController : MonoBehaviour
         if (!isTimeRewinding) //when OFF
         {
             PhantomController.phantomController.listCommandOrder.Clear();
+            PhantomController.phantomController.gameObject.SetActive(false);
+            PhantomController.phantomController.transform.position = this.listPosLog[0].Item1 + new Vector3(0, -4, 0);
+            PhantomController.phantomController.transform.rotation = this.listPosLog[0].Item2;
+            PhantomController.phantomController.playerCurPos = PhantomController.phantomController.transform.position;
+            PhantomController.phantomController.playerCurRot = PhantomController.phantomController.transform.rotation;
+            //Destroy(phantomInstance);
+            isPhantomExists = false;
             maxTurn = TurnManager.turnManager.turn;
             isTimeRewinding = true; //toggle ON
         }
@@ -354,10 +365,26 @@ public class PlayerController : MonoBehaviour
             if (TurnManager.turnManager.turn < maxTurn)
             {
                 int startIndex = TurnManager.turnManager.turn;
+                PhantomController.phantomController.transform.position = this.listPosLog[startIndex].Item1;
+                PhantomController.phantomController.transform.rotation = this.listPosLog[startIndex].Item2;
+                PhantomController.phantomController.playerCurPos = PhantomController.phantomController.transform.position;
+                PhantomController.phantomController.playerCurRot = PhantomController.phantomController.transform.rotation;
+                PhantomController.phantomController.gameObject.SetActive(true);
+                //phantomInstance = Instantiate(phantomPrefab, listPosLog[startIndex].Item1, listPosLog[startIndex].Item2);
+                //phantomScript = phantomInstance.GetComponent<PhantomController>();
+                isPhantomExists = true;
                 // Make Copy list of Command Orders for phantom
                 PhantomController.phantomController.listCommandOrder.AddRange(listCommandLog.GetRange(startIndex, listCommandLog.Count - startIndex)); //copy!!!
+                PhantomController.phantomController.order = 0;
+                //phantomScript.listCommandOrder.AddRange(listCommandLog.GetRange(startIndex, listCommandLog.Count - startIndex)); //copy!!!
                 listCommandLog.RemoveRange(startIndex, listCommandLog.Count - startIndex); // turn 0: no element in listCommandLog
-                listPosLog.RemoveRange(startIndex + 1, listPosLog.Count - startIndex - 1); // turn 0: one initial element in listPosLog
+                Debug.Log(listPosLog[maxTurn]);
+                for (int i=listPosLog.Count-1; i>=startIndex+1 ; i--) // turn 0: one initial element in listPosLog
+                {
+                    listPosLog.RemoveAt(i);
+                }
+                //listPosLog.RemoveRange(startIndex + 1, listPosLog.Count - startIndex - 1); // turn 0: one initial element in listPosLog
+                
             }
             isTimeRewinding = false; //toggle OFF
         }
@@ -396,6 +423,7 @@ public class PlayerController : MonoBehaviour
     private void GoToThePastOrFuture(int turnDelta)
     {
         TurnManager.turnManager.turn += turnDelta;
+        //print(TurnManager.turnManager.turn);
         //position tracking log -> preview the current position(and rotation)
         this.transform.position = listPosLog[TurnManager.turnManager.turn].Item1;
         this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;

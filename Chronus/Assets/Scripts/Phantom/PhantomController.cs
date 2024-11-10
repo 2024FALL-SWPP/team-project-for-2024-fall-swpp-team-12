@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PhantomController : MonoBehaviour
 {
-    public Transform startPoint;
-
     public static PhantomController phantomController; // singleton
 
     public Animator animator; // animator.
@@ -39,7 +37,11 @@ public class PhantomController : MonoBehaviour
 
 
     public List<string> listCommandOrder; //command order list for phantom input -> condition check -> action (Copy Commands)
-    private int order = 0;
+    public int order = 0;
+
+    private bool didCheckCondition = false;
+    private bool didActionOrPassed = false;
+    private bool doActionOnThisTurn = false;
 
 
 
@@ -97,6 +99,8 @@ public class PhantomController : MonoBehaviour
 
     void Start()
     {
+        this.gameObject.SetActive(false);
+
         animator = transform.Find("PhantomCharacter").GetComponent<Animator>(); //rabbit animator!
 
 
@@ -112,13 +116,20 @@ public class PhantomController : MonoBehaviour
 
 
 
-        playerCurPos = this.transform.position;
-        playerCurRot = this.transform.rotation;
-
+        playerCurPos = PlayerController.playerController.playerCurPos + new Vector3(0, -4, 0);
+        playerCurRot = PlayerController.playerController.playerCurRot;
+        this.transform.position = playerCurPos;
+        this.transform.rotation = playerCurRot;
 
 
         listCommandOrder = new List<string>();
         //w, s, a, d, r
+
+        order = 0;
+
+        didCheckCondition = false;
+        didActionOrPassed = false;
+        doActionOnThisTurn = false;
 
 
 
@@ -127,7 +138,7 @@ public class PhantomController : MonoBehaviour
         turnSpeed = 480.0f;
 
 
-
+        phantomStates = GameObject.Find("PhantomStates");
         //get state scripts. (empty object PlayerStates)
         phantomIdle = phantomStates.GetComponent<PhantomIdle>();
         phantomMove = phantomStates.GetComponent<PhantomMove>();
@@ -158,30 +169,63 @@ public class PhantomController : MonoBehaviour
 
     void Update() //Action of this Turn(State Change)
     {
-        
-        if (TurnManager.turnManager.turnClock) //when turn clock in ON.
-        {
-
-
-            sm.IsDoneAction();
-
-            if (doneAction) //next state in the state list
+        if (TurnManager.turnManager.turnClock && !didActionOrPassed && /*listCommandOrder.Count >= 1 && */PlayerController.playerController.isPhantomExists) //when turn clock in ON(subjective)
+        {   
+            if (!didCheckCondition)
             {
-                seq++; //next index
-                if (seq < listCurTurn.Count)
+                if (order >= listCommandOrder.Count) //did read all the orders, and then next turn clock starts
                 {
-                    sm.SetState(listCurTurn[seq]);
-                    doneAction = false;
+                    listCommandOrder.Clear();
+                    this.gameObject.SetActive(false);
+                    this.transform.position = PlayerController.playerController.listPosLog[0].Item1 + new Vector3(0, -4, 0);
+                    this.transform.rotation = PlayerController.playerController.listPosLog[0].Item2;
+                    this.playerCurPos = this.transform.position;
+                    this.playerCurRot = this.transform.rotation;
+                    PlayerController.playerController.isPhantomExists = false;
                 }
                 else
                 {
-                    sm.SetState(idle);
-                    doneAction = false;
-
-                    order++;
-                    TurnManager.turnManager.dicTurnCheck["Phantom"] = true;
+                    HandleMovementInput(listCommandOrder[order]);
+                    didCheckCondition = true; //don't check condition when executing action.
                 }
             }
+
+            if (doActionOnThisTurn) // -> Do execute action.
+            {
+                sm.IsDoneAction();
+
+                if (doneAction) //next state in the state list
+                {
+                    seq++; //next index
+                    if (seq < listCurTurn.Count)
+                    {
+                        sm.SetState(listCurTurn[seq]);
+                        doneAction = false;
+                    }
+                    else
+                    {
+                        sm.SetState(idle);
+                        doneAction = false;
+
+                        order++; //prepare Next Command Order
+                        TurnManager.turnManager.dicTurnCheck["Phantom"] = true;
+                        doActionOnThisTurn = false; //don't execute action next time before condition check.
+                        didCheckCondition = false; //let's check condition next time.
+                        didActionOrPassed = true;
+                    }
+                }
+            }
+            else // -> Don't execute action and just Pass.
+            {
+                TurnManager.turnManager.dicTurnCheck["Phantom"] = true;
+                didCheckCondition = false; //let's check condition next time.
+                didActionOrPassed = true;
+            }
+        }
+
+        if (!TurnManager.turnManager.turnClock)
+        {
+            didActionOrPassed = false; //reset.
         }
 
         //update always ~
@@ -195,8 +239,6 @@ public class PhantomController : MonoBehaviour
     // Functions for Spatial Condition Check //
     private void HandleMovementInput(string command) //get absolute orientation from Command Input (or stand still)
     {
-        if (TurnManager.turnManager.turnClock) return; //***** active when Not executing Actions and Not Time Rewinding Mode.
-
         switch (command)
         {
             case "w":
@@ -311,5 +353,6 @@ public class PhantomController : MonoBehaviour
     {
         seq = 0; //of phantom
         sm.SetState(listCurTurn[seq]); //of phantom
+        doActionOnThisTurn = true; //do execute action
     }
 }

@@ -30,7 +30,7 @@ public class TurnManager : MonoBehaviour
 
     void Update()
     {
-        if (turnClock && dicTurnCheck["Player"]/* && dicTurnCheck["Phantom"]/* && and so on...*/) //action execution (player, phantom, switches, objects, etc)
+        if (turnClock && dicTurnCheck["Player"] && (dicTurnCheck["Phantom"] || !PlayerController.playerController.isPhantomExists)/* && and so on...*/) //action execution (player, phantom, switches, objects, etc)
         {
             UpdateTurn(ref turnClock, ref firstCollisionCheck);
             dicTurnCheck["Player"] = false;
