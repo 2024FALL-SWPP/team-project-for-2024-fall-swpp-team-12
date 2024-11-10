@@ -9,6 +9,7 @@ TagManager:
   - Obstacle
   - GroundFloor
   - FirstFloor
+  - Wall
   layers:
   - Default
   - TransparentFX

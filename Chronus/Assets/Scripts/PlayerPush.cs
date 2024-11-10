@@ -28,7 +28,7 @@ public class PlayerPush : MonoBehaviour
             {
                 if (Physics.Raycast(box.transform.position, direction, out RaycastHit obstacleHit, pushDistance))
                 {
-                    if (obstacleHit.collider.CompareTag("Obstacle"))
+                    if (obstacleHit.collider.CompareTag("Wall"))
                     {
                         StartCoroutine(JumpOntoBox(box));
                         return;
@@ -39,6 +39,8 @@ public class PlayerPush : MonoBehaviour
                 if (rb != null)
                 {
                     rb.MovePosition(box.transform.position + direction * pushDistance);
+                    
+                    TurnManager.turnManager.dicTurnCheck["Box"] = true;
                 }
             }
         }
@@ -61,6 +63,5 @@ public class PlayerPush : MonoBehaviour
         transform.position = targetPosition; 
         isOnBox = true;
         currentBox = box;
-        transform.parent = box.transform; // Attach to box to stay on it
     }
 }
