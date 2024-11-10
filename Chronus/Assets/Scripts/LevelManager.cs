@@ -4,25 +4,33 @@ using System.Collections;
 
 public class LevelManager : MonoBehaviour
 {
+    public GameObject levelBarrierPrefab;
     public string[] levelScenes;
     private int currentLevelIndex = 0;
+    private int previousLevelIndex = -1; // new variable to track the last level to unload
     private PlayerController player;
     private Transform currentGoal;
     private Transform currentStart;
     private Camera mainCamera;
     private Vector3 levelOffset = Vector3.zero;
     private Vector3 cameraOffset = Vector3.zero;
-
     private float playerTileDiff = 1.2f;
     // 1.2f because right now, if the player is at (1, 1, 1),
     // then the tile the player is standing on is (1, -0.2, 1)
     // this may be a bad design pattern, so need to be reviewed.
     private bool isLevelCompleted = false;
+    private GameObject levelBarrier;
+
 
     private void Start()
     {
         player = FindObjectOfType<PlayerController>();
         mainCamera = Camera.main;
+        if (levelBarrierPrefab != null)
+        {
+            levelBarrier = Instantiate(levelBarrierPrefab);
+        }
+
         LoadLevel(currentLevelIndex);
         SceneManager.sceneLoaded += OnSceneLoaded;
         // sceneLoaded = a event called when a scene is loaded
@@ -60,14 +68,25 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator FinishLevel()
     {
-        // load next scene
-        currentLevelIndex++;
+        // Keep track of the previous level to unload later
+        if (currentLevelIndex > 0)
+        {
+            previousLevelIndex = currentLevelIndex - 1;
+        }
+
+        // Load the next level and move the camera
+       currentLevelIndex++;
         LoadLevel(currentLevelIndex);
 
-        // unload previous scene
-        string previousScene = levelScenes[currentLevelIndex - 1];
-        yield return SceneManager.UnloadSceneAsync(previousScene);
+        // Wait until the next level is fully loaded
+        yield return new WaitUntil(() => SceneManager.GetSceneByName(levelScenes[currentLevelIndex]).isLoaded);
 
+        // // Now unload the previous level if there is one to unload
+        // if (previousLevelIndex >= 0)
+        // {
+        //     yield return SceneManager.UnloadSceneAsync(levelScenes[previousLevelIndex]);
+        //     previousLevelIndex = -1; // Reset previousLevelIndex after unloading
+        // }
         isLevelCompleted = false;
     }
 
@@ -101,6 +120,12 @@ public class LevelManager : MonoBehaviour
                 nextGoal.tag = "Untagged"; // to prevent multiple "GoalTile"s in one scene
                 nextStart.tag = "Untagged";
                 ApplyOffsetToScene(scene);
+                
+                if (levelBarrier != null)
+                {
+                    levelBarrier.transform.position = currentStart.position - new Vector3(0, 0, 1);
+                }
+
                 // for camera, offset is "accumulated", so need to be controlled like this.
                 StartCoroutine(MoveCameraWithTransition(levelOffset - previousLevelOffset)); 
             }
@@ -151,5 +176,12 @@ public class LevelManager : MonoBehaviour
         }*/
 
         mainCamera.transform.position = targetPosition; 
+
+        // Now unload the previous level if there is one to unload
+        if (previousLevelIndex >= 0)
+        {
+            yield return SceneManager.UnloadSceneAsync(levelScenes[previousLevelIndex]);
+            previousLevelIndex = -1; // Reset previousLevelIndex after unloading
+        }
     }
 }
