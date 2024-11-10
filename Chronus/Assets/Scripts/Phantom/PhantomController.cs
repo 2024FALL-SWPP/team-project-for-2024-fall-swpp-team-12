@@ -2,18 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PhantomController : MonoBehaviour
 {
-    public static PlayerController playerController; // singleton
+    public Transform startPoint;
+
+    public static PhantomController phantomController; // singleton
 
     public Animator animator; // animator.
 
-    
-    //Input
-    private string curKey = "r"; //Command Log, it will be written on.
-    private bool isTimeRewinding = false; //Time Rewinding Mode Toggle
-    private int maxTurn = 0; //Time Rewinding Mode
-    
 
 
     //Input & Spatial Condition -> rotate/hop Direction
@@ -42,8 +38,8 @@ public class PlayerController : MonoBehaviour
 
 
 
-    public List<string> listCommandLog; //command log for time reverse(objects) and phantom action(copy commands)
-    public List<(Vector3, Quaternion)> listPosLog; //position tracking log for time reverse(reset position)
+    public List<string> listCommandOrder; //command order list for phantom input -> condition check -> action (Copy Commands)
+    private int order = 0;
 
 
 
@@ -67,48 +63,41 @@ public class PlayerController : MonoBehaviour
 
 
     //get state scripts. (empty object PlayerStates)
-    public GameObject playerStates;
+    public GameObject phantomStates;
     //real state names!
-    private PlayerIdle playerIdle; 
-    private PlayerMove playerMove;
-    private PlayerTurn playerTurn;
-    private PlayerHop playerHop;
-    private IState<PlayerController> idle;
-    private IState<PlayerController> move;
-    private IState<PlayerController> turn;
-    private IState<PlayerController> hop;
+    private PhantomIdle phantomIdle;
+    private PhantomMove phantomMove;
+    private PhantomTurn phantomTurn;
+    private PhantomHop phantomHop;
+    private IState<PhantomController> idle;
+    private IState<PhantomController> move;
+    private IState<PhantomController> turn;
+    private IState<PhantomController> hop;
 
     //State List!!!
-    private List<IState<PlayerController>> listCurTurn;
-    private List<IState<PlayerController>> listStay;
-    private List<IState<PlayerController>> listTurn;
-    private List<IState<PlayerController>> listMoveForward;
-    private List<IState<PlayerController>> listMoveSideRear;
-    private List<IState<PlayerController>> listHopForward;
-    private List<IState<PlayerController>> listHopSideRear;
+    private List<IState<PhantomController>> listCurTurn;
+    private List<IState<PhantomController>> listStay;
+    private List<IState<PhantomController>> listTurn;
+    private List<IState<PhantomController>> listMoveForward;
+    private List<IState<PhantomController>> listMoveSideRear;
+    private List<IState<PhantomController>> listHopForward;
+    private List<IState<PhantomController>> listHopSideRear;
 
     //the state machine of player.
-    public StateMachine<PlayerController> sm;
+    public StateMachine<PhantomController> sm;
 
 
 
     private void Awake() //Singleton
     {
-        if (PlayerController.playerController == null) { PlayerController.playerController = this; }
+        if (PhantomController.phantomController == null) { PhantomController.phantomController = this; }
     }
-    
+
 
 
     void Start()
     {
-        animator = transform.Find("MainCharacter").GetComponent<Animator>(); //rabbit animator!
-
-
-
-        //Input -> Condition Check or Time Rewinding Mode
-        InputManager.inputManager.OnCommand += HandleMovementInput;
-        InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindMode;
-        InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInput;
+        animator = transform.Find("PhantomCharacter").GetComponent<Animator>(); //rabbit animator!
 
 
 
@@ -128,10 +117,9 @@ public class PlayerController : MonoBehaviour
 
 
 
-        listCommandLog = new List<string>(); //command log for time reverse(objects) and phantom action(copy commands)
-        listPosLog = new List<(Vector3, Quaternion)> { (playerCurPos, playerCurRot) }; //position tracking log for time reverse and reset position
-        // always: listPosLog.Count = 1 + listCommandLog.Count ***
-        
+        listCommandOrder = new List<string>();
+        //w, s, a, d, r
+
 
 
         moveSpeedHor = 6.0f;
@@ -141,42 +129,40 @@ public class PlayerController : MonoBehaviour
 
 
         //get state scripts. (empty object PlayerStates)
-        playerIdle = playerStates.GetComponent<PlayerIdle>();
-        playerMove = playerStates.GetComponent<PlayerMove>();
-        playerTurn = playerStates.GetComponent<PlayerTurn>();
-        playerHop = playerStates.GetComponent<PlayerHop>();
-        idle = playerIdle;
-        move = playerMove;
-        turn = playerTurn;
-        hop = playerHop;
+        phantomIdle = phantomStates.GetComponent<PhantomIdle>();
+        phantomMove = phantomStates.GetComponent<PhantomMove>();
+        phantomTurn = phantomStates.GetComponent<PhantomTurn>();
+        phantomHop = phantomStates.GetComponent<PhantomHop>();
+        idle = phantomIdle;
+        move = phantomMove;
+        turn = phantomTurn;
+        hop = phantomHop;
 
         //State List write!!
         //idle -> idle
-        listStay = new List<IState<PlayerController>> { idle };
+        listStay = new List<IState<PhantomController>> { idle };
         //idle -> turn -> idle
-        listTurn = new List<IState<PlayerController>> { turn };
+        listTurn = new List<IState<PhantomController>> { turn };
         //idle -> move(forward.) -> idle
-        listMoveForward = new List<IState<PlayerController>> { move };
+        listMoveForward = new List<IState<PhantomController>> { move };
         //idle -> turn(x) -> move -> idle    (x=f(i)) (i:input, f: how much to rotate)
-        listMoveSideRear = new List<IState<PlayerController>> { turn, move };
+        listMoveSideRear = new List<IState<PhantomController>> { turn, move };
         //idle -> hop(over or under) -> idle
-        listHopForward = new List<IState<PlayerController>> { hop };
+        listHopForward = new List<IState<PhantomController>> { hop };
         //idle -> turn(x) -> hop(over or under) -> idle    (x=f(i)) (i:input, f: how much to rotate)
-        listHopSideRear = new List<IState<PlayerController>> { turn, hop };
+        listHopSideRear = new List<IState<PhantomController>> { turn, hop };
 
         //StateMachine for Player, which we handle all the time.
-        sm = new StateMachine<PlayerController>(this, idle);
+        sm = new StateMachine<PhantomController>(this, idle);
     }
 
-    //it's good to think that Update functions are together an StateMachine too. (if-else grammer)
-
-    // [Update() of InputManager.cs]: Input&Condition Check
-    // <-> [Update() of PlayerController.cs]: Action of this Turn(State Change)
-    // <-> [Update() of InputManager.cs]: Time Rewind
     void Update() //Action of this Turn(State Change)
     {
+        
         if (TurnManager.turnManager.turnClock) //when turn clock in ON.
         {
+
+
             sm.IsDoneAction();
 
             if (doneAction) //next state in the state list
@@ -192,12 +178,8 @@ public class PlayerController : MonoBehaviour
                     sm.SetState(idle);
                     doneAction = false;
 
-                    listPosLog.Add((playerCurPos, playerCurRot)); //position tracking log update!
-                    TurnManager.turnManager.dicTurnCheck["Player"] = true;
-                    //Debug.Log("Player completed action for turn " + TurnManager.turnManager.turn);
-
-                    // Reset turnClock to allow new input in the next cycle
-                    turnClock = false;
+                    order++;
+                    TurnManager.turnManager.dicTurnCheck["Phantom"] = true;
                 }
             }
         }
@@ -213,9 +195,8 @@ public class PlayerController : MonoBehaviour
     // Functions for Spatial Condition Check //
     private void HandleMovementInput(string command) //get absolute orientation from Command Input (or stand still)
     {
-        if (TurnManager.turnManager.turnClock || isTimeRewinding) return; //***** active when Not executing Actions and Not Time Rewinding Mode.
+        if (TurnManager.turnManager.turnClock) return; //***** active when Not executing Actions and Not Time Rewinding Mode.
 
-        curKey = command;
         switch (command)
         {
             case "w":
@@ -321,95 +302,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void ChooseAction(List<IState<PlayerController>> statelist1, List<IState<PlayerController>> statelist2)
+    private void ChooseAction(List<IState<PhantomController>> statelist1, List<IState<PhantomController>> statelist2)
     {
         listCurTurn = curTurnAngle == 0.0f ? statelist1 : statelist2; //?  forward  :  side or rear
     }
 
-    private void StartAction() //********** when it is executed, that means the global cycle starts.
+    private void StartAction() //********** special function for phantom.
     {
-        listCommandLog.Add(curKey); //command log update
-        TurnManager.turnManager.turnClock = true;
-        seq = 0; //of player
-        sm.SetState(listCurTurn[seq]); //of player
-    }
-
-
-
-
-
-    // Functions for Time Rewind //
-    private void ToggleTimeRewindMode()
-    {
-        if (TurnManager.turnManager.turnClock) return; //***** active when Not executing Actions.
-
-        if (!isTimeRewinding) //when OFF
-        {
-            PhantomController.phantomController.listCommandOrder.Clear();
-            maxTurn = TurnManager.turnManager.turn;
-            isTimeRewinding = true; //toggle ON
-        }
-        else //when ON
-        {
-            if (TurnManager.turnManager.turn < maxTurn)
-            {
-                int startIndex = TurnManager.turnManager.turn;
-                // Make Copy list of Command Orders for phantom
-                PhantomController.phantomController.listCommandOrder.AddRange(listCommandLog.GetRange(startIndex, listCommandLog.Count - startIndex)); //copy!!!
-                listCommandLog.RemoveRange(startIndex, listCommandLog.Count - startIndex); // turn 0: no element in listCommandLog
-                listPosLog.RemoveRange(startIndex + 1, listPosLog.Count - startIndex - 1); // turn 0: one initial element in listPosLog
-            }
-            isTimeRewinding = false; //toggle OFF
-        }
-    }
-
-
-
-    private void HandleTimeRewindInput(string command)
-    {
-        if (TurnManager.turnManager.turnClock || !isTimeRewinding) return; //***** active when Time Rewinding Mode.
-        switch (command)
-        {
-            case "q": // go to the Past (turn -1)
-                if (TurnManager.turnManager.turn >= 1)
-                {
-                    GoToThePastOrFuture(-1);
-                }
-                else
-                {
-                    print("Cannot go further to the Past!!!");
-                }
-                break;
-
-            case "e": // go to the Future (turn +1)
-                if (TurnManager.turnManager.turn <= maxTurn - 1)
-                {
-                    GoToThePastOrFuture(1);
-                }
-                else
-                {
-                    print("Cannot go further to the Future!!!");
-                }
-                break;
-        }
-    }
-    private void GoToThePastOrFuture(int turnDelta)
-    {
-        TurnManager.turnManager.turn += turnDelta;
-        //position tracking log -> preview the current position(and rotation)
-        this.transform.position = listPosLog[TurnManager.turnManager.turn].Item1;
-        this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;
-        playerCurPos = this.transform.position;
-        playerCurRot = this.transform.rotation;
-    }
-
-    public void BlockInput()
-    {
-        inputBlocked = true;
-    }
-
-    public void UnblockInput()
-    {
-        inputBlocked = false;
+        seq = 0; //of phantom
+        sm.SetState(listCurTurn[seq]); //of phantom
     }
 }
