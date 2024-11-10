@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController playerController; //public accessibility using Singleton
+    private bool inputBlocked = false;
 
     public enum PlayerState //just naming for matching key of state dictionary(dicState), not that important.
     {
@@ -228,6 +229,10 @@ public class PlayerController : MonoBehaviour
 
                     listPosLog.Add((playerCurPos, playerCurRot)); //position tracking log update!
                     TurnManager.turnManager.dicTurnCheck["Player"] = true;
+                    //Debug.Log("Player completed action for turn " + TurnManager.turnManager.turn);
+
+                    // Reset turnClock to allow new input in the next cycle
+                    turnClock = false;
                 }
             }
         }
@@ -240,6 +245,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput() //global direction and check whether 'void or floor(plain or below 1.0)' is in front of player
     {
+        if (inputBlocked) return;
+
         if (Input.GetKeyDown(KeyCode.W))
         {
             curKey = "w";
@@ -438,5 +445,15 @@ public class PlayerController : MonoBehaviour
         this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;
         playerCurPos = this.transform.position;
         playerCurRot = this.transform.rotation;
+    }
+
+    public void BlockInput()
+    {
+        inputBlocked = true;
+    }
+
+    public void UnblockInput()
+    {
+        inputBlocked = false;
     }
 }

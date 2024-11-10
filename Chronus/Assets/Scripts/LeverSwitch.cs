@@ -84,6 +84,11 @@ public class LeverSwitch : MonoBehaviour
         {
             platform.SetActive(isActivated);
         }
+
+        // Mark the lever as done for the current turn in TurnManager
+        TurnManager.turnManager.dicTurnCheck["Lever"] = true;
+        //Debug.Log("Lever completed action for turn " + TurnManager.turnManager.turn);
+
         LeverTileCube.SetActive(true);
     }
 }
