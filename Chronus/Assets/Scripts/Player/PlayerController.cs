@@ -281,13 +281,13 @@ public class PlayerController : MonoBehaviour
             rayDirection = transform.right;
 
         Debug.DrawRay(playerCurPos, rayDirection * rayDistance, Color.blue, 0.8f);
-        if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance, layerMask)) //wall check
+        if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance + 1.0f, layerMask)) //wall check
         {
             if (hitWall.collider.tag == "Lever") //lever.
             {
                 if (hitWall.collider.gameObject.GetComponent<LeverSwitch>().canToggleDirection == rayDirection) //can push lever (right direction)
                 {
-                    hitWall.collider.gameObject.GetComponent<LeverSwitch>().ToggleLever(rayDirection); //push lever!!!
+                    hitWall.collider.gameObject.GetComponent<LeverSwitch>().ToggleLever(); //push lever!!!
                     ChooseAction(listStay, listTurn); //we should set animation trigger on Enter and Exit of PlayerIdle state.
                     StartAction(); //cycle starts!!!
                 }
@@ -302,11 +302,32 @@ public class PlayerController : MonoBehaviour
             }
             else if (hitWall.collider.tag == "Box") //box.
             {
-                PlayerPush.playerPush.TryPush(rayDirection, hitWall); //push box!!!
-                ChooseAction(listMoveForward, listMoveSideRear); //we should set animation trigger on Enter and Exit of PlayerMove state.
-                StartAction(); //cycle starts!!!
+                PlayerPush.playerPush.TryPush(rayDirection); //push box!!!
+                if (PlayerPush.playerPush.canPushBox)
+                {
+                    ChooseAction(listMoveForward, listMoveSideRear); //we should use new state (like playerpush ..) and animation trigger on Enter and Exit of that state.
+                    StartAction(); //cycle starts!!!
+                }
+                else
+                {
+                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance + 1.0f, layerMask)) //available to jump over
+                    {
+                        curHopDir = 1.0f; //Jump Over
+                        ChooseAction(listHopForward, listHopSideRear);
+                        StartAction(); //cycle starts!!!
+                    }
+                    else //if not
+                    {
+                        if (curTurnAngle != 0.0f) //if wall is not in front of player, just turn(rotate) in its place (turn update happens.)
+                        {
+                            listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
+                            StartAction(); //cycle starts!!!
+                        }
+                        //if wall is in front of player, no action and no turn update.
+                    }
+                }
             }
-            else if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask)) //available to jump over
+            else if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance + 1.0f, layerMask)) //available to jump over
             {
                 curHopDir = 1.0f; //Jump Over
                 ChooseAction(listHopForward, listHopSideRear);
@@ -353,10 +374,8 @@ public class PlayerController : MonoBehaviour
 
 
 
-
-
-    // Functions for Time Rewind //
-    private void ToggleTimeRewindMode()
+// Functions for Time Rewind //
+private void ToggleTimeRewindMode()
     {
         if (TurnManager.turnManager.turnClock) return; //***** active when Not executing Actions.
 
