@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class ButtonSwitch : MonoBehaviour
 {
-    public GameObject[] platforms; 
+    public GameObject[] platforms;
+    private bool[] boolPalette;
+    private int idx;
     private Vector3 plateOffPosition;
     private Vector3 plateOnPosition;
     public bool isPressed = false;
@@ -18,9 +20,14 @@ public class ButtonSwitch : MonoBehaviour
         plateOffPosition = this.transform.GetChild(1).transform.position;
         plateOnPosition = plateOffPosition + new Vector3(0,-0.1f,0);
 
+        boolPalette = new bool[1];
+        boolPalette[0] = true;
+
+        idx = 0;
         foreach (GameObject platform in platforms)
         {
-            platform.SetActive(false);
+            platform.SetActive(boolPalette[idx] ^ true);
+            idx++;
         }
     }
 
@@ -49,9 +56,11 @@ public class ButtonSwitch : MonoBehaviour
 
     private void PressButton()
     {
+        idx = 0;
         foreach (GameObject platform in platforms)
         {
-            platform.SetActive(true);
+            platform.SetActive(boolPalette[idx] ^ false);
+            idx++;
         }
         this.transform.GetChild(1).transform.position = plateOnPosition;
 
@@ -62,9 +71,11 @@ public class ButtonSwitch : MonoBehaviour
 
     private void ResetButton()
     {
+        idx = 0;
         foreach (GameObject platform in platforms)
         {
-            platform.SetActive(false);
+            platform.SetActive(boolPalette[idx] ^ true);
+            idx++;
         }
         this.transform.GetChild(1).transform.position = plateOffPosition;
 

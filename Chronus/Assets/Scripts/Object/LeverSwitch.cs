@@ -5,7 +5,8 @@ using UnityEngine;
 public class LeverSwitch : MonoBehaviour
 {
     public GameObject[] platforms;
-    //public GameObject LeverTileCube; //box collider of lever
+    private bool[] boolPalette;
+    private int idx;
 
     private bool isActivated = false;
     private Quaternion forwardRotation; 
@@ -24,9 +25,14 @@ public class LeverSwitch : MonoBehaviour
         this.transform.GetChild(1).transform.rotation = backwardRotation;
         canToggleDirection = this.transform.forward;
 
+        boolPalette = new bool[1];
+        boolPalette[0] = true;
+
+        idx = 0;
         foreach (GameObject platform in platforms)
         {
-            platform.SetActive(false);
+            platform.SetActive(boolPalette[idx] ^ !isActivated);
+            idx++;
         }
     }
 
@@ -87,9 +93,11 @@ public class LeverSwitch : MonoBehaviour
         isActivated = !isActivated;
         this.transform.GetChild(1).transform.rotation = isActivated ? forwardRotation : backwardRotation;
         canToggleDirection = -canToggleDirection;
+        idx = 0;
         foreach (GameObject platform in platforms)
         {
-            platform.SetActive(isActivated);
+            platform.SetActive(boolPalette[idx] ^ !isActivated);
+            idx++;
         }
     }
 }
