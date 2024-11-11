@@ -18,14 +18,7 @@ public class PushBox : MonoBehaviour
         rb.useGravity = false;
         rb.constraints = RigidbodyConstraints.FreezeRotation;
 
-        TickManager.OnTick += OnTickEvent;
     }
-
-    private void OnDestroy()
-    {
-        TickManager.OnTick -= OnTickEvent;
-    }
-
     /*
     private void Update()
     {
@@ -51,8 +44,4 @@ public class PushBox : MonoBehaviour
         }
     }
 
-    private void OnTickEvent()
-    {
-        CheckIfFloating();
-    }
 }
