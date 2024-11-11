@@ -6,7 +6,7 @@ public class PushBox : MonoBehaviour
 {
     public float moveDistance = 2.0f;
     private Rigidbody rb;
-    public float checkDistance = 1.5f;
+    public float checkDistance = 0.5f;
 
     private void Start()
     {
@@ -28,11 +28,12 @@ public class PushBox : MonoBehaviour
             {
                 // Tile detected, keep Y position constraint to keep the box stable
                 rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                return;
             }
         }
-        
-        // If no tile is detected or the tile is not GroundFloor/FirstFloor, allow the box to fall
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        else
+        {
+            // If no tile is detected or the tile is not GroundFloor/FirstFloor, allow the box to fall
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+        }
     }
 }

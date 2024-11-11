@@ -88,7 +88,7 @@ public class LeverSwitch : MonoBehaviour
     }
     */
 
-    public void ToggleLever(Vector3 toggleDirection)
+    public void ToggleLever()
     {
         isActivated = !isActivated;
         this.transform.GetChild(1).transform.rotation = isActivated ? forwardRotation : backwardRotation;

@@ -25,6 +25,7 @@ public class TurnManager : MonoBehaviour
         dicTurnCheck = new Dictionary<string, bool>();
         dicTurnCheck.Add("Player", false);
         dicTurnCheck.Add("Phantom", false);
+        dicTurnCheck.Add("Box", false);
         dicTurnCheck.Add("Button", false);
         //+ mirror phantom, button, lever, box, ...... so on
     }

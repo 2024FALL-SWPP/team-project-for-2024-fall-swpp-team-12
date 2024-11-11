@@ -8,9 +8,9 @@ public class PlayerPush : MonoBehaviour
 
     public float pushDistance = 2f;
     public float jumpHeight = 2f;
-    public float heightOffset = 0.5f; 
-    private bool isOnBox = false;
-    private GameObject currentBox = null;
+    public float heightOffset = 0.5f;
+
+    public bool canPushBox = false;
 
     private void Awake() //singleton
     {
@@ -22,37 +22,51 @@ public class PlayerPush : MonoBehaviour
         
     }
     private void Update()
-    {
-
+    {/*
+        if (Input.GetKeyDown(KeyCode.W)) TryPush(Vector3.forward);
+        if (Input.GetKeyDown(KeyCode.S)) TryPush(Vector3.back);
+        if (Input.GetKeyDown(KeyCode.A)) TryPush(Vector3.left);
+        if (Input.GetKeyDown(KeyCode.D)) TryPush(Vector3.right);
+        */
     }
 
-    public void TryPush(Vector3 direction, RaycastHit hit)
+    public void TryPush(Vector3 direction)
     {
+        RaycastHit hit;
         if (Physics.Raycast(transform.position, direction, out hit, pushDistance))
         {
             GameObject box = hit.collider.gameObject;
             if (box != null && box.CompareTag("Box"))
             {
-                if (Physics.Raycast(box.transform.position, direction, out RaycastHit obstacleHit, pushDistance))
+                if (Physics.Raycast(box.transform.position, direction, out RaycastHit obstacleHit, pushDistance)) //cannot push box
                 {
-                    if (obstacleHit.collider.CompareTag("Obstacle"))
-                    {
-                        StartCoroutine(JumpOntoBox(box));
-                        return;
-                    }
+                    Debug.Log("cannotpush");
+                    //StartCoroutine(JumpOntoBox(box));
+                    canPushBox = false;
                 }
-
-                Rigidbody rb = box.GetComponent<Rigidbody>();
-                if (rb != null)
+                else //can push box
                 {
+                    Rigidbody rb = box.GetComponent<Rigidbody>();
+                    //smoothly move
+                    if (Physics.Raycast(box.transform.position, transform.up, out RaycastHit playerHit, pushDistance))
+                    {
+                        if (playerHit.collider.CompareTag("Player")) //need for phantom too *****
+                        {
+                            playerHit.collider.gameObject.GetComponent<Transform>().transform.position += direction * pushDistance;
+                            PlayerController.playerController.playerCurPos = playerHit.collider.gameObject.GetComponent<Transform>().transform.position;
+                        }
+                    }
                     rb.MovePosition(box.transform.position + direction * pushDistance);
+                    canPushBox = true;
                 }
             }
         }
     }
 
+    //don't use the function below, but it is a good reference of player hop, need to fix that
     private IEnumerator JumpOntoBox(GameObject box)
     {
+        
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = box.transform.position + Vector3.up * (jumpHeight + heightOffset);
         float jumpSpeed = 3f;
@@ -65,9 +79,8 @@ public class PlayerPush : MonoBehaviour
             yield return null;
         }
 
-        transform.position = targetPosition; 
-        isOnBox = true;
-        currentBox = box;
-        transform.parent = box.transform; // Attach to box to stay on it
+        transform.position = targetPosition;
+        
+        canPushBox = false;
     }
 }
