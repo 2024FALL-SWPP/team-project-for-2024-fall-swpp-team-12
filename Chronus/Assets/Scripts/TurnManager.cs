@@ -22,6 +22,7 @@ public class TurnManager : MonoBehaviour
 
     public Vector3 savePoint_pos;
     public Quaternion savePoint_rot;
+    public List<MovingObstacle> obstacles;
 
     private void Awake() //Singleton
     {
@@ -52,12 +53,9 @@ public class TurnManager : MonoBehaviour
         savePoint_pos = new Vector3(1, 1, 1);
         savePoint_rot = Quaternion.Euler(new Vector3(0,0,0));
 
-        TickManager.OnTick += OnTickEvent;
+        obstacles = new List<MovingObstacle>(FindObjectsOfType<MovingObstacle>());
     }
 
-    private void OnTickEvent() { }
-
-    // Update is called once per frame
     void Update()
     {
         //print(turn);
@@ -81,6 +79,11 @@ public class TurnManager : MonoBehaviour
     {
         turn += 1; // Increment the turn count
         //Debug.Log("Turn advanced to: " + turn);
+
+        foreach (var obstacle in obstacles)
+        {
+            obstacle.OnTurnIncrease();
+        }
 
         // Block input at the start of each new turn
         PlayerController.playerController.BlockInput();
