@@ -38,30 +38,23 @@ public class PlayerController : CharacterBase
     {
         if (TurnManager.turnManager.turnClock) //when turn clock in ON.
         {
-            sm.IsDoneAction(); // 여기서 True가 여러번 뜬다. 
-
+            sm.IsDoneAction(); 
             if (doneAction) //next state in the state list
             {
                 seq++; //next index
                 doneAction = false;
-                Debug.Log($"seq: {seq}, listCurTurn: {string.Join(", ", listCurTurn)}");
                 if (seq < listCurTurn.Count)
                 {
                     sm.SetState(listCurTurn[seq]);
                 }
                 else
                 {
-                    sm.SetState(idle);
-                    listPosLog.Add((playerCurPos, playerCurRot)); //position tracking log update!
-                    Debug.Log(TurnManager.turnManager.turn);
-                    Debug.Log(string.Join(" ", listPosLog));
-                    
+                    sm.SetState(idle);                    
                     TurnManager.turnManager.dicTurnCheck["Player"] = true;
                 }
             }
         }
 
-        //update always ~
         sm.DoOperateUpdate();
     }
 

@@ -23,7 +23,7 @@ public class PhantomController : CharacterBase
 
     public void AdvanceTurn()
     {
-        if (order > listCommandOrder.Count) 
+        if (order >= listCommandOrder.Count) 
         {
             gameObject.SetActive(false);
             isPhantomExisting = false;    

@@ -38,6 +38,20 @@ public class TurnManager : MonoBehaviour
             dicTurnCheck["Phantom"] = false;
         }
     }
+
+    public void StartTurn()
+    { 
+        turnClock = true;
+        if (PhantomController.phantomController.isPhantomExisting) PhantomController.phantomController.AdvanceTurn();
+    }
+
+    private void EndTurn()
+    {
+        turnClock = false;
+        turn++;
+        PlayerController.playerController.listPosLog.Add((PlayerController.playerController.playerCurPos, PlayerController.playerController.playerCurRot));
+    }
+
     void _Update()
     {
         if (turnClock && dicTurnCheck["Player"] && (dicTurnCheck["Phantom"] || !PhantomController.phantomController.isPhantomExisting)/* && and so on...*/) //action execution (player, phantom, switches, objects, etc)
@@ -73,19 +87,6 @@ public class TurnManager : MonoBehaviour
             turn++;
         }
     }
-
-    public void StartTurn()
-    { 
-        turnClock = true;
-        if (PhantomController.phantomController.isPhantomExisting) PhantomController.phantomController.AdvanceTurn();
-    }
-
-    private void EndTurn()
-    {
-        turn++;
-        turnClock = false;
-    }
-
     private void UpdateTurn(ref bool previousClock, ref bool nextClock)
     {
         previousClock = false;
