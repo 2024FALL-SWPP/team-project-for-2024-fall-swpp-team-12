@@ -9,6 +9,7 @@ TagManager:
   - Obstacle
   - GroundFloor
   - FirstFloor
+  - Lever
   - GoalTile
   - StartTile
   - Wall
