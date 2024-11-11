@@ -25,6 +25,7 @@ public class TurnManager : MonoBehaviour
         dicTurnCheck = new Dictionary<string, bool>();
         dicTurnCheck.Add("Player", false);
         dicTurnCheck.Add("Phantom", false);
+        dicTurnCheck.Add("Button", false);
         //+ mirror phantom, button, lever, box, ...... so on
     }
 
@@ -36,9 +37,10 @@ public class TurnManager : MonoBehaviour
             dicTurnCheck["Player"] = false;
             dicTurnCheck["Phantom"] = false;
         }
-        if (firstCollisionCheck/* && something*/) //collision check between player and harmful objects (first) (if collide, kill)
+        if (firstCollisionCheck && dicTurnCheck["Button"]/* && something*/) //collision check between player and harmful objects (first) (if collide, kill)
         {
             UpdateTurn(ref firstCollisionCheck, ref lateTurnClock);
+            dicTurnCheck["Button"] = false;
             //dicTurnCheck ....... = false;
         }
         if (lateTurnClock/* && something*/) //late action execution (moving wall, block, spear, etc)

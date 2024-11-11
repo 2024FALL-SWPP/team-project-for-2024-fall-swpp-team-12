@@ -4,32 +4,33 @@ using UnityEngine;
 
 public class LeverSwitch : MonoBehaviour
 {
-    public GameObject[] platforms; 
-    public Transform lever;
-    public GameObject LeverTileCube;
+    public GameObject[] platforms;
+    //public GameObject LeverTileCube; //box collider of lever
 
     private bool isActivated = false;
     private Quaternion forwardRotation; 
-    private Quaternion backwardRotation; 
-    private bool playerAdjacent = false; 
+    private Quaternion backwardRotation;
+    public Vector3 canToggleDirection;
+    //private bool playerAdjacent = false; 
 
-    private GameObject player; 
+    //private GameObject player;
 
     private void Start()
     {
-        foreach (GameObject platform in platforms)
-        {
-            platform.SetActive(false);
-        }
-        LeverTileCube.SetActive(true); // LeverTileCube is active initially to block entry
-
         forwardRotation = Quaternion.Euler(130, 0, 0);
         backwardRotation = Quaternion.Euler(50, 0, 0);
 
         // Initial lever rotation
-        lever.rotation = backwardRotation;
+        this.transform.GetChild(1).transform.rotation = backwardRotation;
+        canToggleDirection = this.transform.forward;
+
+        foreach (GameObject platform in platforms)
+        {
+            platform.SetActive(false);
+        }
     }
 
+    /*
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -47,15 +48,19 @@ public class LeverSwitch : MonoBehaviour
             player = null;
         }
     }
+    */
 
     private void Update()
     {
+        /*
         if (playerAdjacent && PlayerIsTryingToMoveTowardsLever())
         {
             ToggleLever();
         }
+        */
     }
 
+    /*
     private bool PlayerIsTryingToMoveTowardsLever()
     {
         if (player == null) return false;
@@ -75,20 +80,16 @@ public class LeverSwitch : MonoBehaviour
         // Check if the player is pressing in the direction of the lever
         return Vector3.Dot(directionToLever, playerInputDirection) > 0.5f;
     }
+    */
 
-    private void ToggleLever()
+    public void ToggleLever(Vector3 toggleDirection)
     {
         isActivated = !isActivated;
-        lever.rotation = isActivated ? forwardRotation : backwardRotation;
+        this.transform.GetChild(1).transform.rotation = isActivated ? forwardRotation : backwardRotation;
+        canToggleDirection = -canToggleDirection;
         foreach (GameObject platform in platforms)
         {
             platform.SetActive(isActivated);
         }
-
-        // Mark the lever as done for the current turn in TurnManager
-        TurnManager.turnManager.dicTurnCheck["Lever"] = true;
-        //Debug.Log("Lever completed action for turn " + TurnManager.turnManager.turn);
-
-        LeverTileCube.SetActive(true);
     }
 }
