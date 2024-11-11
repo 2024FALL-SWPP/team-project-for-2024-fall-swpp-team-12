@@ -30,7 +30,17 @@ public class TurnManager : MonoBehaviour
 
     void Update()
     {
-        if (turnClock && dicTurnCheck["Player"] && (dicTurnCheck["Phantom"] || !PlayerController.playerController.isPhantomExists)/* && and so on...*/) //action execution (player, phantom, switches, objects, etc)
+        if (dicTurnCheck["Player"] && (dicTurnCheck["Phantom"] || !PhantomController.phantomController.isPhantomExisting)) 
+        // temporary... need to check if all actions are done.
+        {
+            EndTurn();
+            dicTurnCheck["Player"] = false;
+            dicTurnCheck["Phantom"] = false;
+        }
+    }
+    void _Update()
+    {
+        if (turnClock && dicTurnCheck["Player"] && (dicTurnCheck["Phantom"] || !PhantomController.phantomController.isPhantomExisting)/* && and so on...*/) //action execution (player, phantom, switches, objects, etc)
         {
             UpdateTurn(ref turnClock, ref firstCollisionCheck);
             dicTurnCheck["Player"] = false;
@@ -62,7 +72,18 @@ public class TurnManager : MonoBehaviour
             //dicTurnCheck ....... = false;
             turn++;
         }
+    }
 
+    public void StartTurn()
+    { 
+        turnClock = true;
+        if (PhantomController.phantomController.isPhantomExisting) PhantomController.phantomController.AdvanceTurn();
+    }
+
+    private void EndTurn()
+    {
+        turn++;
+        turnClock = false;
     }
 
     private void UpdateTurn(ref bool previousClock, ref bool nextClock)
