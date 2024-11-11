@@ -158,7 +158,7 @@ public class PlayerController : MonoBehaviour
         //idle -> idle
         listStay = new List<IState<PlayerController>> { idle };
         //idle -> turn -> idle
-        listTurn = new List<IState<PlayerController>> { turn };
+        listTurn = new List<IState<PlayerController>> { turn, idle };
         //idle -> move(forward.) -> idle
         listMoveForward = new List<IState<PlayerController>> { move };
         //idle -> turn(x) -> move -> idle    (x=f(i)) (i:input, f: how much to rotate)
@@ -279,13 +279,26 @@ public class PlayerController : MonoBehaviour
         Debug.DrawRay(playerCurPos, rayDirection * rayDistance, Color.blue, 0.8f);
         if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance, layerMask)) //wall check
         {
-            if (/*tag is Lever  AND  can push lever by this side*/false) //lever.
+            if (hitWall.collider.tag == "Lever") //lever.
             {
-                ChooseAction(listStay, listTurn); //we should set animation trigger on Enter and Exit of PlayerIdle state.
-                StartAction(); //cycle starts!!!
+                if (hitWall.collider.gameObject.GetComponent<LeverSwitch>().canToggleDirection == rayDirection) //can push lever (right direction)
+                {
+                    hitWall.collider.gameObject.GetComponent<LeverSwitch>().ToggleLever(rayDirection); //push lever!!!
+                    ChooseAction(listStay, listTurn); //we should set animation trigger on Enter and Exit of PlayerIdle state.
+                    StartAction(); //cycle starts!!!
+                }
+                else
+                {
+                    if (curTurnAngle != 0.0f)
+                    {
+                        listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
+                        StartAction(); //cycle starts!!!
+                    }
+                }
             }
-            else if (/*tag is box  AND  can push box by this side*/false) //box.
+            else if (hitWall.collider.tag == "Box") //box.
             {
+                PlayerPush.playerPush.TryPush(rayDirection, hitWall); //push box!!!
                 ChooseAction(listMoveForward, listMoveSideRear); //we should set animation trigger on Enter and Exit of PlayerMove state.
                 StartAction(); //cycle starts!!!
             }

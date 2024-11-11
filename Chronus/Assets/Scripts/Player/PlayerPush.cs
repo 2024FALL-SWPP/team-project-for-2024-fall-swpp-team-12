@@ -4,23 +4,30 @@ using UnityEngine;
 
 public class PlayerPush : MonoBehaviour
 {
+    public static PlayerPush playerPush;
+
     public float pushDistance = 2f;
     public float jumpHeight = 2f;
     public float heightOffset = 0.5f; 
     private bool isOnBox = false;
     private GameObject currentBox = null;
 
-    private void Update()
+    private void Awake() //singleton
     {
-        if (Input.GetKeyDown(KeyCode.W)) TryPush(Vector3.forward);
-        if (Input.GetKeyDown(KeyCode.S)) TryPush(Vector3.back);
-        if (Input.GetKeyDown(KeyCode.A)) TryPush(Vector3.left);
-        if (Input.GetKeyDown(KeyCode.D)) TryPush(Vector3.right);
+        if (PlayerPush.playerPush == null) { PlayerPush.playerPush = this; }
     }
 
-    private void TryPush(Vector3 direction)
+    private void Start()
     {
-        RaycastHit hit;
+        
+    }
+    private void Update()
+    {
+
+    }
+
+    public void TryPush(Vector3 direction, RaycastHit hit)
+    {
         if (Physics.Raycast(transform.position, direction, out hit, pushDistance))
         {
             GameObject box = hit.collider.gameObject;
