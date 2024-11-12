@@ -11,6 +11,9 @@ public class PlayerPush : MonoBehaviour
     public float heightOffset = 0.5f;
 
     public bool canPushBox = false;
+    public bool canRideBox = false;
+
+    private int layerMask;
 
     private void Awake() //singleton
     {
@@ -19,7 +22,7 @@ public class PlayerPush : MonoBehaviour
 
     private void Start()
     {
-        
+        layerMask = 1 << 0;
     }
     private void Update()
     {/*
@@ -33,30 +36,45 @@ public class PlayerPush : MonoBehaviour
     public void TryPush(Vector3 direction)
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, direction, out hit, pushDistance))
+        if (Physics.Raycast(transform.position, direction, out hit, pushDistance, layerMask))
         {
             GameObject box = hit.collider.gameObject;
             if (box != null && box.CompareTag("Box"))
             {
-                if (Physics.Raycast(box.transform.position, direction, out RaycastHit obstacleHit, pushDistance)) //cannot push box
+                if (Physics.Raycast(box.transform.position, direction, out RaycastHit obstacleHit, pushDistance, layerMask)) //cannot push box
                 {
                     Debug.Log("cannotpush");
                     //StartCoroutine(JumpOntoBox(box));
+                    canRideBox = false;
                     canPushBox = false;
                 }
                 else //can push box
                 {
                     Rigidbody rb = box.GetComponent<Rigidbody>();
                     //smoothly move
-                    if (Physics.Raycast(box.transform.position, transform.up, out RaycastHit playerHit, pushDistance))
+                    if (Physics.Raycast(box.transform.position, transform.up, out RaycastHit playerHit, pushDistance, layerMask))
                     {
-                        if (playerHit.collider.CompareTag("Player")) //need for phantom too *****
+                        if (playerHit.collider.CompareTag("Player"))
                         {
+                            canRideBox = true;
                             playerHit.collider.gameObject.GetComponent<Transform>().transform.position += direction * pushDistance;
                             PlayerController.playerController.playerCurPos = playerHit.collider.gameObject.GetComponent<Transform>().transform.position;
                         }
+                        else if (playerHit.collider.CompareTag("Phantom")) 
+                        {
+                            canRideBox = false;
+                            // kill phantom.
+                        }
+                        else
+                        {
+                            canRideBox = false;
+                        }
                     }
-                    rb.MovePosition(box.transform.position + direction * pushDistance);
+                    else
+                    {
+                        canRideBox = false;
+                    }
+                    rb.MovePosition(box.transform.position + direction * pushDistance); //statemachine replace is neeeeded
                     canPushBox = true;
                 }
             }
