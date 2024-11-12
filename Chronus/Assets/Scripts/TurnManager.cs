@@ -64,6 +64,7 @@ public class TurnManager : MonoBehaviour
             lastCollisionCheck = false;
             //dicTurnCheck ....... = false;
             turn++;
+            //PlayerController.playerController.listPosLog.Add((PlayerController.playerController.playerCurPos, PlayerController.playerController.playerCurRot)); //position tracking log update!
         }
 
     }

@@ -30,6 +30,9 @@ public class PlayerIdle : MonoBehaviour, IState<PlayerController>
     }
     public void DoneAction(PlayerController sender)
     {
-        _playerController.doneAction = true;
+        if (TurnManager.turnManager.turnClock && !TurnManager.turnManager.dicTurnCheck["Player"])
+        {
+            _playerController.doneAction = true;
+        }
     }
 }
