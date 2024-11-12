@@ -195,8 +195,8 @@ public class PlayerController : MonoBehaviour
                 {
                     sm.SetState(idle);
                     doneAction = false;
-
                     listPosLog.Add((playerCurPos, playerCurRot)); //position tracking log update!
+
                     TurnManager.turnManager.dicTurnCheck["Player"] = true;
                     //Debug.Log("Player completed action for turn " + TurnManager.turnManager.turn);
 
@@ -410,12 +410,7 @@ private void ToggleTimeRewindMode()
                 PhantomController.phantomController.order = 0;
                 //phantomScript.listCommandOrder.AddRange(listCommandLog.GetRange(startIndex, listCommandLog.Count - startIndex)); //copy!!!
                 listCommandLog.RemoveRange(startIndex, listCommandLog.Count - startIndex); // turn 0: no element in listCommandLog
-                Debug.Log(listPosLog[maxTurn]);
-                for (int i=listPosLog.Count-1; i>=startIndex+1 ; i--) // turn 0: one initial element in listPosLog
-                {
-                    listPosLog.RemoveAt(i);
-                }
-                //listPosLog.RemoveRange(startIndex + 1, listPosLog.Count - startIndex - 1); // turn 0: one initial element in listPosLog
+                listPosLog.RemoveRange(startIndex + 1, listPosLog.Count - startIndex - 1); // turn 0: one initial element in listPosLog
                 
             }
             isTimeRewinding = false; //toggle OFF

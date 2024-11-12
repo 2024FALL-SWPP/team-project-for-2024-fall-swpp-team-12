@@ -30,6 +30,9 @@ public class PhantomIdle : MonoBehaviour, IState<PhantomController>
     }
     public void DoneAction(PhantomController sender)
     {
-        _playerController.doneAction = true;
+        if (TurnManager.turnManager.turnClock && !TurnManager.turnManager.dicTurnCheck["Phantom"])
+        {
+            _playerController.doneAction = true;
+        }
     }
 }
