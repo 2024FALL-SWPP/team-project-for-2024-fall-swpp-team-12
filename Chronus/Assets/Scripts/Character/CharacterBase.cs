@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Scripting.APIUpdating;
 
 public abstract class CharacterBase : MonoBehaviour
 {
@@ -35,7 +34,7 @@ public abstract class CharacterBase : MonoBehaviour
     public CharacterIdle cIdle; public CharacterMove cMove; public CharacterTurn cTurn; public CharacterHop cHop;
     protected IState<CharacterBase> idle, move, turn, hop;
     // index of state list
-    protected int seq = 0;
+    protected int listSeq = 0;
     // task of a state ended, need to jump to next state (next index of the state list)
     //can be changed from state's DoneAction func, through sender
     public bool doneAction = false;
@@ -86,10 +85,10 @@ public abstract class CharacterBase : MonoBehaviour
         sm.DoOperateUpdate();
         if (doneAction)
         {
-            seq++;
-            if (seq < listCurTurn.Count)
+            listSeq++;
+            if (listSeq < listCurTurn.Count)
             {
-                sm.SetState(listCurTurn[seq]);
+                sm.SetState(listCurTurn[listSeq]);
                 doneAction = false;
             }
             else
@@ -125,15 +124,15 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void StartAction()
     {
-        seq = 0; 
-        sm.SetState(listCurTurn[seq]); 
+        listSeq = 0; 
+        sm.SetState(listCurTurn[listSeq]); 
     }
 
     // below this, functions for spatial check //
 
     protected void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset) //from HandleMovementInput() with local direction Array
     {
-        int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
+        int angleIndex = Mathf.RoundToInt(transform.eulerAngles.y / 90) % 4;
         curTurnAngle = angles[angleIndex]; //relative orientation!!
 
         Debug.DrawRay(playerCurPos + rayOffset, transform.up * -rayDistance, Color.red, 0.8f);

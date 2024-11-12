@@ -19,6 +19,7 @@ public class PhantomController : CharacterBase
     {
         base.Start();
         gameObject.SetActive(false);
+        // this phantom is actually invoked at PlayerController
     }
 
     public void AdvanceTurn()
@@ -27,6 +28,7 @@ public class PhantomController : CharacterBase
         {
             gameObject.SetActive(false);
             isPhantomExisting = false;    
+            return;
         }
         HandleMovementInput(listCommandOrder[order]);
         order++;
@@ -40,11 +42,11 @@ public class PhantomController : CharacterBase
 
             if (doneAction) 
             {
-                seq++; 
+                listSeq++; 
                 doneAction = false;
-                if (seq < listCurTurn.Count)
+                if (listSeq < listCurTurn.Count)
                 {
-                    sm.SetState(listCurTurn[seq]);
+                    sm.SetState(listCurTurn[listSeq]);
                 }
                 else
                 {
