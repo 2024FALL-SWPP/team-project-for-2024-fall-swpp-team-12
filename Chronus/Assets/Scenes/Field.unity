@@ -4997,6 +4997,7 @@ MonoBehaviour:
   - {fileID: 1798994305}
   isPressed: 0
   resetTurnCount: 4
+  listButtonCommandLog: []
 --- !u!54 &2112867951
 Rigidbody:
   m_ObjectHideFlags: 0

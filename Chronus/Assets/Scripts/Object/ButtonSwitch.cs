@@ -14,6 +14,11 @@ public class ButtonSwitch : MonoBehaviour
 
     public int resetTurnCount = 4;
     private int turnActivated = 0;
+    private int lastLoggedCountdown = -1;  // Tracks the last countdown logged
+
+    // Time rewind logs
+    public List<string> listButtonCommandLog;
+    public List<(Vector3, bool, int)> listButtonStateLog; // (position, isPressed, turnActivated)
 
     private void Start()
     {
@@ -29,8 +34,12 @@ public class ButtonSwitch : MonoBehaviour
             platform.SetActive(boolPalette[idx] ^ true);
             idx++;
         }
+
+        listButtonCommandLog = new List<string>();
+        listButtonStateLog = new List<(Vector3, bool, int)>();
     }
 
+    /*
     private void Update()
     {
         if (TurnManager.turnManager.firstCollisionCheck) //update when firstCollisionCheck
@@ -42,6 +51,35 @@ public class ButtonSwitch : MonoBehaviour
             else
             {
                 TurnManager.turnManager.dicTurnCheck["Button"] = true;
+            }
+        }
+    }
+    */
+
+    private void Update()
+    {
+        if (TurnManager.turnManager.firstCollisionCheck) //update when firstCollisionCheck
+        {
+            if (isPressed)
+            {
+                int remainingTurns = (turnActivated + resetTurnCount) - TurnManager.turnManager.turn - 1;
+
+                // Log the countdown if it's decreasing and has not been logged yet
+                if (remainingTurns > 0 && remainingTurns != lastLoggedCountdown)
+                {
+                    listButtonCommandLog.Add($"{remainingTurns}");
+                    lastLoggedCountdown = remainingTurns;
+                }
+
+                // If countdown reaches 0, reset the button
+                if (TurnManager.turnManager.turn >= turnActivated + resetTurnCount - 1)
+                {
+                    ResetButton();
+                }
+                else
+                {
+                    TurnManager.turnManager.dicTurnCheck["Button"] = true;
+                }
             }
         }
     }
@@ -67,6 +105,10 @@ public class ButtonSwitch : MonoBehaviour
         turnActivated = TurnManager.turnManager.turn + 1; //get value before turn update, so +1 (indicates next turn)
         isPressed = true;
         TurnManager.turnManager.dicTurnCheck["Button"] = true;
+
+        // Log button press state
+        listButtonCommandLog.Add("Activated");
+        lastLoggedCountdown = resetTurnCount;
     }
 
     private void ResetButton()
@@ -82,5 +124,37 @@ public class ButtonSwitch : MonoBehaviour
         turnActivated = 0;
         isPressed = false;
         TurnManager.turnManager.dicTurnCheck["Button"] = true;
+
+        // Log button reset state
+        listButtonCommandLog.Add("Deactivated");
+        lastLoggedCountdown = -1; // Reset countdown tracking
+    }
+
+    private void SaveCurrentState(string command)
+    {
+        // Log the command and current state
+        listButtonCommandLog.Add(command);
+        listButtonStateLog.Add((transform.position, isPressed, turnActivated));
+    }
+
+    public void RestoreState(int turnIndex)
+    {
+        if (turnIndex < listButtonStateLog.Count)
+        {
+            var state = listButtonStateLog[turnIndex];
+            transform.position = state.Item1;
+            isPressed = state.Item2;
+            turnActivated = state.Item3;
+
+            // Update button appearance based on the restored state
+            this.transform.GetChild(1).transform.position = isPressed ? plateOnPosition : plateOffPosition;
+
+            idx = 0;
+            foreach (GameObject platform in platforms)
+            {
+                platform.SetActive(boolPalette[idx] ^ !isPressed);
+                idx++;
+            }
+        }
     }
 }
