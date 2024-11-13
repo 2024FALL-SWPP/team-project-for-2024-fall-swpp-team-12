@@ -16,6 +16,10 @@ public class LeverSwitch : MonoBehaviour
 
     //private GameObject player;
 
+    // Time rewind logs
+    public List<string> listLeverCommandLog; 
+    public List<(Quaternion, bool, Vector3)> listLeverStateLog;
+
     private void Start()
     {
         forwardRotation = Quaternion.Euler(130, 0, 0);
@@ -34,6 +38,10 @@ public class LeverSwitch : MonoBehaviour
             platform.SetActive(boolPalette[idx] ^ !isActivated);
             idx++;
         }
+
+
+        listLeverCommandLog = new List<string>();
+        listLeverStateLog = new List<(Quaternion, bool, Vector3)>();
     }
 
     /*
@@ -98,6 +106,34 @@ public class LeverSwitch : MonoBehaviour
         {
             platform.SetActive(boolPalette[idx] ^ !isActivated);
             idx++;
+        }
+
+        // Log lever toggle state
+        SaveCurrentState(isActivated ? "Activate" : "Deactivate");
+    }
+
+    private void SaveCurrentState(string command)
+    {
+        // Log the command and current state
+        listLeverCommandLog.Add(command);
+        listLeverStateLog.Add((transform.GetChild(1).transform.rotation, isActivated, canToggleDirection));
+    }
+
+    public void RestoreState(int turnIndex)
+    {
+        if (turnIndex < listLeverStateLog.Count)
+        {
+            var state = listLeverStateLog[turnIndex];
+            transform.GetChild(1).transform.rotation = state.Item1;
+            isActivated = state.Item2;
+            canToggleDirection = state.Item3;
+
+            idx = 0;
+            foreach (GameObject platform in platforms)
+            {
+                platform.SetActive(boolPalette[idx] ^ !isActivated);
+                idx++;
+            }
         }
     }
 }
