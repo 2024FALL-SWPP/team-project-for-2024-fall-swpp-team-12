@@ -217,7 +217,7 @@ public class PlayerController : MonoBehaviour
     // Functions for Spatial Condition Check //
     private void HandleMovementInput(string command) //get absolute orientation from Command Input (or stand still)
     {
-        if (TurnManager.turnManager.turnClock || isTimeRewinding) return; //***** active when Not executing Actions and Not Time Rewinding Mode.
+        if (TurnManager.turnManager.CLOCK || isTimeRewinding) return; //***** active when Not executing Actions and Not Time Rewinding Mode.
 
         curKey = command;
         switch (command)
@@ -369,15 +369,16 @@ public class PlayerController : MonoBehaviour
         listCommandLog.Add(curKey); //command log update
         seq = 0; //of player
         sm.SetState(listCurTurn[seq]); //of player
-        TurnManager.turnManager.turnClock = true;
+        //START CLOCK
+        TurnManager.turnManager.CLOCK = true;
     }
 
 
 
-// Functions for Time Rewind //
-private void ToggleTimeRewindMode()
+    // Functions for Time Rewind //
+    private void ToggleTimeRewindMode()
     {
-        if (TurnManager.turnManager.turnClock) return; //***** active when Not executing Actions.
+        if (TurnManager.turnManager.CLOCK) return; //***** active when Not executing Actions.
 
         if (!isTimeRewinding) //when OFF
         {
@@ -421,7 +422,7 @@ private void ToggleTimeRewindMode()
 
     private void HandleTimeRewindInput(string command)
     {
-        if (TurnManager.turnManager.turnClock || !isTimeRewinding) return; //***** active when Time Rewinding Mode.
+        if (TurnManager.turnManager.CLOCK || !isTimeRewinding) return; //***** active when Time Rewinding Mode.
         switch (command)
         {
             case "q": // go to the Past (turn -1)
