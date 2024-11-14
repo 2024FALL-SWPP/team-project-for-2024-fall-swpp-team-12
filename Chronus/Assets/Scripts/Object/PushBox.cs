@@ -7,15 +7,19 @@ public class PushBox : MonoBehaviour
     public float moveDistance = 2.0f;
     private Rigidbody rb;
     public float checkDistance = 0.5f;
-    private Vector3 lastSavedPosition;
-     private bool wasOnGround = false;
 
+    public Vector3 boxCurPos;
     // Time rewind logs
-    public List<string> listBoxCommandLog;
-    public List<(Vector3, bool)> listBoxStateLog; // (position, isOnGround)
+    public List<Vector3> listBoxPosLog; // position
+    private int maxTurn = 0; //Time Rewinding Mode
+    private int curTurn = 0; //for simultaneous(parallel) Time Rewinding Mode managing, local(private) turn variable is need for each object.
+    private bool isTimeRewinding = false; //for simultaneous(parallel) Time Rewinding Mode managing, local(private) turn variable is need for each object.
 
     private void Start()
     {
+        InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindModeForBox;
+        InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInputForBox;
+
         rb = gameObject.GetComponent<Rigidbody>();
         if (rb == null)
         {
@@ -24,74 +28,101 @@ public class PushBox : MonoBehaviour
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
 
-        // Initialize time rewind logs
-        listBoxCommandLog = new List<string>();
-        listBoxStateLog = new List<(Vector3, bool)>();
-
-        lastSavedPosition = transform.position;
-        wasOnGround = true;
-        SaveCurrentState("Initialize"); // Save initial state
+        // Initialize log
+        listBoxPosLog = new List<Vector3>() { transform.position };
     }
 
     private void Update()
     {
-        bool isOnGround = false;
-        
-        // Raycast downward to check if there's a "Ground Floor" or "First Floor" tile beneath the box
+        if (TurnManager.turnManager.turnClock)
+        {
+            if (!TurnManager.turnManager.dicTurnCheck["Box"])
+            {
+                SaveCurrentPos();
+                TurnManager.turnManager.dicTurnCheck["Box"] = true;
+            }
+        }
+
+        // Demo falling code. need fix.
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance))
         {
             if (hit.collider.CompareTag("GroundFloor") || hit.collider.CompareTag("FirstFloor"))
             {
                 // Tile detected, keep Y position constraint to keep the box stable
                 rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                isOnGround = true;
             }
         }
         else
         {
-            // If no tile is detected or the tile is not GroundFloor/FirstFloor, allow the box to fall
+            // If no tile is detected, allow the box to fall
             rb.constraints = RigidbodyConstraints.FreezeRotation;
         }
-        
-        // Save the state if the position has changed or if there is a ground state change
-        if (isOnGround && (transform.position != lastSavedPosition || !wasOnGround))
-        {
-            SaveCurrentState(isOnGround ? "Landed" : "Location Update");
-        }
-        
-        // Update ground status
-        wasOnGround = isOnGround;
     }
 
-    private void SaveCurrentState(string command)
+    private void SaveCurrentPos()
     {
-        // Save state only if position or stability status changes
-        if (transform.position != lastSavedPosition || listBoxCommandLog.Count == 0 || listBoxCommandLog[^1] != command)
-        {
-            // Log the command and current position
-            string logEntry = $"{command} {transform.position}";
-            listBoxCommandLog.Add(logEntry);
+        listBoxPosLog.Add(this.transform.position);
+    }
 
-            bool isOnGround = (rb.constraints & RigidbodyConstraints.FreezePositionY) != 0;
-            listBoxStateLog.Add((transform.position, isOnGround));
-            
-            // Update the last saved position
-            lastSavedPosition = transform.position;
+    public void RestorePos(int turnIndex)
+    {
+        transform.position = listBoxPosLog[turnIndex];
+    }
+    public void RemoveLog(int startIndex)
+    {
+        listBoxPosLog.RemoveRange(startIndex + 1, listBoxPosLog.Count - startIndex - 1); // turn 0: one initial element
+    }
+
+
+
+    // Functions for Time Rewind //
+    private void ToggleTimeRewindModeForBox()
+    {
+        if (TurnManager.turnManager.CLOCK) return; //***** active when Not executing Actions.
+
+        if (!isTimeRewinding) //when OFF
+        {
+            maxTurn = TurnManager.turnManager.turn;
+            curTurn = maxTurn;
+            isTimeRewinding = true; //toggle ON
+        }
+        else //when ON
+        {
+            if (curTurn < maxTurn)
+            {
+                RemoveLog(curTurn);
+                boxCurPos = transform.position;
+            }
+            isTimeRewinding = false; //toggle OFF
         }
     }
 
-    public void RestoreState(int turnIndex)
-    {
-        if (turnIndex < listBoxStateLog.Count)
-        {
-            var state = listBoxStateLog[turnIndex];
-            transform.position = state.Item1;
-            bool isOnGround = state.Item2;
 
-            // Restore Y constraint based on whether the box was on the ground
-            rb.constraints = isOnGround
-                ? RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY
-                : RigidbodyConstraints.FreezeRotation;
+
+    private void HandleTimeRewindInputForBox(string command)
+    {
+        if (TurnManager.turnManager.CLOCK || !isTimeRewinding) return; //***** active when Time Rewinding Mode.
+        switch (command)
+        {
+            case "q": // go to the Past (turn -1)
+                if (curTurn >= 1)
+                {
+                    GoToThePastOrFuture(-1);
+                }
+                break;
+
+            case "e": // go to the Future (turn +1)
+                if (curTurn <= maxTurn - 1)
+                {
+                    GoToThePastOrFuture(1);
+                }
+                break;
         }
+    }
+    private void GoToThePastOrFuture(int turnDelta)
+    {
+        curTurn += turnDelta;
+        //position tracking log -> preview the current position(and rotation)
+        RestorePos(curTurn);
     }
 }

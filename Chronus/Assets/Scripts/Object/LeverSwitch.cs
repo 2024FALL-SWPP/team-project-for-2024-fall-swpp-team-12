@@ -12,16 +12,21 @@ public class LeverSwitch : MonoBehaviour
     private Quaternion forwardRotation; 
     private Quaternion backwardRotation;
     public Vector3 canToggleDirection;
-    //private bool playerAdjacent = false; 
 
-    //private GameObject player;
+    public bool doPushLever = false;
 
     // Time rewind logs
-    public List<string> listLeverCommandLog; 
-    public List<(Quaternion, bool, Vector3)> listLeverStateLog;
+    public List<(Quaternion, bool, Vector3)> listLeverStateLog; //(stick bias, isActivated, canToggleDirection)
+    public List<string> listLeverCommandLog;
+    private int maxTurn = 0; //Time Rewinding Mode
+    private int curTurn = 0; //for simultaneous(parallel) Time Rewinding Mode managing, local(private) turn variable is need for each object.
+    private bool isTimeRewinding = false; //for simultaneous(parallel) Time Rewinding Mode managing, local(private) turn variable is need for each object.
 
     private void Start()
     {
+        InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindModeForLever;
+        InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInputForLever;
+
         forwardRotation = Quaternion.Euler(130, 0, 0);
         backwardRotation = Quaternion.Euler(50, 0, 0);
 
@@ -41,60 +46,28 @@ public class LeverSwitch : MonoBehaviour
 
 
         listLeverCommandLog = new List<string>();
-        listLeverStateLog = new List<(Quaternion, bool, Vector3)>();
+        listLeverStateLog = new List<(Quaternion, bool, Vector3)>() { (transform.GetChild(1).transform.rotation, isActivated, canToggleDirection) };
     }
-
-    /*
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerAdjacent = true;
-            player = other.gameObject;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerAdjacent = false;
-            player = null;
-        }
-    }
-    */
 
     private void Update()
     {
-        /*
-        if (playerAdjacent && PlayerIsTryingToMoveTowardsLever())
+        if (TurnManager.turnManager.turnClock)
         {
-            ToggleLever();
+            if (doPushLever)
+            {
+                doPushLever = false;
+                ToggleLever();
+            }
+            else
+            {
+                if (!TurnManager.turnManager.dicTurnCheck["Lever"])
+                {
+                    SaveCurrentState("No Update");
+                    TurnManager.turnManager.dicTurnCheck["Lever"] = true;
+                }
+            }
         }
-        */
     }
-
-    /*
-    private bool PlayerIsTryingToMoveTowardsLever()
-    {
-        if (player == null) return false;
-
-        // Calculate the direction from the player to the lever
-        Vector3 directionToLever = (lever.position - player.transform.position).normalized;
-
-        // Get the player's movement input direction
-        Vector3 playerInputDirection = Vector3.zero;
-
-        // Capture player input continuously
-        if (Input.GetKey(KeyCode.W)) playerInputDirection = Vector3.forward;
-        else if (Input.GetKey(KeyCode.S)) playerInputDirection = Vector3.back;
-        else if (Input.GetKey(KeyCode.A)) playerInputDirection = Vector3.left;
-        else if (Input.GetKey(KeyCode.D)) playerInputDirection = Vector3.right;
-
-        // Check if the player is pressing in the direction of the lever
-        return Vector3.Dot(directionToLever, playerInputDirection) > 0.5f;
-    }
-    */
 
     public void ToggleLever()
     {
@@ -110,6 +83,8 @@ public class LeverSwitch : MonoBehaviour
 
         // Log lever toggle state
         SaveCurrentState(isActivated ? "Activate" : "Deactivate");
+
+        TurnManager.turnManager.dicTurnCheck["Lever"] = true;
     }
 
     private void SaveCurrentState(string command)
@@ -135,5 +110,60 @@ public class LeverSwitch : MonoBehaviour
                 idx++;
             }
         }
+    }
+    public void RemoveLog(int startIndex)
+    {
+        listLeverCommandLog.RemoveRange(startIndex, listLeverCommandLog.Count - startIndex); // turn 0: no element
+        listLeverStateLog.RemoveRange(startIndex + 1, listLeverStateLog.Count - startIndex - 1); // turn 0: one initial element
+    }
+
+    // Functions for Time Rewind //
+    private void ToggleTimeRewindModeForLever()
+    {
+        if (TurnManager.turnManager.CLOCK) return; //***** active when Not executing Actions.
+
+        if (!isTimeRewinding) //when OFF
+        {
+            maxTurn = TurnManager.turnManager.turn;
+            curTurn = maxTurn;
+            isTimeRewinding = true; //toggle ON
+        }
+        else //when ON
+        {
+            if (curTurn < maxTurn)
+            {
+                RemoveLog(curTurn);
+            }
+            isTimeRewinding = false; //toggle OFF
+        }
+    }
+
+
+
+    private void HandleTimeRewindInputForLever(string command)
+    {
+        if (TurnManager.turnManager.CLOCK || !isTimeRewinding) return; //***** active when Time Rewinding Mode.
+        switch (command)
+        {
+            case "q": // go to the Past (turn -1)
+                if (curTurn >= 1)
+                {
+                    GoToThePastOrFuture(-1);
+                }
+                break;
+
+            case "e": // go to the Future (turn +1)
+                if (curTurn <= maxTurn - 1)
+                {
+                    GoToThePastOrFuture(1);
+                }
+                break;
+        }
+    }
+    private void GoToThePastOrFuture(int turnDelta)
+    {
+        curTurn += turnDelta;
+        //position tracking log -> preview the current position(and rotation)
+        RestoreState(curTurn);
     }
 }
