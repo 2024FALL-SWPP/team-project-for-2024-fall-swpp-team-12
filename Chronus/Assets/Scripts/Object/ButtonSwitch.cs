@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,7 +38,7 @@ public class ButtonSwitch : MonoBehaviour
         listButtonStateLog = new List<(Vector3, bool, int)>();
     }
 
-    /*
+    
     private void Update()
     {
         if (TurnManager.turnManager.firstCollisionCheck) //update when firstCollisionCheck
@@ -50,36 +49,16 @@ public class ButtonSwitch : MonoBehaviour
             }
             else
             {
-                TurnManager.turnManager.dicTurnCheck["Button"] = true;
-            }
-        }
-    }
-    */
-
-    private void Update()
-    {
-        if (TurnManager.turnManager.firstCollisionCheck) //update when firstCollisionCheck
-        {
-            if (isPressed)
-            {
                 int remainingTurns = (turnActivated + resetTurnCount) - TurnManager.turnManager.turn - 1;
-
+                
                 // Log the countdown if it's decreasing and has not been logged yet
                 if (remainingTurns > 0 && remainingTurns != lastLoggedCountdown)
                 {
                     listButtonCommandLog.Add($"{remainingTurns}");
                     lastLoggedCountdown = remainingTurns;
                 }
-
-                // If countdown reaches 0, reset the button
-                if (TurnManager.turnManager.turn >= turnActivated + resetTurnCount - 1)
-                {
-                    ResetButton();
-                }
-                else
-                {
-                    TurnManager.turnManager.dicTurnCheck["Button"] = true;
-                }
+                
+                TurnManager.turnManager.dicTurnCheck["Button"] = true;
             }
         }
     }
