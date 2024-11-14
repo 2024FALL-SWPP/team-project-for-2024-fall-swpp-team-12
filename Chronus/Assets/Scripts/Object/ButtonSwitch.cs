@@ -9,15 +9,18 @@ public class ButtonSwitch : MonoBehaviour
     private int idx;
     private Vector3 plateOffPosition;
     private Vector3 plateOnPosition;
+
+    private bool doPressButton = false;
     public bool isPressed = false;
 
-    public int resetTurnCount = 4;
-    private int turnActivated = 0;
-    private int lastLoggedCountdown = -1;  // Tracks the last countdown logged
+    private int resetTurnCount = 4; //treated as constant (hyperparameter)
+    public int turnActivated = -1; //variable.
 
     // Time rewind logs
-    public List<string> listButtonCommandLog;
     public List<(Vector3, bool, int)> listButtonStateLog; // (position, isPressed, turnActivated)
+
+    public List<string> listButtonCommandLog; //visualizing detail for us, developers.
+    private int lastLoggedCountdown = -1;  // Tracks the last countdown logged
 
     private void Start()
     {
@@ -49,25 +52,61 @@ public class ButtonSwitch : MonoBehaviour
             }
             else
             {
-                int remainingTurns = (turnActivated + resetTurnCount) - TurnManager.turnManager.turn - 1;
-                
-                // Log the countdown if it's decreasing and has not been logged yet
-                if (remainingTurns > 0 && remainingTurns != lastLoggedCountdown)
-                {
-                    listButtonCommandLog.Add($"{remainingTurns}");
-                    lastLoggedCountdown = remainingTurns;
-                }
-                
                 TurnManager.turnManager.dicTurnCheck["Button"] = true;
             }
         }
     }
-    
+    */
     private void OnTriggerEnter(Collider other)
     {
-        if (!isPressed && (other.CompareTag("Player") || other.CompareTag("Box"))) //update when firstCollisionCheck
+        if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
         {
-            PressButton();
+            doPressButton = true; //start pressing the button
+        }
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
+        {
+            doPressButton = true; //if player stands still on the button -> keep pressing
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
+        {
+            doPressButton = false; //left the button
+        }
+    }
+
+    private void Update()
+    {
+        if (TurnManager.turnManager.firstCollisionCheck) //update when firstCollisionCheck
+        {
+            if (doPressButton)
+            {
+                doPressButton = false;
+                PressButton(); //turnActivated update.
+            }
+
+            int remainingTurns = (turnActivated + resetTurnCount) - TurnManager.turnManager.turn - 1;
+
+            // Log the countdown if it's decreasing and has not been logged yet
+            if (isPressed && (remainingTurns > 0) && (remainingTurns != lastLoggedCountdown))
+            {
+                listButtonCommandLog.Add($"{remainingTurns}");
+                lastLoggedCountdown = remainingTurns;
+            }
+
+            // If countdown reaches 0, reset the button
+            if (isPressed && (remainingTurns <= 0))
+            {
+                ResetButton();
+            }
+            else
+            {
+                TurnManager.turnManager.dicTurnCheck["Button"] = true;
+            }
         }
     }
 
@@ -82,12 +121,14 @@ public class ButtonSwitch : MonoBehaviour
         this.transform.GetChild(1).transform.position = plateOnPosition;
 
         turnActivated = TurnManager.turnManager.turn + 1; //get value before turn update, so +1 (indicates next turn)
-        isPressed = true;
-        TurnManager.turnManager.dicTurnCheck["Button"] = true;
+
+        if (!isPressed) isPressed = true;
 
         // Log button press state
         listButtonCommandLog.Add("Activated");
         lastLoggedCountdown = resetTurnCount;
+
+        TurnManager.turnManager.dicTurnCheck["Button"] = true;
     }
 
     private void ResetButton()
@@ -100,7 +141,7 @@ public class ButtonSwitch : MonoBehaviour
         }
         this.transform.GetChild(1).transform.position = plateOffPosition;
 
-        turnActivated = 0;
+        turnActivated = -1; //idle state of turnActivated.
         isPressed = false;
         TurnManager.turnManager.dicTurnCheck["Button"] = true;
 
@@ -109,11 +150,10 @@ public class ButtonSwitch : MonoBehaviour
         lastLoggedCountdown = -1; // Reset countdown tracking
     }
 
-    private void SaveCurrentState(string command)
+    private void SaveCurrentState()
     {
         // Log the command and current state
-        listButtonCommandLog.Add(command);
-        listButtonStateLog.Add((transform.position, isPressed, turnActivated));
+        listButtonStateLog.Add((this.transform.position, isPressed, turnActivated));
     }
 
     public void RestoreState(int turnIndex)
