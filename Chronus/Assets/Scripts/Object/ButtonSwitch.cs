@@ -41,22 +41,8 @@ public class ButtonSwitch : MonoBehaviour
         listButtonStateLog = new List<(Vector3, bool, int)>();
     }
 
-    
-    private void Update()
-    {
-        if (TurnManager.turnManager.firstCollisionCheck) //update when firstCollisionCheck
-        {
-            if (isPressed  &&  TurnManager.turnManager.turn >= turnActivated + resetTurnCount - 1)
-            {
-                ResetButton();
-            }
-            else
-            {
-                TurnManager.turnManager.dicTurnCheck["Button"] = true;
-            }
-        }
-    }
-    */
+  
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
