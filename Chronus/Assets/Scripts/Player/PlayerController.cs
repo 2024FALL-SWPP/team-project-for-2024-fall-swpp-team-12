@@ -11,13 +11,8 @@ public class PlayerController : MonoBehaviour
     public bool isPhantomExists = false;
 
     public Animator animator; // animator.
+    
 
-    
-    //Input
-    private string curKey = "r"; //Command Log, it will be written on.
-    public bool isTimeRewinding = false; //Time Rewinding Mode Toggle
-    private int maxTurn = 0; //Time Rewinding Mode
-    
 
 
     //Input & Spatial Condition -> rotate/hop Direction
@@ -48,6 +43,11 @@ public class PlayerController : MonoBehaviour
 
     public List<string> listCommandLog; //command log for time reverse(objects) and phantom action(copy commands)
     public List<(Vector3, Quaternion)> listPosLog; //position tracking log for time reverse(reset position)
+
+
+    private string curKey = "r"; //Command Log, it will be written on.
+    private int maxTurn = 0; //Time Rewinding Mode
+    private int curTurn = 0; //for simultaneous(parallel) Time Rewinding Mode managing, local(private) turn variable is need for each object.
 
 
 
@@ -217,7 +217,7 @@ public class PlayerController : MonoBehaviour
     // Functions for Spatial Condition Check //
     private void HandleMovementInput(string command) //get absolute orientation from Command Input (or stand still)
     {
-        if (TurnManager.turnManager.CLOCK || isTimeRewinding) return; //***** active when Not executing Actions and Not Time Rewinding Mode.
+        if (TurnManager.turnManager.CLOCK || TurnManager.turnManager.isTimeRewinding) return; //***** active when Not executing Actions and Not Time Rewinding Mode.
 
         curKey = command;
         switch (command)
@@ -287,7 +287,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (hitWall.collider.gameObject.GetComponent<LeverSwitch>().canToggleDirection == rayDirection) //can push lever (right direction)
                 {
-                    hitWall.collider.gameObject.GetComponent<LeverSwitch>().ToggleLever(); //push lever!!!
+                    hitWall.collider.gameObject.GetComponent<LeverSwitch>().doPushLever = true; //push lever!!!
                     ChooseAction(listStay, listTurn); //we should set animation trigger on Enter and Exit of PlayerIdle state.
                     StartAction(); //cycle starts!!!
                 }
@@ -380,7 +380,7 @@ public class PlayerController : MonoBehaviour
     {
         if (TurnManager.turnManager.CLOCK) return; //***** active when Not executing Actions.
 
-        if (!isTimeRewinding) //when OFF
+        if (!TurnManager.turnManager.isTimeRewinding) //when OFF
         {
             PhantomController.phantomController.listCommandOrder.Clear();
             PhantomController.phantomController.gameObject.SetActive(false);
@@ -391,15 +391,16 @@ public class PlayerController : MonoBehaviour
             //Destroy(phantomInstance);
             isPhantomExists = false;
             maxTurn = TurnManager.turnManager.turn;
-            isTimeRewinding = true; //toggle ON
+            curTurn = maxTurn;
+            TurnManager.turnManager.isTimeRewinding = true; //toggle ON
         }
         else //when ON
         {
-            if (TurnManager.turnManager.turn < maxTurn)
+            if (curTurn < maxTurn)
             {
-                int startIndex = TurnManager.turnManager.turn;
-                PhantomController.phantomController.transform.position = this.listPosLog[startIndex].Item1;
-                PhantomController.phantomController.transform.rotation = this.listPosLog[startIndex].Item2;
+                //need refactoring I think (RestorePosNRot(), RemoveLog(), SummonPhantom(), KillPhantom()) 
+                PhantomController.phantomController.transform.position = this.listPosLog[curTurn].Item1;
+                PhantomController.phantomController.transform.rotation = this.listPosLog[curTurn].Item2;
                 PhantomController.phantomController.playerCurPos = PhantomController.phantomController.transform.position;
                 PhantomController.phantomController.playerCurRot = PhantomController.phantomController.transform.rotation;
                 PhantomController.phantomController.gameObject.SetActive(true);
@@ -407,14 +408,17 @@ public class PlayerController : MonoBehaviour
                 //phantomScript = phantomInstance.GetComponent<PhantomController>();
                 isPhantomExists = true;
                 // Make Copy list of Command Orders for phantom
-                PhantomController.phantomController.listCommandOrder.AddRange(listCommandLog.GetRange(startIndex, listCommandLog.Count - startIndex)); //copy!!!
+                PhantomController.phantomController.listCommandOrder.AddRange(listCommandLog.GetRange(curTurn, listCommandLog.Count - curTurn)); //copy!!!
                 PhantomController.phantomController.order = 0;
                 //phantomScript.listCommandOrder.AddRange(listCommandLog.GetRange(startIndex, listCommandLog.Count - startIndex)); //copy!!!
-                listCommandLog.RemoveRange(startIndex, listCommandLog.Count - startIndex); // turn 0: no element in listCommandLog
-                listPosLog.RemoveRange(startIndex + 1, listPosLog.Count - startIndex - 1); // turn 0: one initial element in listPosLog
-                
+                listCommandLog.RemoveRange(curTurn, listCommandLog.Count - curTurn); // turn 0: no element in listCommandLog
+                listPosLog.RemoveRange(curTurn + 1, listPosLog.Count - curTurn - 1); // turn 0: one initial element in listPosLog
+
+                TurnManager.turnManager.turn = curTurn;
+                playerCurPos = this.transform.position;
+                playerCurRot = this.transform.rotation;
             }
-            isTimeRewinding = false; //toggle OFF
+            TurnManager.turnManager.isTimeRewinding = false; //toggle OFF
         }
     }
 
@@ -422,11 +426,11 @@ public class PlayerController : MonoBehaviour
 
     private void HandleTimeRewindInput(string command)
     {
-        if (TurnManager.turnManager.CLOCK || !isTimeRewinding) return; //***** active when Time Rewinding Mode.
+        if (TurnManager.turnManager.CLOCK || !TurnManager.turnManager.isTimeRewinding) return; //***** active when Time Rewinding Mode.
         switch (command)
         {
             case "q": // go to the Past (turn -1)
-                if (TurnManager.turnManager.turn >= 1)
+                if (curTurn >= 1)
                 {
                     GoToThePastOrFuture(-1);
                 }
@@ -437,7 +441,7 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case "e": // go to the Future (turn +1)
-                if (TurnManager.turnManager.turn <= maxTurn - 1)
+                if (curTurn <= maxTurn - 1)
                 {
                     GoToThePastOrFuture(1);
                 }
@@ -450,13 +454,11 @@ public class PlayerController : MonoBehaviour
     }
     private void GoToThePastOrFuture(int turnDelta)
     {
-        TurnManager.turnManager.turn += turnDelta;
+        curTurn += turnDelta;
         //print(TurnManager.turnManager.turn);
         //position tracking log -> preview the current position(and rotation)
-        this.transform.position = listPosLog[TurnManager.turnManager.turn].Item1;
-        this.transform.rotation = listPosLog[TurnManager.turnManager.turn].Item2;
-        playerCurPos = this.transform.position;
-        playerCurRot = this.transform.rotation;
+        this.transform.position = listPosLog[curTurn].Item1;
+        this.transform.rotation = listPosLog[curTurn].Item2;
     }
 
     public void BlockInput()
