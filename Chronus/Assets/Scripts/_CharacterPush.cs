@@ -1,11 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerPush : MonoBehaviour
+public class _CharacterPush : MonoBehaviour
 {
-    public static PlayerPush playerPush;
 
+    // This script is not used.
+    
     public float pushDistance = 2f;
     public float jumpHeight = 2f;
     public float heightOffset = 0.5f;
@@ -14,12 +14,6 @@ public class PlayerPush : MonoBehaviour
     public bool canRideBox = false;
 
     private int layerMask;
-
-    private void Awake() //singleton
-    {
-        if (PlayerPush.playerPush == null) { PlayerPush.playerPush = this; }
-    }
-
     private void Start()
     {
         layerMask = 1 << 0;
