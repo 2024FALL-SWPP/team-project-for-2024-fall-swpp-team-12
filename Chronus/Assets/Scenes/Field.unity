@@ -1779,9 +1779,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6119d7709304ddb49a3a6b51664cb84e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platforms:
-  - {fileID: 1724060629}
+  platformStates:
+  - platform: {fileID: 1724060629}
+    isInitiallyActive: 0
   canToggleDirection: {x: 0, y: 0, z: 0}
+  doPushLever: 0
+  listLeverCommandLog: []
 --- !u!65 &723372658
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1931,6 +1934,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
   m_PrefabInstance: {fileID: 736736397}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &804359033 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4137369883225489573, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
+  m_PrefabInstance: {fileID: 272630103}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &804359038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 804359033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27e9fcd32fd104b7999f2c3bc75f24d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pushDistance: 2
+  jumpHeight: 1
+  heightOffset: 0.5
+  canPushBox: 0
+  canRideBox: 0
 --- !u!1001 &844742001
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2400,6 +2425,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0270982a7ba4ab24eb278822794059c8, type: 3}
+--- !u!1 &977095729 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
+  m_PrefabInstance: {fileID: 1483997798}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1091019158
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3442,6 +3472,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveDistance: 2
   checkDistance: 0.5
+  boxCurPos: {x: 0, y: 0, z: 0}
+  listBoxPosLog: []
 --- !u!54 &1545049539
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3746,6 +3778,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turn: 0
+  CLOCK: 0
+  isTimeRewinding: 0
+  idleClock: 1
   turnClock: 0
   firstCollisionCheck: 0
   lateTurnClock: 0
@@ -4993,10 +5028,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a901faebb0058488865542239a63ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platforms:
-  - {fileID: 1798994305}
+  platformStates:
+  - platform: {fileID: 977095729}
+    isInitiallyActive: 1
+  - platform: {fileID: 1798994305}
+    isInitiallyActive: 0
   isPressed: 0
-  resetTurnCount: 4
+  resetTurnCount: 1
+  turnActivated: -1
   listButtonCommandLog: []
 --- !u!54 &2112867951
 Rigidbody:
