@@ -13,7 +13,7 @@ public class ButtonSwitch : MonoBehaviour
     private bool doPressButton = false;
     public bool isPressed = false;
 
-    private int resetTurnCount = 9; //treated as constant (hyperparameter)
+    public int resetTurnCount = 9; //treated as constant (hyperparameter)
     public int turnActivated = -1; //variable.
 
     // Time rewind logs
