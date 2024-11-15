@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class PlatformState
+{
+    public GameObject platform;
+    public bool isInitiallyActive; //true means the platform starts inactive
+}
+
 public class ButtonSwitch : MonoBehaviour
 {
-    public GameObject[] platforms;
-    private bool[] boolPalette;
-    private int idx;
+    public List<PlatformState> platformStates; //pair platforms with their initial states
     private Vector3 plateOffPosition;
     private Vector3 plateOnPosition;
 
@@ -31,21 +36,15 @@ public class ButtonSwitch : MonoBehaviour
         plateOffPosition = this.transform.GetChild(1).transform.position;
         plateOnPosition = plateOffPosition + new Vector3(0,-0.1f,0);
 
-        boolPalette = new bool[1];
-        boolPalette[0] = true;
-
-        idx = 0;
-        foreach (GameObject platform in platforms)
+        // Initialize platforms based on their initial state
+        foreach (var platformState in platformStates)
         {
-            platform.SetActive(boolPalette[idx] ^ true);
-            idx++;
+            platformState.platform.SetActive(platformState.isInitiallyActive);
         }
 
         listButtonCommandLog = new List<string>();
         listButtonStateLog = new List<(Vector3, bool, int)>() { (this.transform.GetChild(1).transform.position, isPressed, turnActivated) };
     }
-
-  
 
     private void OnTriggerEnter(Collider other)
     {
@@ -108,11 +107,9 @@ public class ButtonSwitch : MonoBehaviour
 
     private void PressButton()
     {
-        idx = 0;
-        foreach (GameObject platform in platforms)
+        foreach (var platformState in platformStates)
         {
-            platform.SetActive(boolPalette[idx] ^ false);
-            idx++;
+            platformState.platform.SetActive(!platformState.isInitiallyActive); // Toggle state
         }
         this.transform.GetChild(1).transform.position = plateOnPosition;
 
@@ -128,11 +125,9 @@ public class ButtonSwitch : MonoBehaviour
 
     private void ResetButton()
     {
-        idx = 0;
-        foreach (GameObject platform in platforms)
+        foreach (var platformState in platformStates)
         {
-            platform.SetActive(boolPalette[idx] ^ true);
-            idx++;
+            platformState.platform.SetActive(platformState.isInitiallyActive); // Revert to initial state
         }
         this.transform.GetChild(1).transform.position = plateOffPosition;
 
@@ -160,11 +155,9 @@ public class ButtonSwitch : MonoBehaviour
         isPressed = state.Item2;
         turnActivated = state.Item3;
 
-        idx = 0;
-        foreach (GameObject platform in platforms)
+        foreach (var platformState in platformStates)
         {
-            platform.SetActive(boolPalette[idx] ^ !isPressed);
-            idx++;
+            platformState.platform.SetActive(isPressed ? !platformState.isInitiallyActive : platformState.isInitiallyActive);
         }
 
     }
