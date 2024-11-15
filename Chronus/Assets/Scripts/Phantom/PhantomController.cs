@@ -302,15 +302,41 @@ public class PhantomController : MonoBehaviour
         Debug.DrawRay(playerCurPos, rayDirection * rayDistance, Color.blue, 0.8f);
         if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance, layerMask)) //wall check
         {
-            if (/*tag is Lever  AND  can push lever by this side*/false) //lever.
+            if (hitWall.collider.tag == "Lever") //lever. TODO: needs to check if player operates the same lever
             {
-                ChooseAction(listStay, listTurn); //we should set animation trigger on Enter and Exit of PlayerIdle state.
-                StartAction(); //cycle starts!!!
+                if (hitWall.collider.gameObject.GetComponent<LeverSwitch>().canToggleDirection == rayDirection) //can push lever (right direction)
+                {
+                    hitWall.collider.gameObject.GetComponent<LeverSwitch>().doPushLever = true; //push lever!!!
+                    ChooseAction(listStay, listTurn); //we should set animation trigger on Enter and Exit of PlayerIdle state.
+                    StartAction(); //cycle starts!!!
+                }
             }
-            else if (/*tag is box  AND  can push box by this side*/false) //box.
+            else if (hitWall.collider.tag == "Box") //box. TODO: needs to check if player pushes the same box
             {
-                ChooseAction(listMoveForward, listMoveSideRear); //we should set animation trigger on Enter and Exit of PlayerMove state.
-                StartAction(); //cycle starts!!!
+                PhantomPush.phantomPush.TryPush(rayDirection); //push box!!!
+                if (PhantomPush.phantomPush.canPushBox)
+                {
+                    ChooseAction(listMoveForward, listMoveSideRear); //we should use new state (like playerpush ..) and animation trigger on Enter and Exit of that state.
+                    StartAction(); //cycle starts!!!
+                }
+                else
+                {
+                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance + 1.0f, layerMask)) //available to jump over
+                    {
+                        curHopDir = 1.0f; //Jump Over
+                        ChooseAction(listHopForward, listHopSideRear);
+                        StartAction(); //cycle starts!!!
+                    }
+                    else //if not
+                    {
+                        if (curTurnAngle != 0.0f) //if wall is not in front of player, just turn(rotate) in its place (turn update happens.)
+                        {
+                            listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
+                            StartAction(); //cycle starts!!!
+                        }
+                        //if wall is in front of player, no action and no turn update.
+                    }
+                }
             }
             else if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance, layerMask)) //available to jump over
             {
