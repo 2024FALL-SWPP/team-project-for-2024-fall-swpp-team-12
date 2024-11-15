@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class LeverSwitch : MonoBehaviour
 {
-    public GameObject[] platforms;
-    private bool[] boolPalette;
-    private int idx;
-
+    public List<PlatformState> platformStates; //pair platforms with their initial states
     private bool isActivated = false;
     private Quaternion forwardRotation; 
     private Quaternion backwardRotation;
@@ -34,16 +31,11 @@ public class LeverSwitch : MonoBehaviour
         this.transform.GetChild(1).transform.rotation = backwardRotation;
         canToggleDirection = this.transform.forward;
 
-        boolPalette = new bool[1];
-        boolPalette[0] = true;
-
-        idx = 0;
-        foreach (GameObject platform in platforms)
+        // Initialize platforms based on their initial state
+        foreach (var platformState in platformStates)
         {
-            platform.SetActive(boolPalette[idx] ^ !isActivated);
-            idx++;
+            platformState.platform.SetActive(platformState.isInitiallyActive);
         }
-
 
         listLeverCommandLog = new List<string>();
         listLeverStateLog = new List<(Quaternion, bool, Vector3)>() { (transform.GetChild(1).transform.rotation, isActivated, canToggleDirection) };
@@ -74,11 +66,10 @@ public class LeverSwitch : MonoBehaviour
         isActivated = !isActivated;
         this.transform.GetChild(1).transform.rotation = isActivated ? forwardRotation : backwardRotation;
         canToggleDirection = -canToggleDirection;
-        idx = 0;
-        foreach (GameObject platform in platforms)
+
+        foreach (var platformState in platformStates)
         {
-            platform.SetActive(boolPalette[idx] ^ !isActivated);
-            idx++;
+            platformState.platform.SetActive(platformState.isInitiallyActive ^ isActivated);
         }
 
         // Log lever toggle state
@@ -103,11 +94,9 @@ public class LeverSwitch : MonoBehaviour
             isActivated = state.Item2;
             canToggleDirection = state.Item3;
 
-            idx = 0;
-            foreach (GameObject platform in platforms)
+            foreach (var platformState in platformStates)
             {
-                platform.SetActive(boolPalette[idx] ^ !isActivated);
-                idx++;
+                platformState.platform.SetActive(platformState.isInitiallyActive ^ isActivated);
             }
         }
     }
