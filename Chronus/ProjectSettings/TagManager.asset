@@ -10,6 +10,7 @@ TagManager:
   - GroundFloor
   - FirstFloor
   - Lever
+  - MovingObstacle
   layers:
   - Default
   - TransparentFX
