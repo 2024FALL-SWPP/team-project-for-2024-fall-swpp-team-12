@@ -41,25 +41,27 @@ public class Box : MonoBehaviour
     {
         // I guess it's not okay to just simply put this here, but it's temporary.
         // There MUST be a problem because of this.
-        isMoveComplete = true; 
+        isMoveComplete = true;
     }
     public bool TryMove(Vector3 direction)
     {
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance))
         {
-            if (hit.collider.CompareTag("Obstacle") || hit.collider.CompareTag("Lever")) // need "Obstacle" tag for all walls.
+            if (hit.collider.CompareTag("Obstacle") || // need "Obstacle" tag for all walls.
+                hit.collider.CompareTag("Lever") ||
+                hit.collider.CompareTag("MovingObstacle")) 
             {
                 return false;
             }
         }
 
         StartCoroutine(SmoothMove(direction * moveDistance));
-        return true; 
+        return true;
     }
 
     private IEnumerator SmoothMove(Vector3 direction)
     {
-        float moveSpeed = 3.0f; 
+        float moveSpeed = 3.0f;
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = startPosition + direction;
 
@@ -69,7 +71,7 @@ public class Box : MonoBehaviour
             yield return null;
         }
 
-        transform.position = targetPosition; 
+        transform.position = targetPosition;
         //isMoveComplete = true;
 
         // Also, need to implement this: but has to be changed

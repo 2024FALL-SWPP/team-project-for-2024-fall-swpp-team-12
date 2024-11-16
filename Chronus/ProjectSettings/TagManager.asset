@@ -10,9 +10,9 @@ TagManager:
   - GroundFloor
   - FirstFloor
   - Lever
+  - MovingObstacle
   - GoalTile
   - StartTile
-  - Wall
   layers:
   - Default
   - TransparentFX

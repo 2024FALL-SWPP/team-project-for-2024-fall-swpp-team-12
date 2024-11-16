@@ -5,7 +5,7 @@ using System.Linq;
 
 public class TurnManager : MonoBehaviour
 {
-    public static TurnManager turnManager;
+    public static TurnManager turnManager; // Singleton
     public int turn = 0;
     public bool CLOCK = false;
     public PlayerController player;
@@ -16,7 +16,7 @@ public class TurnManager : MonoBehaviour
     public List<Button> buttonList = new();
     public List<Lever> leverList = new();
     public List<MovingObstacle> obstacleList = new();
-    private void Awake() // Singleton
+    private void Awake() 
     {
         if (TurnManager.turnManager == null) { TurnManager.turnManager = this; }
     }
@@ -28,6 +28,7 @@ public class TurnManager : MonoBehaviour
 
     void Update()
     {
+        // Starting a turn is done at PlayerController, by StartTurn()
         if (CheckAllMoveComplete())
         {
             EndTurn();
@@ -35,7 +36,30 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    private bool CheckAllMoveComplete()
+    public void StartTurn() 
+    {
+        Debug.Log($"Turn {turn} started");
+        CLOCK = true;
+        if (phantom.isPhantomExisting) phantom.AdvanceTurn();
+        boxList.ForEach(box => box.AdvanceTurn());
+        leverList.ForEach(lever => lever.AdvanceTurn());
+        buttonList.ForEach(button => button.AdvanceTurn());
+        obstacleList.ForEach(obstacle => obstacle.AdvanceTurn());
+    }
+
+    private void EndTurn()
+    {
+        Debug.Log($"Turn {turn} ended");
+        CLOCK = false;
+        turn++;
+        player.listPosLog.Add((player.playerCurPos, player.playerCurRot));
+        boxList.ForEach(box => box.SaveCurrentPos());
+        obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
+        // lever & button is done at its script, saving its states. 
+    }
+
+    private bool CheckAllMoveComplete() 
+    // Check if all movements of the current turn on the scene are complete.
     {
         return (
             player.isMoveComplete &&
@@ -57,25 +81,7 @@ public class TurnManager : MonoBehaviour
         obstacleList.ForEach(obstacle => obstacle.isMoveComplete = false);
     }
 
-    public void StartTurn() // this is called at PlayerController
-    {
-        CLOCK = true;
-        if (phantom.isPhantomExisting) phantom.AdvanceTurn();
-        boxList.ForEach(box => box.AdvanceTurn());
-        leverList.ForEach(lever => lever.AdvanceTurn());
-        buttonList.ForEach(button => button.AdvanceTurn());
-        obstacleList.ForEach(obstacle => obstacle.AdvanceTurn());
-    }
-
-    private void EndTurn()
-    {
-        CLOCK = false;
-        turn++;
-        player.listPosLog.Add((player.playerCurPos, player.playerCurRot));
-        boxList.ForEach(box => box.SaveCurrentPos());
-        //lever & button is done at its script. (state, no move ...) 
-    }
-
+    // maybe we need a separate ObjectManager to control all these lists & time rewind?
     private void InitializeObjectLists()
     {
         GameObject[] boxObjects = GameObject.FindGameObjectsWithTag("Box");
@@ -101,6 +107,14 @@ public class TurnManager : MonoBehaviour
             Button buttonScript = buttonObject.GetComponent<Button>();
             buttonList.Add(buttonScript);
         }
+
+        GameObject[] obstacleObjects = GameObject.FindGameObjectsWithTag("MovingObstacle");
+        obstacleList.Clear();
+        foreach (GameObject obstacleObject in obstacleObjects)
+        {
+            MovingObstacle obstacleScript = obstacleObject.GetComponent<MovingObstacle>();
+            obstacleList.Add(obstacleScript);
+        }
     }
 
     // below this, methods for time rewind 
@@ -120,7 +134,7 @@ public class TurnManager : MonoBehaviour
     {
         if (turn < player.maxTurn)
         {
-            // modifying the location
+            // modifying the location of the phantom
             phantom.gameObject.transform.position = player.listPosLog[turn].Item1;
             phantom.gameObject.transform.rotation = player.listPosLog[turn].Item2;
             phantom.playerCurPos = player.listPosLog[turn].Item1;
@@ -140,6 +154,7 @@ public class TurnManager : MonoBehaviour
             boxList.ForEach(box => box.RemoveLog(turn));
             leverList.ForEach(lever => lever.RemoveLog(turn));
             buttonList.ForEach(button => button.RemoveLog(turn));
+            obstacleList.ForEach(obstacle => obstacle.RemoveLog(turn));
         }
         player.isTimeRewinding = false;
     }
@@ -159,6 +174,6 @@ public class TurnManager : MonoBehaviour
         boxList.ForEach(box => box.RestorePos(turn));
         leverList.ForEach(lever => lever.RestoreState(turn));
         buttonList.ForEach(button => button.RestoreState(turn));
+        obstacleList.ForEach(obstacle => obstacle.RestorePos(turn));
     }
-
 }
