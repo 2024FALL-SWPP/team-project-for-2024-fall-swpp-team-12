@@ -25,24 +25,6 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
 
         targetTranslation = _CharacterBase.targetTranslation;
 
-        /*
-        if (_CharacterBase.playerCurRot.eulerAngles.y == 0.0f)
-        {
-            targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 1.0f * _CharacterBase.curHopDir, 2.0f); //exact target position.
-        }
-        else if (_CharacterBase.playerCurRot.eulerAngles.y == 90.0f)
-        {
-            targetTranslation = _CharacterBase.playerCurPos + new Vector3(2.0f, 1.0f * _CharacterBase.curHopDir, 0); //exact target position.
-        }
-        else if (_CharacterBase.playerCurRot.eulerAngles.y == 270.0f)
-        {
-            targetTranslation = _CharacterBase.playerCurPos + new Vector3(-2.0f, 1.0f * _CharacterBase.curHopDir, 0); //exact target position.
-        }
-        else if (_CharacterBase.playerCurRot.eulerAngles.y == 180.0f)
-        {
-            targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 1.0f * _CharacterBase.curHopDir, -2.0f); //exact target position.
-        }*/
-
         //small hop motion (part of animation yeah)
         smallHopRate = 3.0f;
         speedVer = _CharacterBase.moveSpeedVer * smallHopRate;
@@ -58,16 +40,13 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
     }
 
     public void OperateUpdate(CharacterBase sender)
-    {
+    {   
+        // There's no way. Need to capture targetTranslation changes. (to check if being pushed)
+        targetTranslation = _CharacterBase.targetTranslation;
+
         //small hop motion (log graph shape, non-linear it is.) (part of animation yeah)
-        if (!meetLocalMax)
-        {
-            speedVer -= Mathf.Log(speedVer + 1.0f) * 0.01f;
-        }
-        else
-        {
-            speedVer -= Mathf.Log(-speedVer + 1.0f) * 0.01f;
-        }
+        if (!meetLocalMax) speedVer -= Mathf.Log(speedVer + 1.0f) * 0.01f;
+        else speedVer -= Mathf.Log(-speedVer + 1.0f) * 0.01f;
 
         if (_CharacterBase)
         {
@@ -75,7 +54,16 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
             _CharacterBase.transform.Translate(Vector3.up * _CharacterBase.curHopDir * hopStep);
 
             float moveStep = _CharacterBase.curSpeed * Time.deltaTime;
-            _CharacterBase.transform.Translate(Vector3.forward * moveStep);
+            if (_CharacterBase.pushDirection != Vector3.zero)
+            {   
+                Vector3 currentTranslation = _CharacterBase.transform.position;
+                Vector3 direction = (targetTranslation - currentTranslation).normalized;
+                _CharacterBase.transform.Translate(2f * direction * moveStep, Space.World);
+            }
+            else
+            {
+                _CharacterBase.transform.Translate(Vector3.forward * moveStep);
+            }
 
             //small hop motion (part of animation yeah)
             float smallHopStep = speedVer * Time.deltaTime;
@@ -92,20 +80,15 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
             }
         }
     }
-    public void DoneAction(CharacterBase sender) //just check for x and z (no need to check y gap)
+    public void DoneAction(CharacterBase sender) 
     {
         Vector3 currentTranslation = _CharacterBase.transform.position;
-        float gap = Mathf.Sqrt((_CharacterBase.playerCurPos.x - currentTranslation.x) * (_CharacterBase.playerCurPos.x - currentTranslation.x) + (_CharacterBase.playerCurPos.z - currentTranslation.z) * (_CharacterBase.playerCurPos.z - currentTranslation.z));
-        float planeDistance = Mathf.Sqrt((targetTranslation.x - currentTranslation.x)*(targetTranslation.x - currentTranslation.x) + (targetTranslation.z - currentTranslation.z)*(targetTranslation.z - currentTranslation.z));
-        if (planeDistance < 0.1f || gap >= 2.0f)
+        if (Vector3.Distance(currentTranslation, targetTranslation) < 0.2f)
         {
-            CompleteTranslation(targetTranslation);
+            _CharacterBase.transform.position = targetTranslation;
+            _CharacterBase.playerCurPos = _CharacterBase.transform.position;
             _CharacterBase.doneAction = true;
+            _CharacterBase.pushDirection = Vector3.zero;
         }
-    }
-    private void CompleteTranslation(Vector3 targetTranslation)
-    {
-        _CharacterBase.transform.position = targetTranslation;
-        _CharacterBase.playerCurPos = _CharacterBase.transform.position; //update current position information
     }
 }
