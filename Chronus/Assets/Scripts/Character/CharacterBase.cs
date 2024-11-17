@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class CharacterBase : MonoBehaviour
 {
+    public Vector3 targetTranslation { get; set; }
     public Animator animator;
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;

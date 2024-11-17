@@ -25,19 +25,19 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
 
         if (_CharacterBase.playerCurRot.eulerAngles.y == 0.0f)
         {
-            targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 0, 2.0f); //exact target position.
+            _CharacterBase.targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 0, 2.0f); //exact target position.
         }
         else if (_CharacterBase.playerCurRot.eulerAngles.y == 90.0f)
         {
-            targetTranslation = _CharacterBase.playerCurPos + new Vector3(2.0f, 0, 0); //exact target position.
+            _CharacterBase.targetTranslation = _CharacterBase.playerCurPos + new Vector3(2.0f, 0, 0); //exact target position.
         }
         else if (_CharacterBase.playerCurRot.eulerAngles.y == 270.0f)
         {
-            targetTranslation = _CharacterBase.playerCurPos + new Vector3(-2.0f, 0, 0); //exact target position.
+            _CharacterBase.targetTranslation = _CharacterBase.playerCurPos + new Vector3(-2.0f, 0, 0); //exact target position.
         }
         else if (_CharacterBase.playerCurRot.eulerAngles.y == 180.0f)
         {
-            targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 0, -2.0f); //exact target position.
+            _CharacterBase.targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 0, -2.0f); //exact target position.
         }
 
         //small hop motion (part of animation yeah)
