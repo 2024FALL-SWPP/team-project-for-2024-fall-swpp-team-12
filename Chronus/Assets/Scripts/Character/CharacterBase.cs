@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class CharacterBase : MonoBehaviour
 {
     public Vector3 targetTranslation { get; set; }
-    public float targetYRotation { get; set; }
+    public Vector3 targetDirection { get; set; }
     public Animator animator;
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
@@ -101,6 +101,7 @@ public abstract class CharacterBase : MonoBehaviour
                 break;
             case "r": // keep idle and pass turn
                 listCurTurn = listStay;
+                targetTranslation = playerCurPos;
                 StartAction();
                 break;
         }
@@ -117,19 +118,10 @@ public abstract class CharacterBase : MonoBehaviour
     protected void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset) //from HandleMovementInput() with local direction Array
     {
         targetTranslation = playerCurPos + rayOffset; //target position. (horizontal)
+        targetDirection = direction;
 
-        int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
+        int angleIndex = Mathf.RoundToInt(transform.eulerAngles.y / 90) % 4;
         curTurnAngle = angles[angleIndex]; //relative orientation!!
-
-        targetYRotation = playerCurRot.eulerAngles.y + curTurnAngle; //target rotation.
-        if (targetYRotation >= 360.0f)
-        {
-            targetYRotation -= 360.0f;
-        }
-        else if (targetYRotation < 0.0f)
-        {
-            targetYRotation += 360.0f;
-        }
 
         Debug.DrawRay(playerCurPos + rayOffset, transform.up * -rayDistance, Color.red, 0.8f);
         if (Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask)) //void check
