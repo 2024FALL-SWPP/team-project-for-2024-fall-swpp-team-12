@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class CharacterBase : MonoBehaviour
 {
     public Vector3 targetTranslation { get; set; }
+    public float targetYRotation { get; set; }
     public Animator animator;
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
@@ -115,8 +116,20 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset) //from HandleMovementInput() with local direction Array
     {
+        targetTranslation = playerCurPos + rayOffset; //target position. (horizontal)
+
         int angleIndex = Mathf.RoundToInt(this.transform.eulerAngles.y / 90) % 4;
         curTurnAngle = angles[angleIndex]; //relative orientation!!
+
+        targetYRotation = playerCurRot.eulerAngles.y + curTurnAngle; //target rotation.
+        if (targetYRotation >= 360.0f)
+        {
+            targetYRotation -= 360.0f;
+        }
+        else if (targetYRotation < 0.0f)
+        {
+            targetYRotation += 360.0f;
+        }
 
         Debug.DrawRay(playerCurPos + rayOffset, transform.up * -rayDistance, Color.red, 0.8f);
         if (Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask)) //void check
@@ -198,6 +211,7 @@ public abstract class CharacterBase : MonoBehaviour
             else if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance + 1.0f, layerMask)) //available to jump over
             {
                 curHopDir = 1.0f; //Jump Over
+                targetTranslation = playerCurPos + new Vector3(0, curHopDir, 0); //target readjust
                 ChooseAction(listHopForward, listHopSideRear);
                 StartAction(); //cycle starts!!!
             }
@@ -216,6 +230,7 @@ public abstract class CharacterBase : MonoBehaviour
             if (isUnderJump)
             {
                 curHopDir = -1.0f; //Jump Under
+                targetTranslation = playerCurPos + new Vector3(0, curHopDir, 0); //target readjust
                 ChooseAction(listHopForward, listHopSideRear);
                 isUnderJump = false;
             }
