@@ -194,6 +194,7 @@ public abstract class CharacterBase : MonoBehaviour
                     if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance + 1.0f, layerMask)) //available to jump over
                     {
                         curHopDir = 1.0f; //Jump Over
+                        targetTranslation += new Vector3(0, curHopDir, 0); //target readjust
                         ChooseAction(listHopForward, listHopSideRear);
                         StartAction(); //cycle starts!!!
                     }
@@ -211,7 +212,7 @@ public abstract class CharacterBase : MonoBehaviour
             else if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance + 1.0f, layerMask)) //available to jump over
             {
                 curHopDir = 1.0f; //Jump Over
-                targetTranslation = playerCurPos + new Vector3(0, curHopDir, 0); //target readjust
+                targetTranslation += new Vector3(0, curHopDir, 0); //target readjust
                 ChooseAction(listHopForward, listHopSideRear);
                 StartAction(); //cycle starts!!!
             }
@@ -230,7 +231,7 @@ public abstract class CharacterBase : MonoBehaviour
             if (isUnderJump)
             {
                 curHopDir = -1.0f; //Jump Under
-                targetTranslation = playerCurPos + new Vector3(0, curHopDir, 0); //target readjust
+                targetTranslation += new Vector3(0, curHopDir, 0); //target readjust
                 ChooseAction(listHopForward, listHopSideRear);
                 isUnderJump = false;
             }
