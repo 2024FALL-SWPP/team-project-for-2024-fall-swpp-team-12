@@ -7,11 +7,14 @@ public class MovingObstacle : MonoBehaviour
     // Don't forget to add tag "MovingObstacle" at the gameObject!
     private Vector3 hiddenPosition;
     public Vector3 visiblePosition;
+    private Vector3 direction; // moving direction
     public int turnCycle = 3; // turn interval
     public float moveSpeed = 4.0f;
     private int turnCount = 0;
+    // for time rewind
     private bool isVisible = false;
     public bool isMoveComplete = false;
+    private bool isPlayerPushed = false, isObstacleMoved = false; // internal flags to check isMoveComplete.
     public List<Vector3> listObstPosLog;
 
     private void Start()
@@ -25,7 +28,7 @@ public class MovingObstacle : MonoBehaviour
         turnCount++;
         if (turnCount == turnCycle)
         {
-            StartCoroutine(MoveObstacle(isVisible ? hiddenPosition : visiblePosition));
+            StartCoroutine(Move(isVisible ? hiddenPosition : visiblePosition));
             isVisible = !isVisible;
             turnCount = 0;
         }
@@ -35,53 +38,65 @@ public class MovingObstacle : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        // THIS DOESN'T WORK
-        // because the collider is 1x1x1, and Player doesn't move in only horizontal ways.
-        if (other.CompareTag("Player"))
+    private IEnumerator Move(Vector3 targetPosition)
+    {   
+        isPlayerPushed = false;
+        isObstacleMoved = false;
+        direction = (targetPosition - transform.position).normalized;
+        // first, check if the target position overlaps with player's target position.
+        Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
+        // 지금 다른 방향 보고 있다가 뛰면 (turn -> move)이면 안됨.
+        // 그리고 마주 오면 안됨 -> <- 이렇게
+        Debug.Log($"Player+1: {playerTargetPosition}");
+        Debug.Log($"Block+1: {targetPosition}");
+        if (playerTargetPosition == targetPosition)
         {
-            // if current position is not hidden or visible position,
-            // then there was a collision at "the middle" of the grid.
-            if (transform.position != hiddenPosition && transform.position != visiblePosition)
-            {
-                Debug.Log("Game Over!");
-            }
-            Debug.Log($"Player: {other.transform.position}");
-            Debug.Log($"Block: {transform.position}");
-        }
+            // If this is a block: going to push the player
+            StartCoroutine(PushPlayer(PlayerController.playerController, targetPosition));
+            // Else, if this is a spear: just game over.
+        } 
+        else isPlayerPushed = true;
+
+        // move the obstacle to the target position
+        StartCoroutine(MoveObstacle(targetPosition));
+
+        while (!isPlayerPushed || !isObstacleMoved) yield return null;
+        isMoveComplete = true;
     }
 
-    private void CheckOverlapWithPlayer(Vector3 targetPosition) 
+    private IEnumerator PushPlayer(PlayerController player, Vector3 targetPosition)
     {
-        // Check if player is "here" by grid coordination
-        // This works because if this is "visible", player cannot pass(works like a wall).
-        
-        Vector3 playerPosition = PlayerController.playerController.playerCurPos;
-        //Debug.Log($"Player: {playerPosition}");
-        //Debug.Log($"Player+1: {playerPosition????}");
-        //Debug.Log($"Block+1: {targetPosition}");
-        // 지금 게임 오버 판정이 안되고 있다.
-        // 현재 턴+1의 "위치", 즉 현재 턴이 진행된 결과를 받아야 하는데, 지금은 현재 턴의 위치를 가져오고 있다.
-        if (Vector3.Distance(playerPosition, targetPosition) <= 0.1f) 
+        Vector3 pushedPosition = targetPosition + direction * 2.0f;
+        while (Vector3.Distance(player.transform.position, pushedPosition) > 0.01f)
         {
-            Debug.Log("Game Over??");
+            Vector3 moveVector = (pushedPosition - player.transform.position).normalized * moveSpeed * Time.deltaTime;
+            player.transform.Translate(moveVector, Space.World);
+
+            yield return null;
         }
+        /*while (Vector3.Distance(player.transform.position, pushedPosition) > 0.01f)
+        {
+            player.transform.position = Vector3.MoveTowards(
+                player.transform.position,
+                pushedPosition,
+                moveSpeed * Time.deltaTime
+            );
+            yield return null;
+        }*/
+        player.transform.position = pushedPosition;
+        player.playerCurPos = pushedPosition;
+        isPlayerPushed = true;
     }
 
     private IEnumerator MoveObstacle(Vector3 targetPosition)
-    {
-        // first, check if the target position overlaps with player
-        CheckOverlapWithPlayer(targetPosition);
-        // move the obstacle to the target position
+    {   
         while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
             yield return null;
         }
-
         transform.position = targetPosition;
-        isMoveComplete = true;
+        isObstacleMoved = true;
     }
 
     public void SaveCurrentPos()

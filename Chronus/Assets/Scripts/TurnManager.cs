@@ -38,7 +38,6 @@ public class TurnManager : MonoBehaviour
 
     public void StartTurn() 
     {
-        Debug.Log($"Turn {turn} started");
         CLOCK = true;
         if (phantom.isPhantomExisting) phantom.AdvanceTurn();
         boxList.ForEach(box => box.AdvanceTurn());
@@ -49,7 +48,6 @@ public class TurnManager : MonoBehaviour
 
     private void EndTurn()
     {
-        Debug.Log($"Turn {turn} ended");
         CLOCK = false;
         turn++;
         player.listPosLog.Add((player.playerCurPos, player.playerCurRot));

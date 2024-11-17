@@ -12,7 +12,6 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
     private float speedVer;
     private bool meetLocalMax;
 
-
     public void OperateEnter(CharacterBase sender)
     {
         _CharacterBase = sender;
@@ -24,24 +23,6 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
         }
 
         targetTranslation = _CharacterBase.targetTranslation;
-
-        /*
-        if (_CharacterBase.playerCurRot.eulerAngles.y == 0.0f)
-        {
-            _CharacterBase.targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 0, 2.0f); //exact target position.
-        }
-        else if (_CharacterBase.playerCurRot.eulerAngles.y == 90.0f)
-        {
-            _CharacterBase.targetTranslation = _CharacterBase.playerCurPos + new Vector3(2.0f, 0, 0); //exact target position.
-        }
-        else if (_CharacterBase.playerCurRot.eulerAngles.y == 270.0f)
-        {
-            _CharacterBase.targetTranslation = _CharacterBase.playerCurPos + new Vector3(-2.0f, 0, 0); //exact target position.
-        }
-        else if (_CharacterBase.playerCurRot.eulerAngles.y == 180.0f)
-        {
-            _CharacterBase.targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 0, -2.0f); //exact target position.
-        }*/
 
         //small hop motion (part of animation yeah)
         smallHopRate = 2.0f;
