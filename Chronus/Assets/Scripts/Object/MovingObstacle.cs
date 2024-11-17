@@ -23,12 +23,13 @@ public class MovingObstacle : MonoBehaviour
         listObstPosLog = new List<Vector3>() { transform.position };
     }
 
-    public void AdvanceTurn() 
-    {   
+    public void AdvanceTurn()
+    {
         turnCount++;
         if (turnCount == turnCycle)
-        {
-            StartCoroutine(Move(isVisible ? hiddenPosition : visiblePosition));
+        {   
+            //StartCoroutine(Move(isVisible ? hiddenPosition : visiblePosition));
+            Invoke("StartMove", 0.2f); // This is not great, but temporary.
             isVisible = !isVisible;
             turnCount = 0;
         }
@@ -38,15 +39,16 @@ public class MovingObstacle : MonoBehaviour
         }
     }
 
+    private void StartMove() { StartCoroutine(Move(isVisible ? hiddenPosition : visiblePosition)); }
+
     private IEnumerator Move(Vector3 targetPosition)
-    {   
+    {
         isPlayerPushed = false;
         isObstacleMoved = false;
         direction = (targetPosition - transform.position).normalized;
         // first, check if the target position overlaps with player's target position.
         Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
-        // 지금 다른 방향 보고 있다가 뛰면 (turn -> move)이면 안됨.
-        // 그리고 마주 오면 안됨 -> <- 이렇게
+        Debug.Log($"Player: {PlayerController.playerController.playerCurPos}");
         Debug.Log($"Player+1: {playerTargetPosition}");
         Debug.Log($"Block+1: {targetPosition}");
         if (playerTargetPosition == targetPosition)
@@ -54,7 +56,7 @@ public class MovingObstacle : MonoBehaviour
             // If this is a block: going to push the player
             StartCoroutine(PushPlayer(PlayerController.playerController, targetPosition));
             // Else, if this is a spear: just game over.
-        } 
+        }
         else isPlayerPushed = true;
 
         // move the obstacle to the target position
@@ -67,6 +69,10 @@ public class MovingObstacle : MonoBehaviour
     private IEnumerator PushPlayer(PlayerController player, Vector3 targetPosition)
     {
         Vector3 pushedPosition = targetPosition + direction * 2.0f;
+        // the case when player and obstacle meeting like this (opposite) -> <-
+        // -direction == PlayerController.playerController.targetDirection
+        // this works poorly. 
+
         while (Vector3.Distance(player.transform.position, pushedPosition) > 0.01f)
         {
             Vector3 moveVector = (pushedPosition - player.transform.position).normalized * moveSpeed * Time.deltaTime;
@@ -75,21 +81,22 @@ public class MovingObstacle : MonoBehaviour
             yield return null;
         }
         /*while (Vector3.Distance(player.transform.position, pushedPosition) > 0.01f)
-        {
-            player.transform.position = Vector3.MoveTowards(
-                player.transform.position,
-                pushedPosition,
-                moveSpeed * Time.deltaTime
-            );
-            yield return null;
-        }*/
+            {
+                player.transform.position = Vector3.MoveTowards(
+                    player.transform.position,
+                    pushedPosition,
+                    moveSpeed * Time.deltaTime
+                );
+                yield return null;
+            }*/
+
         player.transform.position = pushedPosition;
         player.playerCurPos = pushedPosition;
         isPlayerPushed = true;
     }
 
     private IEnumerator MoveObstacle(Vector3 targetPosition)
-    {   
+    {
         while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
@@ -107,7 +114,7 @@ public class MovingObstacle : MonoBehaviour
     {
         listObstPosLog.RemoveRange(startIndex + 1, listObstPosLog.Count - startIndex - 1);
     }
-    public void RestorePos(int turn) 
+    public void RestorePos(int turn)
     {
         transform.position = listObstPosLog[turn];
         isVisible = transform.position != hiddenPosition;
