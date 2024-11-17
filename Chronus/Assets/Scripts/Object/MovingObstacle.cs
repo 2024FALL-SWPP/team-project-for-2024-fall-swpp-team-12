@@ -14,7 +14,6 @@ public class MovingObstacle : MonoBehaviour
     // for time rewind
     private bool isVisible = false;
     public bool isMoveComplete = false;
-    private bool isObstacleMoved = false; // internal flags to check isMoveComplete.
     public List<Vector3> listObstPosLog;
 
     private void Start()
@@ -28,8 +27,7 @@ public class MovingObstacle : MonoBehaviour
         turnCount++;
         if (turnCount == turnCycle)
         {   
-            //StartCoroutine(Move(isVisible ? hiddenPosition : visiblePosition));
-            Invoke("StartMove", 0.2f); // This is not great, but temporary.
+            Invoke("Move", 0.2f);
             isVisible = !isVisible;
             turnCount = 0;
         }
@@ -39,16 +37,20 @@ public class MovingObstacle : MonoBehaviour
         }
     }
 
-    private void StartMove() { Move(isVisible ? hiddenPosition : visiblePosition); }
+    private void Move() 
+    { 
+        Vector3 targetPosition = isVisible ? hiddenPosition : visiblePosition; 
+        CheckOverlapWithCharacters(targetPosition);
+        StartCoroutine(MoveObstacle(targetPosition));
+    }
 
-    private void Move(Vector3 targetPosition)
+    private void CheckOverlapWithCharacters(Vector3 targetPosition)
     {
-        isObstacleMoved = false;
         direction = (targetPosition - transform.position).normalized;
         // first, check if the target position overlaps with player's target position.
         Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
         if (playerTargetPosition == targetPosition)
-        {
+        {   
             // If this is a block: going to push the player
             PlayerController.playerController.pushDirection = direction;
             PlayerController.playerController.targetTranslation = targetPosition + direction * 2.0f;
@@ -65,9 +67,6 @@ public class MovingObstacle : MonoBehaviour
                 // Else, if this is a spear: kill it.
             }
         }
-
-        // move the obstacle to the target position
-        StartCoroutine(MoveObstacle(targetPosition));
     }
 
     private IEnumerator MoveObstacle(Vector3 targetPosition)
