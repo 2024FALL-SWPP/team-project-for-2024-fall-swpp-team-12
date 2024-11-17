@@ -11,7 +11,7 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
     {
         _CharacterBase = sender;
         _CharacterBase.curSpeed = _CharacterBase.moveSpeedHor;
-        
+
         if (_CharacterBase.animator != null)
         {
             _CharacterBase.animator.SetBool("isMoving", true);
@@ -33,22 +33,19 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
         // There's no way. Need to capture targetTranslation changes. (to check if being pushed)
         targetTranslation = _CharacterBase.targetTranslation;
 
-        if (_CharacterBase)
+        float moveStep = _CharacterBase.curSpeed * Time.deltaTime;
+        if (_CharacterBase.pushDirection != Vector3.zero)
         {
-            float moveStep = _CharacterBase.curSpeed * Time.deltaTime;
-            if (_CharacterBase.pushDirection != Vector3.zero)
-            {   
-                Vector3 currentTranslation = _CharacterBase.transform.position;
-                Vector3 direction = (targetTranslation - currentTranslation).normalized;
-                _CharacterBase.transform.Translate(direction * moveStep, Space.World);
-            }
-            else
-            {
-                _CharacterBase.transform.Translate(Vector3.forward * moveStep);
-            }
+            Vector3 currentTranslation = _CharacterBase.transform.position;
+            Vector3 direction = (targetTranslation - currentTranslation).normalized;
+            _CharacterBase.transform.Translate(direction * moveStep, Space.World);
+        }
+        else
+        {
+            _CharacterBase.transform.Translate(Vector3.forward * moveStep);
         }
     }
-    public void DoneAction(CharacterBase sender) 
+    public void DoneAction(CharacterBase sender)
     {
         Vector3 currentTranslation = _CharacterBase.transform.position;
         if (Vector3.Distance(currentTranslation, targetTranslation) < 0.2f)

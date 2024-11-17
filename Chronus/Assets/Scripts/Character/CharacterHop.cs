@@ -40,7 +40,7 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
     }
 
     public void OperateUpdate(CharacterBase sender)
-    {   
+    {
         // There's no way. Need to capture targetTranslation changes. (to check if being pushed)
         targetTranslation = _CharacterBase.targetTranslation;
 
@@ -48,39 +48,36 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
         if (!meetLocalMax) speedVer -= Mathf.Log(speedVer + 1.0f) * 0.01f;
         else speedVer -= Mathf.Log(-speedVer + 1.0f) * 0.01f;
 
-        if (_CharacterBase)
+        float hopStep = _CharacterBase.curHopSpeed * Time.deltaTime;
+        _CharacterBase.transform.Translate(Vector3.up * _CharacterBase.curHopDir * hopStep);
+
+        float moveStep = _CharacterBase.curSpeed * Time.deltaTime;
+        if (_CharacterBase.pushDirection != Vector3.zero)
         {
-            float hopStep = _CharacterBase.curHopSpeed * Time.deltaTime;
-            _CharacterBase.transform.Translate(Vector3.up * _CharacterBase.curHopDir * hopStep);
+            Vector3 currentTranslation = _CharacterBase.transform.position;
+            Vector3 direction = (targetTranslation - currentTranslation).normalized;
+            _CharacterBase.transform.Translate(2f * direction * moveStep, Space.World);
+        }
+        else
+        {
+            _CharacterBase.transform.Translate(Vector3.forward * moveStep);
+        }
 
-            float moveStep = _CharacterBase.curSpeed * Time.deltaTime;
-            if (_CharacterBase.pushDirection != Vector3.zero)
-            {   
-                Vector3 currentTranslation = _CharacterBase.transform.position;
-                Vector3 direction = (targetTranslation - currentTranslation).normalized;
-                _CharacterBase.transform.Translate(2f * direction * moveStep, Space.World);
-            }
-            else
-            {
-                _CharacterBase.transform.Translate(Vector3.forward * moveStep);
-            }
-
-            //small hop motion (part of animation yeah)
-            float smallHopStep = speedVer * Time.deltaTime;
-            _CharacterBase.transform.Translate(Vector3.up * smallHopStep);
-            if (!meetLocalMax)
-            {
-                Vector3 currentTranslation = _CharacterBase.transform.position;
-                float planeDistance = Mathf.Sqrt((targetTranslation.x - currentTranslation.x)*(targetTranslation.x - currentTranslation.x) + (targetTranslation.z - currentTranslation.z)*(targetTranslation.z - currentTranslation.z));
-                if (planeDistance < 0.5f * 2.0f)
-                {//less than half distance
-                    meetLocalMax = true;
-                    speedVer = -3.0f * smallHopRate;
-                }
+        //small hop motion (part of animation yeah)
+        float smallHopStep = speedVer * Time.deltaTime;
+        _CharacterBase.transform.Translate(Vector3.up * smallHopStep);
+        if (!meetLocalMax)
+        {
+            Vector3 currentTranslation = _CharacterBase.transform.position;
+            float planeDistance = Mathf.Sqrt((targetTranslation.x - currentTranslation.x) * (targetTranslation.x - currentTranslation.x) + (targetTranslation.z - currentTranslation.z) * (targetTranslation.z - currentTranslation.z));
+            if (planeDistance < 0.5f * 2.0f)
+            {//less than half distance
+                meetLocalMax = true;
+                speedVer = -3.0f * smallHopRate;
             }
         }
     }
-    public void DoneAction(CharacterBase sender) 
+    public void DoneAction(CharacterBase sender)
     {
         Vector3 currentTranslation = _CharacterBase.transform.position;
         if (Vector3.Distance(currentTranslation, targetTranslation) < 0.2f)

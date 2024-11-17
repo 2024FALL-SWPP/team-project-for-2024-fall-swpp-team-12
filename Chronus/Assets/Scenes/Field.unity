@@ -4133,7 +4133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visiblePosition: {x: 5, y: 2, z: 1}
-  turnCycle: 1
+  turnCycle: 2
   moveSpeed: 7
   isMoveComplete: 0
   listObstPosLog: []
