@@ -11,15 +11,15 @@ public abstract class CharacterBase : MonoBehaviour
     public Quaternion playerCurRot;
 
     // Movement-related properties
-    public float moveSpeedHor;
-    public float moveSpeedVer;
-    public float turnSpeed;
+    public float moveSpeedHor, moveSpeedVer, turnSpeed;
     public float curHopDir = 1.0f;
     public float curTurnAngle = 0.0f;
     public float curSpeed { get; set; }
     public float curHopSpeed { get; set; }
     public float curRotSpeed { get; set; }
 
+    // variables for being pushed: is there another efficient way to implement this? idk
+    public Vector3 pushDirection = Vector3.zero;
     //for state decision 'branch' from spatial condition check
     protected bool isUnderJump = false;
 
