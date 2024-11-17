@@ -18,7 +18,9 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         _CharacterBase = sender;
         //turn left or right speed  x 2   =   turn behind speed
         _CharacterBase.curRotSpeed = _CharacterBase.turnSpeed * Mathf.Abs(_CharacterBase.curTurnAngle) / 90.0f;
-        
+
+        targetYRotation = _CharacterBase.targetYRotation;
+        /*
         targetYRotation = _CharacterBase.playerCurRot.eulerAngles.y + _CharacterBase.curTurnAngle;
         if (targetYRotation >= 360.0f)
         {
@@ -27,7 +29,7 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         else if (targetYRotation < 0.0f)
         {
             targetYRotation += 360.0f;
-        }
+        }*/
 
         //small hop motion (part of animation yeah)
         smallHopRate = 1.0f;

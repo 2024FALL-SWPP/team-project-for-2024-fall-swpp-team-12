@@ -23,6 +23,9 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
             _CharacterBase.animator.SetBool("isMoving", true);
         }
 
+        targetTranslation = _CharacterBase.targetTranslation;
+
+        /*
         if (_CharacterBase.playerCurRot.eulerAngles.y == 0.0f)
         {
             targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 1.0f * _CharacterBase.curHopDir, 2.0f); //exact target position.
@@ -38,7 +41,7 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
         else if (_CharacterBase.playerCurRot.eulerAngles.y == 180.0f)
         {
             targetTranslation = _CharacterBase.playerCurPos + new Vector3(0, 1.0f * _CharacterBase.curHopDir, -2.0f); //exact target position.
-        }
+        }*/
 
         //small hop motion (part of animation yeah)
         smallHopRate = 3.0f;
