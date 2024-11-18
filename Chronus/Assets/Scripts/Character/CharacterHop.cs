@@ -80,7 +80,7 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
     public void DoneAction(CharacterBase sender)
     {
         Vector3 currentTranslation = _CharacterBase.transform.position;
-        if (Vector3.Distance(currentTranslation, targetTranslation) < 0.2f)
+        if (Vector3.Distance(currentTranslation, targetTranslation) < 0.3f)
         {
             _CharacterBase.transform.position = targetTranslation;
             _CharacterBase.playerCurPos = _CharacterBase.transform.position;
