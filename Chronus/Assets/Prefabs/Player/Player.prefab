@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2417013240605120036}
   - component: {fileID: 8394453472789530727}
   - component: {fileID: 8394453472789530744}
-  - component: {fileID: 8394453472789530644}
   - component: {fileID: 2144903796421854843}
   - component: {fileID: 965985751615319944}
   - component: {fileID: 8337172169193159353}
@@ -142,23 +141,6 @@ MonoBehaviour:
   isTimeRewinding: 0
   maxTurn: 0
   listCommandLog: []
---- !u!114 &8394453472789530644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4243777499992674637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60558272c85865d4da3cf1221cd65c42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pushDistance: 2
-  jumpHeight: 1
-  heightOffset: 0.5
-  canPushBox: 0
-  canRideBox: 0
 --- !u!114 &2144903796421854843
 MonoBehaviour:
   m_ObjectHideFlags: 0

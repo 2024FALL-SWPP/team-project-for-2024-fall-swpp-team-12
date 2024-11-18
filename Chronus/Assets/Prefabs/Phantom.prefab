@@ -1156,7 +1156,6 @@ GameObject:
   - component: {fileID: 753261232140372117}
   - component: {fileID: 2531181437950435812}
   - component: {fileID: 3632663121590721122}
-  - component: {fileID: 9045074184420411353}
   m_Layer: 3
   m_Name: Phantom
   m_TagString: Player
@@ -1255,11 +1254,13 @@ MonoBehaviour:
   turnSpeed: 0
   curHopDir: 1
   curTurnAngle: 0
+  pushDirection: {x: 0, y: 0, z: 0}
   cIdle: {fileID: 0}
   cMove: {fileID: 0}
   cTurn: {fileID: 0}
   cHop: {fileID: 0}
   doneAction: 0
+  isMoveComplete: 0
   listCommandOrder: []
   order: 0
   isPhantomExisting: 0
@@ -1311,23 +1312,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abe693de95a814942a04ea235b0b704b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &9045074184420411353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4137369883225489573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60558272c85865d4da3cf1221cd65c42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pushDistance: 2
-  jumpHeight: 2
-  heightOffset: 0.5
-  canPushBox: 0
-  canRideBox: 0
 --- !u!1 &4313637727183743810
 GameObject:
   m_ObjectHideFlags: 0
