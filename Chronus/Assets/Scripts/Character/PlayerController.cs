@@ -36,28 +36,9 @@ public class PlayerController : CharacterBase
         // always: listPosLog.Count = 1 + listCommandLog.Count
     }
 
-    void Update() 
+    protected override void Update() 
     {
-        if (TurnManager.turnManager.CLOCK) // when turn is on progress
-        {
-            sm.IsDoneAction(); 
-            if (doneAction) // next state in the state list
-            {
-                listSeq++; // next index
-                doneAction = false;
-                if (listSeq < listCurTurn.Count)
-                {
-                    sm.SetState(listCurTurn[listSeq]);
-                }
-                else
-                {
-                    sm.SetState(idle);                    
-                    isMoveComplete = true;
-                }
-            }
-        }
-
-        sm.DoOperateUpdate();
+        base.Update();
     }
 
     protected override void HandleMovementInput(string command) 

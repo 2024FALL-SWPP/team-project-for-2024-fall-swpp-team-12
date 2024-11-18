@@ -83,6 +83,29 @@ public abstract class CharacterBase : MonoBehaviour
         sm = new StateMachine<CharacterBase>(this, idle);
     }
 
+    protected virtual void Update()
+    {
+        if (TurnManager.turnManager.CLOCK) // when turn is on progress
+        {
+            sm.IsDoneAction();
+            if (doneAction) // next state in the state list
+            {
+                listSeq++; // next index
+                doneAction = false;
+                if (listSeq < listCurTurn.Count)
+                {
+                    sm.SetState(listCurTurn[listSeq]);
+                }
+                else
+                {
+                    sm.SetState(idle);
+                    isMoveComplete = true;
+                }
+            }
+        }
+        sm.DoOperateUpdate();
+    }
+
     protected virtual void HandleMovementInput(string command)
     {
         switch (command)

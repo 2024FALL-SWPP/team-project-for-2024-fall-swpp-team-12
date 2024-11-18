@@ -34,26 +34,9 @@ public class PhantomController : CharacterBase
         order++;
     }
 
-    void Update() 
+    protected override void Update() 
     {
-        if (isPhantomExisting && TurnManager.turnManager.CLOCK) 
-        {
-            sm.IsDoneAction(); 
-            if (doneAction) 
-            {
-                listSeq++; 
-                doneAction = false;
-                if (listSeq < listCurTurn.Count)
-                {
-                    sm.SetState(listCurTurn[listSeq]);
-                }
-                else
-                {
-                    sm.SetState(idle);
-                    isMoveComplete = true;
-                }
-            }
-        }
-        sm.DoOperateUpdate();
+        if (!isPhantomExisting) return;
+        base.Update();
     }
 }
