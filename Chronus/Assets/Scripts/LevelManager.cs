@@ -133,6 +133,10 @@ public class LevelManager : MonoBehaviour
             // Get information from the new level
             TurnManager.turnManager.InitializeObjectLists();
             // Reset player position log (to be added)
+            PlayerController.playerController.InitializePositionLog();
+            // Kill the phantom
+            PhantomController.phantomController.isPhantomExisting = false;
+            PhantomController.phantomController.gameObject.SetActive(false);
         }
     }
 

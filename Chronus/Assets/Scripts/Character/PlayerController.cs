@@ -26,9 +26,14 @@ public class PlayerController : CharacterBase
         InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindMode;
         InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInput;
 
+        InitializePositionLog();
+    }
+
+    public void InitializePositionLog()
+    {
         listCommandLog = new List<string>(); // command log for time rewind(objects) and phantom action(copy commands)
         listPosLog = new List<(Vector3, Quaternion)> { (playerCurPos, playerCurRot) }; // position tracking log for time rewind and reset position
-        // always: listPosLog.Count = 1 + listCommandLog.Count 
+        // always: listPosLog.Count = 1 + listCommandLog.Count
     }
 
     void Update() 
