@@ -221,10 +221,6 @@ PrefabInstance:
       propertyPath: cTurn
       value: 
       objectReference: {fileID: 14471903}
-    - target: {fileID: 0}
-      propertyPath: canPushBox
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 9059034893468094471, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
       propertyPath: phantomStates
       value: 
@@ -643,6 +639,10 @@ PrefabInstance:
     - target: {fileID: 4243777499992674637, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 4243777499992674637, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4484388044528181326, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
       propertyPath: m_RootOrder
