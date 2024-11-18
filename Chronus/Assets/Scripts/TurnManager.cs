@@ -80,7 +80,7 @@ public class TurnManager : MonoBehaviour
     }
 
     // maybe we need a separate ObjectManager to control all these lists & time rewind?
-    private void InitializeObjectLists()
+    public void InitializeObjectLists()
     {
         GameObject[] boxObjects = GameObject.FindGameObjectsWithTag("Box");
         boxList.Clear();

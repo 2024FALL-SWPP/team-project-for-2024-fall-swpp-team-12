@@ -19,14 +19,14 @@ public class Lever : MonoBehaviour
     private void Start()
     {
         // Initial lever rotation
-        transform.GetChild(1).transform.rotation = backwardRotation;
-        canToggleDirection = transform.forward;
+        transform.GetChild(1).transform.localRotation = backwardRotation;
+        canToggleDirection = transform.localRotation * Vector3.forward;
 
         // Initialize platforms based on their initial state
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
 
         listLeverCommandLog = new List<string>();
-        listLeverStateLog = new List<(Quaternion, bool, Vector3)>() { (transform.GetChild(1).transform.rotation, isActivated, canToggleDirection) };
+        listLeverStateLog = new List<(Quaternion, bool, Vector3)>() { (transform.GetChild(1).transform.localRotation, isActivated, canToggleDirection) };
     }
 
     public void AdvanceTurn()
@@ -49,7 +49,7 @@ public class Lever : MonoBehaviour
     public void ToggleLever()
     {
         isActivated = !isActivated;
-        this.transform.GetChild(1).transform.rotation = isActivated ? forwardRotation : backwardRotation;
+        transform.GetChild(1).transform.localRotation = isActivated ? forwardRotation : backwardRotation;
         canToggleDirection = -canToggleDirection;
 
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive ^ isActivated)); 
@@ -64,7 +64,7 @@ public class Lever : MonoBehaviour
     {
         // Log the command and current state
         listLeverCommandLog.Add(command);
-        listLeverStateLog.Add((transform.GetChild(1).transform.rotation, isActivated, canToggleDirection));
+        listLeverStateLog.Add((transform.GetChild(1).transform.localRotation, isActivated, canToggleDirection));
     }
 
     public void RestoreState(int turnIndex)
@@ -72,7 +72,7 @@ public class Lever : MonoBehaviour
         if (turnIndex < listLeverStateLog.Count)
         {
             var state = listLeverStateLog[turnIndex];
-            transform.GetChild(1).transform.rotation = state.Item1;
+            transform.GetChild(1).transform.localRotation = state.Item1;
             isActivated = state.Item2;
             canToggleDirection = state.Item3;
 

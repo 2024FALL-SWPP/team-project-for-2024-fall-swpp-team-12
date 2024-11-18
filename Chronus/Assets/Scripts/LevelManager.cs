@@ -75,7 +75,7 @@ public class LevelManager : MonoBehaviour
         }
 
         // Load the next level and move the camera
-       currentLevelIndex++;
+        currentLevelIndex++;
         LoadLevel(currentLevelIndex);
 
         // Wait until the next level is fully loaded
@@ -129,6 +129,10 @@ public class LevelManager : MonoBehaviour
                 // for camera, offset is "accumulated", so need to be controlled like this.
                 StartCoroutine(MoveCameraWithTransition(levelOffset - previousLevelOffset)); 
             }
+            
+            // Get information from the new level
+            TurnManager.turnManager.InitializeObjectLists();
+            // Reset player position log (to be added)
         }
     }
 
