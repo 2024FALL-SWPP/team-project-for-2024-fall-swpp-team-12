@@ -1,14 +1,60 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+public class TurnLogIterator<T>
+{
+    private readonly List<T> log;
+    private int currentIndex;
+
+    public TurnLogIterator(List<T> log)
+    {
+        this.log = log;
+        this.currentIndex = log.Count - 1; // Start at the latest log
+    }
+
+    public bool HasNext() => currentIndex < log.Count - 1;
+
+    public bool HasPrevious() => currentIndex > 0;
+
+    public T Next()
+    {
+        if (HasNext())
+        {
+            currentIndex++;
+            return log[currentIndex];
+        }
+        throw new InvalidOperationException("No next turn available.");
+    }
+
+    public T Previous()
+    {
+        if (HasPrevious())
+        {
+            currentIndex--;
+            return log[currentIndex];
+        }
+        throw new InvalidOperationException("No previous turn available.");
+    }
+
+    public void ResetToStart() => currentIndex = 0;
+
+    public void ResetToEnd() => currentIndex = log.Count - 1;
+
+    public int GetCurrentIndex() => currentIndex;
+}
+
 
 public class PlayerController : CharacterBase
 {
     public static PlayerController playerController; 
     private string curKey = "r"; // command log(wasdr)
     public bool isTimeRewinding = false;     
-    public int maxTurn = 0; // used for time rewind mode
-    
+    // Iterators for logs
+    private TurnLogIterator<string> commandIterator;
+    private TurnLogIterator<(Vector3, Quaternion)> positionIterator;
+    public bool DidRewind => positionIterator != null && positionIterator.HasNext();
+
     public List<string> listCommandLog; // command log for time rewind (objects) and phantom action (copy commands)
     public List<(Vector3, Quaternion)> listPosLog; // position tracking log for time rewind (reset position)
     protected override void Awake() // singleton
@@ -21,19 +67,15 @@ public class PlayerController : CharacterBase
     {
         base.Start();
 
-        // getting input from input manager: producing is done below.
+        listCommandLog = new List<string>();
+        listPosLog = new List<(Vector3, Quaternion)> { (playerCurPos, playerCurRot) };
+
+        commandIterator = new TurnLogIterator<string>(listCommandLog);
+        positionIterator = new TurnLogIterator<(Vector3, Quaternion)>(listPosLog);
+
         InputManager.inputManager.OnCommand += HandleMovementInput;
         InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindMode;
         InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInput;
-
-        InitializePositionLog();
-    }
-
-    public void InitializePositionLog()
-    {
-        listCommandLog = new List<string>(); // command log for time rewind(objects) and phantom action(copy commands)
-        listPosLog = new List<(Vector3, Quaternion)> { (playerCurPos, playerCurRot) }; // position tracking log for time rewind and reset position
-        // always: listPosLog.Count = 1 + listCommandLog.Count
     }
 
     protected override void Update() 
@@ -76,7 +118,7 @@ public class PlayerController : CharacterBase
         switch (command)
         {
             case "q": // go to the 1 turn past
-                if (TurnManager.turnManager.turn >= 1)
+                if (positionIterator.HasPrevious())
                 {
                     TurnManager.turnManager.GoToThePastOrFuture(-1);
                 }
@@ -87,7 +129,7 @@ public class PlayerController : CharacterBase
                 break;
 
             case "e": // go to the 1 turn future
-                if (TurnManager.turnManager.turn <= maxTurn - 1)
+                if (positionIterator.HasNext())
                 {
                     TurnManager.turnManager.GoToThePastOrFuture(1);
                 }

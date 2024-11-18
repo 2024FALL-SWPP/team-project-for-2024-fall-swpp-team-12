@@ -121,7 +121,6 @@ public class TurnManager : MonoBehaviour
     public void EnterTimeRewind()
     // entering time rewind mode: make an empty phantom(actually, the player) in current position 
     {
-        player.maxTurn = turn;
         player.isTimeRewinding = true;
 
         // delete already existing phantom, if not ended
@@ -132,7 +131,7 @@ public class TurnManager : MonoBehaviour
     public void LeaveTimeRewind()
     // leaving time rewind mode: make a phantom based on the input
     {
-        if (turn < player.maxTurn)
+        if (player.DidRewind)
         {
             // modifying the location of the phantom
             phantom.gameObject.transform.position = player.listPosLog[turn].Item1;
