@@ -45,5 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turn: 0
-  savePoint_pos: {x: 0, y: 0, z: 0}
-  savePoint_rot: {x: 0, y: 0, z: 0, w: 0}
+  CLOCK: 0
+  player: {fileID: 0}
+  phantom: {fileID: 0}
+  boxList: []
+  buttonList: []
+  leverList: []
+  obstacleList: []
