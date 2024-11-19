@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class TurnManager : MonoBehaviour
 {
     public static TurnManager turnManager; // Singleton
-    public int turn = 0;
+    public int rewindTurnCount = 0;
     public bool CLOCK = false;
     public PlayerController player;
     public PhantomController phantom;
@@ -49,8 +50,9 @@ public class TurnManager : MonoBehaviour
     private void EndTurn()
     {
         CLOCK = false;
-        turn++;
-        player.listPosLog.Add((player.playerCurPos, player.playerCurRot));
+        // turn++;
+        Debug.Log("turn: " + rewindTurnCount);
+        player.positionIterator.Add((player.playerCurPos, player.playerCurRot));
         boxList.ForEach(box => box.SaveCurrentPos());
         obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
         // lever & button is done at its script, saving its states. 
@@ -133,46 +135,82 @@ public class TurnManager : MonoBehaviour
     {
         if (player.DidRewind)
         {
-            // modifying the location of the phantom
-            phantom.gameObject.transform.position = player.listPosLog[turn].Item1;
-            phantom.gameObject.transform.rotation = player.listPosLog[turn].Item2;
-            phantom.playerCurPos = player.listPosLog[turn].Item1;
-            phantom.playerCurRot = player.listPosLog[turn].Item2;
+            var currentTransform = player.positionIterator.Current;
+            phantom.gameObject.transform.position = currentTransform.Item1;
+            phantom.gameObject.transform.rotation = currentTransform.Item2;
+            phantom.playerCurPos = currentTransform.Item1;
+            phantom.playerCurRot = currentTransform.Item2;
 
             // actually initializing the phantom
             phantom.gameObject.SetActive(true);
             phantom.isPhantomExisting = true;
             phantom.listCommandOrder.Clear();
-            phantom.listCommandOrder.AddRange(player.listCommandLog.GetRange(turn, player.listCommandLog.Count - turn)); 
+            // phantom.listCommandOrder.AddRange(player.listCommandLog.GetRange(turn, player.listCommandLog.Count - turn)); 
+            while (player.commandIterator.HasNext())
+            {
+                phantom.listCommandOrder.Add(player.commandIterator.Next());
+            }
             phantom.order = 0;
 
-            // deleting list commands from the player, which has been moved to the phantom
-            player.listCommandLog.RemoveRange(turn, player.listCommandLog.Count - turn); // turn 0: no element in listCommandLog
-            player.listPosLog.RemoveRange(turn + 1, player.listPosLog.Count - turn - 1); // turn 0: one initial element in listPosLog
+            player.RemoveLastKEntriesFromLogs(rewindTurnCount);
 
-            boxList.ForEach(box => box.RemoveLog(turn));
-            leverList.ForEach(lever => lever.RemoveLog(turn));
-            buttonList.ForEach(button => button.RemoveLog(turn));
-            obstacleList.ForEach(obstacle => obstacle.RemoveLog(turn));
+            // boxList.ForEach(box => box.RemoveLog(turn));
+            // leverList.ForEach(lever => lever.RemoveLog(turn));
+            // buttonList.ForEach(button => button.RemoveLog(turn));
+            // obstacleList.ForEach(obstacle => obstacle.RemoveLog(turn));
         }
         player.isTimeRewinding = false;
     }
 
-    public void GoToThePastOrFuture(int turnDelta) 
-    // this is for time rewind, to show changes across all the scene
+    public void GoToThePast()
     {
-        turn += turnDelta;
-        // position tracking log -> preview the current position(and rotation)
-        Vector3 tempPos = player.listPosLog[turn].Item1;
-        Quaternion tempRot = player.listPosLog[turn].Item2;
-        player.gameObject.transform.position = tempPos;
-        player.gameObject.transform.rotation = tempRot;
-        player.playerCurPos = tempPos;
-        player.playerCurRot = tempRot;
+        GoToThePastOrFuture(-1);
+    }
 
-        boxList.ForEach(box => box.RestorePos(turn));
-        leverList.ForEach(lever => lever.RestoreState(turn));
-        buttonList.ForEach(button => button.RestoreState(turn));
-        obstacleList.ForEach(obstacle => obstacle.RestorePos(turn));
+    public void GoToTheFuture()
+    {
+        GoToThePastOrFuture(1);
+    }
+
+    private void GoToThePastOrFuture(int turnDelta)
+    {
+        if (turnDelta != -1 && turnDelta != 1)
+        {
+            throw new ArgumentException("turnDelta must be -1 (Past) or 1 (Future).", nameof(turnDelta));
+        }
+
+        rewindTurnCount -= turnDelta;
+
+        // Use iterator to navigate through position logs
+        (Vector3 position, Quaternion rotation) newTransform;
+        String newCommand;
+
+        if (turnDelta == -1 && player.positionIterator.HasPrevious())
+        {
+            newTransform = player.positionIterator.Previous();
+            newCommand = player.commandIterator.Previous();
+        }
+        else if (turnDelta == 1 && player.positionIterator.HasNext())
+        {
+            newTransform = player.positionIterator.Next();
+            newCommand = player.commandIterator.Next();
+        }
+        else
+        {
+            Debug.Log("Cannot go further in the specified direction!");
+            return;
+        }
+
+        // Apply new position and rotation to the player
+        player.gameObject.transform.position = newTransform.Item1;
+        player.gameObject.transform.rotation = newTransform.Item2;
+        player.playerCurPos = newTransform.Item1;
+        player.playerCurRot = newTransform.Item2;
+
+        // // Restore object states based on the iterator's current position
+        // boxList.ForEach(box => box.RestorePos(player.positionIterator.GetCurrentIndex()));
+        // leverList.ForEach(lever => lever.RestoreState(player.positionIterator.GetCurrentIndex()));
+        // buttonList.ForEach(button => button.RestoreState(player.positionIterator.GetCurrentIndex()));
+        // obstacleList.ForEach(obstacle => obstacle.RestorePos(player.positionIterator.GetCurrentIndex()));
     }
 }

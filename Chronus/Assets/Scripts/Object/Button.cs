@@ -71,7 +71,7 @@ public class Button : MonoBehaviour
             {
                 if (isPressed)
                 {
-                    int remainingTurns = (turnActivated + resetTurnCount) - TurnManager.turnManager.turn - 1;
+                    int remainingTurns = (turnActivated + resetTurnCount) - TurnManager.turnManager.rewindTurnCount - 1;
                     if (remainingTurns <= 0)
                     {
                         ResetButton();
@@ -97,7 +97,7 @@ public class Button : MonoBehaviour
         targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
         transform.GetChild(1).transform.position = plateOnPosition;
 
-        turnActivated = TurnManager.turnManager.turn; //get value before turn update, so +1 (indicates next turn)
+        turnActivated = TurnManager.turnManager.rewindTurnCount; //get value before turn update, so +1 (indicates next turn)
 
         if (!isPressed) isPressed = true;
 
