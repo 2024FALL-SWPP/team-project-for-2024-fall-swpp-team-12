@@ -13,8 +13,8 @@ public class Lever : MonoBehaviour
     public bool doPushLever = false;
     public bool isMoveComplete = false;
 
-    public List<(Quaternion, bool, Vector3)> listLeverStateLog; //(stick bias, isActivated, canToggleDirection)
-    public List<string> listLeverCommandLog;
+    public TurnLogIterator<(Quaternion, bool, Vector3)> stateIterator;
+    public TurnLogIterator<string> commandIterator;
 
     private void Start()
     {
@@ -25,8 +25,14 @@ public class Lever : MonoBehaviour
         // Initialize platforms based on their initial state
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
 
-        listLeverCommandLog = new List<string>();
-        listLeverStateLog = new List<(Quaternion, bool, Vector3)>() { (transform.GetChild(1).transform.localRotation, isActivated, canToggleDirection) };
+        var initialState = new List<(Quaternion, bool, Vector3)>
+        {
+            (transform.GetChild(1).transform.rotation, isActivated, canToggleDirection)
+        };
+        var initialCommands = new List<string>();
+
+        stateIterator = new TurnLogIterator<(Quaternion, bool, Vector3)>(initialState);
+        commandIterator = new TurnLogIterator<string>(initialCommands);
     }
 
     public void AdvanceTurn()
@@ -63,25 +69,27 @@ public class Lever : MonoBehaviour
     private void SaveCurrentState(string command)
     {
         // Log the command and current state
-        listLeverCommandLog.Add(command);
-        listLeverStateLog.Add((transform.GetChild(1).transform.localRotation, isActivated, canToggleDirection));
+        commandIterator.Add(command);
+        stateIterator.Add((transform.GetChild(1).transform.rotation, isActivated, canToggleDirection));
     }
 
-    public void RestoreState(int turnIndex)
+    public void RestoreState()
     {
-        if (turnIndex < listLeverStateLog.Count)
+        var state = stateIterator.Current;
+        transform.GetChild(1).transform.rotation = state.Item1;
+        isActivated = state.Item2;
+        canToggleDirection = state.Item3;
+
+        targetStates.ForEach(state =>
+        state.target.SetActive(state.isInitiallyActive ^ isActivated));
+    }
+
+    public void RemoveLog(int k)
+    {
+        for (int i = 0; i < k; i++)
         {
-            var state = listLeverStateLog[turnIndex];
-            transform.GetChild(1).transform.localRotation = state.Item1;
-            isActivated = state.Item2;
-            canToggleDirection = state.Item3;
-
-            targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive ^ isActivated)); 
+            commandIterator.RemoveLast();
+            stateIterator.RemoveLast();
         }
-    }
-    public void RemoveLog(int startIndex)
-    {
-        listLeverCommandLog.RemoveRange(startIndex, listLeverCommandLog.Count - startIndex); // turn 0: no element
-        listLeverStateLog.RemoveRange(startIndex + 1, listLeverStateLog.Count - startIndex - 1); // turn 0: one initial element
     }
 }

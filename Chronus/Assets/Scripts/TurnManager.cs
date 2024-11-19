@@ -145,7 +145,6 @@ public class TurnManager : MonoBehaviour
             phantom.gameObject.SetActive(true);
             phantom.isPhantomExisting = true;
             phantom.listCommandOrder.Clear();
-            // phantom.listCommandOrder.AddRange(player.listCommandLog.GetRange(turn, player.listCommandLog.Count - turn)); 
             while (player.commandIterator.HasNext())
             {
                 phantom.listCommandOrder.Add(player.commandIterator.Next());
@@ -154,10 +153,10 @@ public class TurnManager : MonoBehaviour
 
             player.RemoveLastKEntriesFromLogs(rewindTurnCount);
 
-            // boxList.ForEach(box => box.RemoveLog(turn));
-            // leverList.ForEach(lever => lever.RemoveLog(turn));
-            // buttonList.ForEach(button => button.RemoveLog(turn));
-            // obstacleList.ForEach(obstacle => obstacle.RemoveLog(turn));
+            boxList.ForEach(box => box.RemoveLog(rewindTurnCount));
+            leverList.ForEach(lever => lever.RemoveLog(rewindTurnCount));
+            buttonList.ForEach(button => button.RemoveLog(rewindTurnCount));
+            obstacleList.ForEach(obstacle => obstacle.RemoveLog(rewindTurnCount));
         }
         player.isTimeRewinding = false;
     }
@@ -183,17 +182,30 @@ public class TurnManager : MonoBehaviour
 
         // Use iterator to navigate through position logs
         (Vector3 position, Quaternion rotation) newTransform;
-        String newCommand;
 
         if (turnDelta == -1 && player.positionIterator.HasPrevious())
         {
             newTransform = player.positionIterator.Previous();
-            newCommand = player.commandIterator.Previous();
+            player.commandIterator.Previous();
+
+            boxList.ForEach(box => box.positionIterator.Previous());
+            leverList.ForEach(lever => lever.stateIterator.Previous());
+            leverList.ForEach(lever => lever.commandIterator.Previous());
+            buttonList.ForEach(button => button.stateIterator.Previous());
+            buttonList.ForEach(button => button.commandIterator.Previous());
+            obstacleList.ForEach(obstacle => obstacle.positionIterator.Previous());
         }
         else if (turnDelta == 1 && player.positionIterator.HasNext())
         {
             newTransform = player.positionIterator.Next();
-            newCommand = player.commandIterator.Next();
+            player.commandIterator.Next();
+            
+            boxList.ForEach(box => box.positionIterator.Next());
+            leverList.ForEach(lever => lever.stateIterator.Next());
+            leverList.ForEach(lever => lever.commandIterator.Next());
+            buttonList.ForEach(button => button.stateIterator.Next());
+            buttonList.ForEach(button => button.commandIterator.Next());
+            obstacleList.ForEach(obstacle => obstacle.positionIterator.Next());
         }
         else
         {
@@ -208,9 +220,9 @@ public class TurnManager : MonoBehaviour
         player.playerCurRot = newTransform.Item2;
 
         // // Restore object states based on the iterator's current position
-        // boxList.ForEach(box => box.RestorePos(player.positionIterator.GetCurrentIndex()));
-        // leverList.ForEach(lever => lever.RestoreState(player.positionIterator.GetCurrentIndex()));
-        // buttonList.ForEach(button => button.RestoreState(player.positionIterator.GetCurrentIndex()));
-        // obstacleList.ForEach(obstacle => obstacle.RestorePos(player.positionIterator.GetCurrentIndex()));
+        boxList.ForEach(box => box.RestoreState());
+        leverList.ForEach(lever => lever.RestoreState());
+        buttonList.ForEach(button => button.RestoreState());
+        obstacleList.ForEach(obstacle => obstacle.RestoreState());
     }
 }

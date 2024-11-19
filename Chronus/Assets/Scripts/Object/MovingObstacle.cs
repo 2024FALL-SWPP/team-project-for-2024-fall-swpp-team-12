@@ -14,12 +14,14 @@ public class MovingObstacle : MonoBehaviour
     // for time rewind
     private bool isVisible = false;
     public bool isMoveComplete = false;
-    public List<Vector3> listObstPosLog;
+    public TurnLogIterator<Vector3> positionIterator;
 
     private void Start()
     {
         hiddenPosition = transform.position;
-        listObstPosLog = new List<Vector3>() { transform.position };
+
+        var initialPositionLog = new List<Vector3> { transform.position };
+        positionIterator = new TurnLogIterator<Vector3>(initialPositionLog);
     }
 
     public void AdvanceTurn()
@@ -82,15 +84,18 @@ public class MovingObstacle : MonoBehaviour
 
     public void SaveCurrentPos()
     {
-        listObstPosLog.Add(transform.position);
+        positionIterator.Add(transform.position);
     }
-    public void RemoveLog(int startIndex)
+    public void RemoveLog(int k)
     {
-        listObstPosLog.RemoveRange(startIndex + 1, listObstPosLog.Count - startIndex - 1);
+        for (int i = 0; i < k; i++)
+        {
+            positionIterator.RemoveLast();
+        }
     }
-    public void RestorePos(int turn)
+    public void RestoreState()
     {
-        transform.position = listObstPosLog[turn];
+        transform.position = positionIterator.Current;
         isVisible = transform.position != hiddenPosition;
     }
 }

@@ -7,14 +7,16 @@ public class Box : MonoBehaviour
     public float moveDistance = 2.0f;
     public float checkDistance = 0.5f;
     private Rigidbody rb;
-    public List<Vector3> listBoxPosLog; // position log for time rewind
+    
+    public TurnLogIterator<Vector3> positionIterator;
     public bool isMoveComplete = false;
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-        listBoxPosLog = new List<Vector3>() { transform.position };
+        var initialPositionLog = new List<Vector3> { transform.position };
+        positionIterator = new TurnLogIterator<Vector3>(initialPositionLog);
     }
 
     private void Update()
@@ -116,15 +118,17 @@ public class Box : MonoBehaviour
     }
     public void SaveCurrentPos()
     {
-        listBoxPosLog.Add(transform.position);
+        positionIterator.Add(transform.position);
     }
-    public void RemoveLog(int startIndex)
+    public void RemoveLog(int k)
     {
-        // remove movements from "future turns"
-        listBoxPosLog.RemoveRange(startIndex + 1, listBoxPosLog.Count - startIndex - 1);
+        for (int i = 0; i < k; i++)
+        {
+            positionIterator.RemoveLast();
+        }
     }
-    public void RestorePos(int turn) // updating for time rewind
+    public void RestoreState() // updating for time rewind
     {
-        transform.position = listBoxPosLog[turn];
+        transform.position = positionIterator.Current;
     }
 }
