@@ -19,11 +19,12 @@ public class Button : MonoBehaviour
     public bool isPressed = false;
 
     public int resetTurnCount = 1; //treated as constant (hyperparameter)
-    public int turnActivated = -1; //variable.
+    private int remainingTurns = 0;
 
     public bool isMoveComplete = false;
-    public List<(Vector3, bool, int)> listButtonStateLog; // (extrude/intrude, isPressed, turnActivated)
-    public List<string> listButtonCommandLog; //visualizing detail for us, developers.
+
+    public TurnLogIterator<(Vector3, bool, int)> stateIterator;
+    public TurnLogIterator<string> commandIterator;
     private void Start()
     {
         plateOffPosition = transform.GetChild(1).transform.position;
@@ -32,8 +33,11 @@ public class Button : MonoBehaviour
         // Initialize platforms based on their initial state
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
 
-        listButtonCommandLog = new List<string>();
-        listButtonStateLog = new List<(Vector3, bool, int)>() { (transform.GetChild(1).transform.position, isPressed, turnActivated) };
+        var initialState = new List<(Vector3, bool, int)> { (transform.GetChild(1).transform.position, isPressed, remainingTurns) };
+        var initialCommands = new List<string>();
+
+        stateIterator = new TurnLogIterator<(Vector3, bool, int)>(initialState);
+        commandIterator = new TurnLogIterator<string>(initialCommands);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -71,7 +75,9 @@ public class Button : MonoBehaviour
             {
                 if (isPressed)
                 {
-                    int remainingTurns = (turnActivated + resetTurnCount) - TurnManager.turnManager.rewindTurnCount - 1;
+                    remainingTurns--;
+                    Debug.Log(remainingTurns);
+
                     if (remainingTurns <= 0)
                     {
                         ResetButton();
@@ -97,7 +103,7 @@ public class Button : MonoBehaviour
         targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
         transform.GetChild(1).transform.position = plateOnPosition;
 
-        turnActivated = TurnManager.turnManager.rewindTurnCount; //get value before turn update, so +1 (indicates next turn)
+        remainingTurns = resetTurnCount - 1;
 
         if (!isPressed) isPressed = true;
 
@@ -112,7 +118,7 @@ public class Button : MonoBehaviour
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); // Revert to initial state
         transform.GetChild(1).transform.position = plateOffPosition;
 
-        turnActivated = -1; //idle state of turnActivated.
+        remainingTurns = 0; //idle state of turnActivated.
 
         isPressed = false;
 
@@ -125,23 +131,26 @@ public class Button : MonoBehaviour
     private void SaveCurrentState(string command)
     {
         // Log the command and current state
-        listButtonCommandLog.Add(command);
-        listButtonStateLog.Add((transform.GetChild(1).transform.position, isPressed, turnActivated));
+        commandIterator.Add(command);
+        stateIterator.Add((transform.GetChild(1).transform.position, isPressed, remainingTurns));
     }
 
-    public void RestoreState(int turnIndex)
+    public void RestoreState()
     {
-        var state = listButtonStateLog[turnIndex];
+        var state = stateIterator.Current;
         transform.GetChild(1).transform.position = state.Item1;
         isPressed = state.Item2;
-        turnActivated = state.Item3;
+        remainingTurns = state.Item3;
 
         targetStates.ForEach(state => state.target.SetActive(isPressed ? !state.isInitiallyActive : state.isInitiallyActive));
 
     }
-    public void RemoveLog(int startIndex)
+    public void RemoveLog(int k)
     {
-        listButtonCommandLog.RemoveRange(startIndex, listButtonCommandLog.Count - startIndex); // turn 0: no element
-        listButtonStateLog.RemoveRange(startIndex + 1, listButtonStateLog.Count - startIndex - 1); // turn 0: one initial element
+        for (int i = 0; i < k; i++)
+        {
+            commandIterator.RemoveLast();
+            stateIterator.RemoveLast();
+        }
     }
 }
