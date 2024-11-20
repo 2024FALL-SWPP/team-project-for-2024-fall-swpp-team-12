@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,8 +15,6 @@ public class Button : MonoBehaviour
     public List<TargetObjectState> targetStates; //pair platforms with their initial states
     private Vector3 plateOffPosition;
     private Vector3 plateOnPosition;
-
-    private bool doPressButton = false;
     public bool isPressed = false;
 
     public int resetTurnCount = 1; //treated as constant (hyperparameter)
@@ -42,6 +41,7 @@ public class Button : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (TurnManager.turnManager.player.isTimeRewinding) return;
         if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
         {
             PressButton();
@@ -49,6 +49,7 @@ public class Button : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
+        if (TurnManager.turnManager.player.isTimeRewinding) return;
         if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
         {
             PressButton();
@@ -58,59 +59,61 @@ public class Button : MonoBehaviour
     {
         if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
         {
-            doPressButton = false; //left the button
+
         }
     }
-
     public void AdvanceTurn()
     {
-        if (doPressButton)
-        {
-            doPressButton = false;
-            isMoveComplete = true;
-        }
-        else
-        {
-            if (!isMoveComplete)
-            {
-                if (isPressed)
-                {
-                    remainingTurns--;
-                    Debug.Log(remainingTurns);
+        StartCoroutine(WaitForPlayerMoveCompleteAndAdvance());
+    }
 
-                    if (remainingTurns <= 0)
-                    {
-                        ResetButton();
-                    }
-                    else
-                    {
-                        SaveCurrentState($"{remainingTurns}");
-                        isMoveComplete = true;
-                    }
+    private IEnumerator WaitForPlayerMoveCompleteAndAdvance()
+    {
+        // Wait until isMoveComplete becomes true
+        yield return new WaitUntil(() => TurnManager.turnManager.player.isMoveComplete);
+
+        Debug.Log("Player move complete. Advancing turn...");
+
+        if (!isMoveComplete)
+        {
+            remainingTurns--;
+            if (isPressed)
+            {
+                Debug.Log("remainingTurns:" + remainingTurns);
+
+                if (remainingTurns <= 0)
+                {
+                    ResetButton();
                 }
                 else
                 {
-                    SaveCurrentState("No Update");
+                    SaveCurrentState($"{remainingTurns}");
                     isMoveComplete = true;
                 }
+            }
+            else
+            {
+                SaveCurrentState("No Update");
+                isMoveComplete = true;
             }
         }
     }
 
     private void PressButton()
     {
-        doPressButton = true;
-        targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
-        transform.GetChild(1).transform.position = plateOnPosition;
+        if (!isPressed) {
+            targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
+            transform.GetChild(1).transform.position = plateOnPosition;
 
-        remainingTurns = resetTurnCount - 1;
+            remainingTurns = resetTurnCount;
 
-        if (!isPressed) isPressed = true;
+            {isPressed = true; Debug.Log("pressed");}
 
-        // Log button press state
-        SaveCurrentState("Activated");
+            // Log button press state
+            SaveCurrentState("Activated");
 
-        isMoveComplete = true;
+            isMoveComplete = true;
+        }
     }
 
     private void ResetButton()
@@ -133,6 +136,7 @@ public class Button : MonoBehaviour
         // Log the command and current state
         commandIterator.Add(command);
         stateIterator.Add((transform.GetChild(1).transform.position, isPressed, remainingTurns));
+        Debug.Log("saving: " + isPressed);
     }
 
     public void RestoreState()
@@ -140,6 +144,7 @@ public class Button : MonoBehaviour
         var state = stateIterator.Current;
         transform.GetChild(1).transform.position = state.Item1;
         isPressed = state.Item2;
+        Debug.Log("button:" + isPressed);
         remainingTurns = state.Item3;
 
         targetStates.ForEach(state => state.target.SetActive(isPressed ? !state.isInitiallyActive : state.isInitiallyActive));
