@@ -29,7 +29,7 @@ public class Lever : MonoBehaviour
         {
             (transform.GetChild(1).transform.rotation, isActivated, canToggleDirection)
         };
-        var initialCommands = new List<string>();
+        var initialCommands = new List<string>{""};
 
         stateIterator = new TurnLogIterator<(Quaternion, bool, Vector3)>(initialState);
         commandIterator = new TurnLogIterator<string>(initialCommands);
