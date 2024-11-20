@@ -34,7 +34,7 @@ public class Button : MonoBehaviour
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
 
         var initialState = new List<(Vector3, bool, int)> { (transform.GetChild(1).transform.position, isPressed, remainingTurns) };
-        var initialCommands = new List<string>();
+        var initialCommands = new List<string>{""};
 
         stateIterator = new TurnLogIterator<(Vector3, bool, int)>(initialState);
         commandIterator = new TurnLogIterator<string>(initialCommands);

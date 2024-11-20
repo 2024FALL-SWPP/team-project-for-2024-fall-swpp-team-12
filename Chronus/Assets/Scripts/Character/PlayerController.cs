@@ -102,7 +102,7 @@ public class PlayerController : CharacterBase
     {
         base.Start();
 
-        listCommandLog = new List<string>();
+        listCommandLog = new List<string>{""};
         listPosLog = new List<(Vector3, Quaternion)> { (playerCurPos, playerCurRot) };
 
         commandIterator = new TurnLogIterator<string>(listCommandLog);
@@ -155,6 +155,7 @@ public class PlayerController : CharacterBase
             case "q": // go to the 1 turn past
                 if (positionIterator.HasPrevious())
                 {
+                    Debug.Log("gotopast");
                     TurnManager.turnManager.GoToThePast();
                 }
                 else
