@@ -11,7 +11,6 @@ public class TurnManager : MonoBehaviour
     public bool CLOCK = false;
     public PlayerController player;
     public PhantomController phantom;
-    public Dictionary<string, bool> dicTurnCheck;
     // maybe we should integrate all objects into one interface? (considering design pattern)
     public List<Box> boxList = new();
     public List<Button> buttonList = new();
@@ -19,7 +18,7 @@ public class TurnManager : MonoBehaviour
     public List<MovingObstacle> obstacleList = new();
     private void Awake() 
     {
-        if (TurnManager.turnManager == null) { TurnManager.turnManager = this; }
+        if (turnManager == null) { turnManager = this; }
     }
 
     void Start()
@@ -56,6 +55,9 @@ public class TurnManager : MonoBehaviour
         boxList.ForEach(box => box.SaveCurrentPos());
         obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
         // lever & button is done at its script, saving its states. 
+
+        // Check if player has cleared the level -> if cleared, go to next level
+        LevelManager.levelManager.CheckAndCompleteLevel();
     }
 
     private bool CheckAllMoveComplete() 
@@ -90,7 +92,7 @@ public class TurnManager : MonoBehaviour
         foreach (GameObject boxObject in boxObjects)
         {
             Box boxScript = boxObject.GetComponent<Box>();
-            boxList.Add(boxScript); // 100% sure there's a script. so not adding if (!= null)
+            boxList.Add(boxScript); 
         }
 
         GameObject[] leverObjects = GameObject.FindGameObjectsWithTag("Lever");
@@ -118,13 +120,13 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    // below this, methods for time rewind 
+    // Functions for time rewind 
     public void EnterTimeRewind()
     // entering time rewind mode: make an empty phantom(actually, the player) in current position 
     {
         player.isTimeRewinding = true;
 
-        // delete already existing phantom, if not ended
+        // kill already existing phantom, if not ended
         phantom.isPhantomExisting = false;
         phantom.gameObject.SetActive(false);
     }

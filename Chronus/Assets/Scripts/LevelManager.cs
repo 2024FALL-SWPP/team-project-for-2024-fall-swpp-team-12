@@ -4,52 +4,54 @@ using System.Collections;
 
 public class LevelManager : MonoBehaviour
 {
+    public static LevelManager levelManager;
     public GameObject levelBarrierPrefab;
     public string[] levelScenes;
-    private int currentLevelIndex = 0;
-    private int previousLevelIndex = -1; // new variable to track the last level to unload
+    private int currentLevelIndex;
+    private int previousLevelIndex = -1;
     private PlayerController player;
     private Transform currentGoal;
     private Transform currentStart;
     private Camera mainCamera;
     private Vector3 levelOffset = Vector3.zero;
-    private Vector3 cameraOffset = Vector3.zero;
-    private float playerTileDiff = 1.2f;
-    // 1.2f because right now, if the player is at (1, 1, 1),
-    // then the tile the player is standing on is (1, -0.2, 1)
-    // this may be a bad design pattern, so need to be reviewed.
-    private bool isLevelCompleted = false;
     private GameObject levelBarrier;
+    private readonly float playerTileDiff = 1.2f;
+    // 1.2f: because right now, if the player is at (1, 1, 1),
+    // then the tile the player is standing on is (1, -0.2, 1)
+    private readonly string baseSceneName = "LevelBaseScene";
 
-
+    private void Awake() 
+    {
+        if (levelManager == null) { levelManager = this; }
+    }
     private void Start()
     {
         player = FindObjectOfType<PlayerController>();
         mainCamera = Camera.main;
-        if (levelBarrierPrefab != null)
-        {
-            levelBarrier = Instantiate(levelBarrierPrefab);
-        }
+        if (levelBarrierPrefab != null) levelBarrier = Instantiate(levelBarrierPrefab);
+
+        if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
+        else currentLevelIndex = 0;
+
+        // I don't know how it's going to work in real application
+        // but in test environment: this will work for now.
+        Scene activeScene = SceneManager.GetActiveScene();
+        if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
 
         LoadLevel(currentLevelIndex);
-        SceneManager.sceneLoaded += OnSceneLoaded;
-        // sceneLoaded = a event called when a scene is loaded
+        SceneManager.sceneLoaded += OnSceneLoaded; // sceneLoaded = a event called when a scene is loaded
     }
+
+    private void OnApplicationQuit()
+    // Save is done automatically when quitting the game; Load is done at the Start()
+    {
+        PlayerPrefs.SetInt("SavedLevelIndex", currentLevelIndex);
+        PlayerPrefs.Save();
+    }
+
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void Update()
-    {
-        // I think this clear logic should not be "updated" per frame.
-        // clear logic should be called once after the player movement, to check if the player is at the goal tile. 
-        // -> To avoid this from being called multiple times, I introduced "isLevelCompleted" bool (temporary)
-        // This should be fixed when integrating with refactored PlayerController!
-        if (player != null && currentGoal != null && IsPlayerAtGoal() && !isLevelCompleted)
-        {
-            LevelComplete();
-        }
     }
 
     private bool IsPlayerAtGoal()
@@ -59,20 +61,20 @@ public class LevelManager : MonoBehaviour
             Mathf.Approximately(player.transform.position.z, currentGoal.position.z);
     }
 
-    private void LevelComplete()
+    public void CheckAndCompleteLevel()
+    // This is called at TurnManager.EndTurn()
     {
-        isLevelCompleted = true;
-        Debug.Log("Level Clear!");
-        StartCoroutine(FinishLevel());
+        if (player != null && currentGoal != null && IsPlayerAtGoal())
+        {
+            Debug.Log("Level Clear!");
+            StartCoroutine(FinishLevel());
+        }
     }
 
     private IEnumerator FinishLevel()
     {
         // Keep track of the previous level to unload later
-        if (currentLevelIndex > 0)
-        {
-            previousLevelIndex = currentLevelIndex - 1;
-        }
+        if (currentLevelIndex > 0) previousLevelIndex = currentLevelIndex - 1;
 
         // Load the next level and move the camera
         currentLevelIndex++;
@@ -80,14 +82,6 @@ public class LevelManager : MonoBehaviour
 
         // Wait until the next level is fully loaded
         yield return new WaitUntil(() => SceneManager.GetSceneByName(levelScenes[currentLevelIndex]).isLoaded);
-
-        // // Now unload the previous level if there is one to unload
-        // if (previousLevelIndex >= 0)
-        // {
-        //     yield return SceneManager.UnloadSceneAsync(levelScenes[previousLevelIndex]);
-        //     previousLevelIndex = -1; // Reset previousLevelIndex after unloading
-        // }
-        isLevelCompleted = false;
     }
 
     private void LoadLevel(int index)
@@ -108,7 +102,7 @@ public class LevelManager : MonoBehaviour
             GameObject nextGoal = GameObject.FindWithTag("GoalTile");
             GameObject nextStart = GameObject.FindWithTag("StartTile");
             if (nextGoal != null && nextStart != null)
-            {   
+            {
                 Vector3 previousLevelOffset = levelOffset;
                 if (currentGoal != null) // passing the first level
                 {
@@ -119,16 +113,15 @@ public class LevelManager : MonoBehaviour
                 currentStart = nextStart.transform;
                 nextGoal.tag = "Untagged"; // to prevent multiple "GoalTile"s in one scene
                 nextStart.tag = "Untagged";
-                ApplyOffsetToScene(scene);
-                
-                if (levelBarrier != null)
-                {
-                    levelBarrier.transform.position = currentStart.position - new Vector3(0, 0, 1);
-                }
 
-                // for camera, offset is "accumulated", so need to be controlled like this.
-                StartCoroutine(MoveCameraWithTransition(levelOffset - previousLevelOffset)); 
+                ApplyOffsetToScene(scene);
+                // add a transparent barrier to prevent going to the previous level
+                if (levelBarrier != null) levelBarrier.transform.position = currentStart.position - new Vector3(0, 0, 1); 
+                // for camera, offset is "cumulated", so need to be controlled like this.
+                StartCoroutine(MoveCameraWithTransition(levelOffset - previousLevelOffset));
             }
+
+            ResetLevel();
             
             // Get information from the new level
             TurnManager.turnManager.InitializeObjectLists();
@@ -136,6 +129,17 @@ public class LevelManager : MonoBehaviour
             PhantomController.phantomController.isPhantomExisting = false;
             PhantomController.phantomController.gameObject.SetActive(false);
         }
+    }
+
+    public void ResetLevel()
+    {
+        // Get information from the new level
+        TurnManager.turnManager.InitializeObjectLists();
+        // Reset player position log 
+        PlayerController.playerController.InitializePositionLog();
+        // Kill the phantom
+        PhantomController.phantomController.isPhantomExisting = false;
+        PhantomController.phantomController.gameObject.SetActive(false);
     }
 
     private void ApplyOffsetToScene(Scene scene)
@@ -156,37 +160,26 @@ public class LevelManager : MonoBehaviour
     private IEnumerator MoveCameraWithTransition(Vector3 offset)
     {
         Vector3 targetPosition = mainCamera.transform.position + offset;
-        
-        // Ease-in
-        Vector3 velocity = Vector3.zero;  
+
+        // Ease-in transition
+        Vector3 velocity = Vector3.zero;
         while (Vector3.Distance(mainCamera.transform.position, targetPosition) > 0.1f)
         {
             mainCamera.transform.position = Vector3.SmoothDamp(
                 mainCamera.transform.position,
                 targetPosition,
                 ref velocity,
-                0.3f  
+                0.3f
             );
             yield return null;
         }
+        mainCamera.transform.position = targetPosition;
 
-        // Linear
-        /*while (Vector3.Distance(mainCamera.transform.position, targetPosition) > 0.1f)
-        {
-            mainCamera.transform.position = Vector3.Lerp(
-                mainCamera.transform.position,
-                targetPosition,
-                transitionSpeed * Time.deltaTime
-            );
-            yield return null;
-        }*/
-
-        mainCamera.transform.position = targetPosition; 
-
-        // Now unload the previous level if there is one to unload
+        // After the transition, unload the previous level if there is one to unload
         if (previousLevelIndex >= 0)
         {
-            yield return SceneManager.UnloadSceneAsync(levelScenes[previousLevelIndex]);
+            Scene sceneToUnload = SceneManager.GetSceneByName(levelScenes[previousLevelIndex]);
+            if (sceneToUnload.isLoaded) yield return SceneManager.UnloadSceneAsync(sceneToUnload);
             previousLevelIndex = -1; // Reset previousLevelIndex after unloading
         }
     }
