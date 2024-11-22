@@ -57,7 +57,10 @@ public class TurnManager : MonoBehaviour
         // lever & button is done at its script, saving its states. 
 
         // Check if player has cleared the level -> if cleared, go to next level
-        LevelManager.levelManager.CheckAndCompleteLevel();
+        if (LevelManager.levelManager != null)
+        {
+            LevelManager.levelManager.CheckAndCompleteLevel();
+        }    
     }
 
     private bool CheckAllMoveComplete() 
