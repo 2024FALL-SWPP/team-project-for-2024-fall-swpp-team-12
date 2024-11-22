@@ -14,9 +14,9 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 1, g: 1, b: 1, a: 1}
-  m_FogMode: 2
+  m_FogMode: 3
   m_FogDensity: 0
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
@@ -27,7 +27,7 @@ RenderSettings:
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
-  m_HaloStrength: 0.5
+  m_HaloStrength: 1
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
@@ -5072,16 +5072,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 715a4bfcd8ca9bc40992d98d801f12c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clockPrefab: {fileID: 100543603439902902, guid: f07e1e5c9cd147d4398c736dd7966acc, type: 3}
-  rewindFogColor: {r: 0.6401922, g: 0.9245283, b: 0.89619184, a: 1}
-  fogTransitionSpeed: 50
-  rewindFogDensity: 0.1
-  normalFogDensity: 0
-  clockSpinSpeed: 500
-  clockSlideDuration: 1.5
-  clockDuration: 1
-  clockStartPosition: {x: -1, y: 2, z: -11}
-  clockEndPosition: {x: 10, y: 2, z: -2}
+  rewindOverlayColor: {r: 1, g: 1, b: 1, a: 0.5}
+  transitionSpeed: 3
   rewindStartAudio: {fileID: 8300000, guid: 55da9333239a57246a539976acf9e880, type: 3}
 --- !u!82 &1828245217
 AudioSource:
