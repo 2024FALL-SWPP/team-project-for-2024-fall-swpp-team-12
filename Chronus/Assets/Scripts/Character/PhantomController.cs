@@ -37,8 +37,7 @@ public class PhantomController : CharacterBase
     {
         if (!commandIterator.HasNext()) 
         {
-            gameObject.SetActive(false);
-            isPhantomExisting = false;    
+            KillPhantom();
             return;
         }
         string nextCommand = commandIterator.Next();  // Get the next command
@@ -49,5 +48,11 @@ public class PhantomController : CharacterBase
     {
         if (!isPhantomExisting) return;
         base.Update();
+    }
+
+    public void KillPhantom()
+    {
+        gameObject.SetActive(false);
+        isPhantomExisting = false;
     }
 }

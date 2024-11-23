@@ -9,6 +9,7 @@ public class TurnManager : MonoBehaviour
     public static TurnManager turnManager; // Singleton
     public int rewindTurnCount = 0;
     public bool CLOCK = false;
+    public bool fallCLOCK = false;
     public PlayerController player;
     public PhantomController phantom;
     // maybe we should integrate all objects into one interface? (considering design pattern)
@@ -34,30 +35,54 @@ public class TurnManager : MonoBehaviour
         {
             EndTurn();
             ResetMoveComplete();
+            StartFall();
+        }
+        if (CheckAllFallComplete())
+        {
+            EndFall();
+            ResetFallComplete();
         }
     }
 
-    public void StartTurn() 
+    public void StartTurn() //by player
     {
         CLOCK = true;
         if (phantom.isPhantomExisting) phantom.AdvanceTurn();
-        boxList.ForEach(box => box.AdvanceTurn());
+        boxList.ForEach(box => box.AdvanceTurn()); //problem here: box move -> button press -> ????
         leverList.ForEach(lever => lever.AdvanceTurn());
         buttonList.ForEach(button => button.AdvanceTurn());
+        //after switch change
         obstacleList.ForEach(obstacle => obstacle.AdvanceTurn());
+    }
+    public void StartFall()
+    {
+        fallCLOCK = true;
+        player.AdvanceFall(); //check if void or not
+        if (phantom.isPhantomExisting) phantom.AdvanceFall(); //check if void or not
+        boxList.ForEach(box => box.AdvanceFall());
     }
 
     private void EndTurn()
     {
         CLOCK = false;
+        obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
+        //player.positionIterator.Add((player.playerCurPos, player.playerCurRot));
+        //boxList.ForEach(box => box.SaveCurrentPos());
+        // lever & button is done at its script, saving its states.
+    }
+
+    private void EndFall()
+    {
+        fallCLOCK = false;
+        // turn++;
+        Debug.Log("turn: " + rewindTurnCount);
+
         player.positionIterator.Add((player.playerCurPos, player.playerCurRot));
         if (phantom.isPhantomExisting) 
         {
             phantom.positionIterator.Add((phantom.gameObject.transform.position, phantom.gameObject.transform.rotation));
         }
         boxList.ForEach(box => box.SaveCurrentPos());
-        obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
-        // lever & button is done at its script, saving its states. 
 
         // Check if player has cleared the level -> if cleared, go to next level
         LevelManager.levelManager?.CheckAndCompleteLevel();    
@@ -76,6 +101,15 @@ public class TurnManager : MonoBehaviour
         );
     }
 
+    private bool CheckAllFallComplete()
+    {
+        return (
+            player.isFallComplete &&
+            (!phantom.isPhantomExisting || phantom.isFallComplete) &&
+            boxList.All(box => box.isFallComplete)
+        );
+    }
+
     private void ResetMoveComplete()
     {
         player.isMoveComplete = false;
@@ -84,6 +118,12 @@ public class TurnManager : MonoBehaviour
         leverList.ForEach(lever => lever.isMoveComplete = false);
         buttonList.ForEach(button => button.isMoveComplete = false);
         obstacleList.ForEach(obstacle => obstacle.isMoveComplete = false);
+    }
+    private void ResetFallComplete()
+    {
+        player.isFallComplete = false;
+        phantom.isFallComplete = false;
+        boxList.ForEach(box => box.isFallComplete = false);
     }
 
     // maybe we need a separate ObjectManager to control all these lists & time rewind?
