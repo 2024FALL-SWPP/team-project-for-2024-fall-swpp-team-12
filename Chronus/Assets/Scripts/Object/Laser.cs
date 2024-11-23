@@ -4,7 +4,6 @@ public class Laser : MonoBehaviour
 {
     public float laserSpeed = 20f; 
     public float laserLength = 100f; // arbitrary maximum length
-    public LayerMask collisionLayer; 
     private LineRenderer lineRenderer; 
 
     void Start()
@@ -32,7 +31,7 @@ public class Laser : MonoBehaviour
         Vector3 start = transform.position;
         Vector3 direction = transform.forward;
 
-        if (Physics.Raycast(start, direction, out RaycastHit hit, Mathf.Infinity, collisionLayer))
+        if (Physics.Raycast(start, direction, out RaycastHit hit, Mathf.Infinity))
         {
             // stop at the collision(hit) point 
             lineRenderer.SetPosition(0, start);
