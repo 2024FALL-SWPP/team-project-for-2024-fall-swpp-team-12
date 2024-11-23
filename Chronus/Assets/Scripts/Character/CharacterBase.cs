@@ -18,16 +18,8 @@ public abstract class CharacterBase : MonoBehaviour
     public float curHopSpeed { get; set; }
     public float curRotSpeed { get; set; }
 
-    // variables for being pushed: is there another efficient way to implement this? idk
-    public Vector3 pushDirection = Vector3.zero;
-    //for state decision 'branch' from spatial condition check
-    protected bool isUnderJump = false;
-
-    // Raycasting for spatial checks
-    protected RaycastHit hitWall, hitFloor, hitOverFloor, hitUnderFloor;
-    protected float rayDistance = 1.0f;
-    protected float rayJumpInterval = 1.0f;
-    protected int layerMask = 1 << 0;
+    public Vector3 pushDirection = Vector3.zero; // to check if being pushed
+    private const float BLOCK_SIZE = 2.0f;
 
     // State management
     protected List<IState<CharacterBase>> listCurTurn, listStay, listTurn, listMoveForward, listMoveSideRear, listHopForward, listHopSideRear;
@@ -38,7 +30,7 @@ public abstract class CharacterBase : MonoBehaviour
     // index of state list
     protected int listSeq = 0;
     // task of a state ended, need to jump to next state (next index of the state list)
-    //can be changed from state's DoneAction func, through sender
+    // can be changed from state's DoneAction func, through sender
     public bool doneAction = false; // for state machine
     public bool isMoveComplete = false; // for turn mechanism
 
@@ -49,15 +41,6 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Start()
     {
-        //Raycast for spatial condition check
-        hitWall = new RaycastHit();
-        hitFloor = new RaycastHit();
-        hitOverFloor = new RaycastHit();
-        hitUnderFloor = new RaycastHit();
-        rayDistance = 1.0f;
-        rayJumpInterval = 1.0f;
-        layerMask = 1 << 0;
-
         moveSpeedHor = 6.0f;
         moveSpeedVer = 0.5f * moveSpeedHor;
         turnSpeed = 480.0f;
@@ -79,7 +62,7 @@ public abstract class CharacterBase : MonoBehaviour
         listHopForward = new List<IState<CharacterBase>> { hop };
         //idle -> turn(x) -> hop(over or under) -> idle    (x=f(i)) (i:input, f: how much to rotate)
         listHopSideRear = new List<IState<CharacterBase>> { turn, hop };
-        
+
         sm = new StateMachine<CharacterBase>(this, idle);
     }
 
@@ -111,155 +94,144 @@ public abstract class CharacterBase : MonoBehaviour
         switch (command)
         {
             case "w":
-                HandleDirection(Vector3.forward, new float[] { 0.0f, -90.0f, 180.0f, 90.0f }, new Vector3(0, 0, 2.0f));
+                targetDirection = Vector3.forward;
                 break;
             case "s":
-                HandleDirection(Vector3.back, new float[] { 180.0f, 90.0f, 0.0f, -90.0f }, new Vector3(0, 0, -2.0f));
+                targetDirection = Vector3.back;
                 break;
             case "a":
-                HandleDirection(Vector3.left, new float[] { -90.0f, 180.0f, 90.0f, 0.0f }, new Vector3(-2.0f, 0, 0));
+                targetDirection = Vector3.left;
                 break;
             case "d":
-                HandleDirection(Vector3.right, new float[] { 90.0f, 0.0f, -90.0f, 180.0f }, new Vector3(2.0f, 0, 0));
+                targetDirection = Vector3.right;
                 break;
-            case "r": // keep idle and pass turn
+            case "r":
                 listCurTurn = listStay;
                 targetTranslation = playerCurPos;
                 StartAction();
-                break;
+                return;
         }
+
+        TryToMoveToDirection();
     }
 
     protected virtual void StartAction()
     {
-        listSeq = 0; 
-        sm.SetState(listCurTurn[listSeq]); 
+        listSeq = 0;
+        sm.SetState(listCurTurn[listSeq]);
     }
 
-    // below this, functions for spatial check //
-
-    protected void HandleDirection(Vector3 direction, float[] angles, Vector3 rayOffset) //from HandleMovementInput() with local direction Array
+    protected void RotateInPlace()
     {
-        targetTranslation = playerCurPos + rayOffset; //target position. (horizontal)
-        targetDirection = direction;
-
-        int angleIndex = Mathf.RoundToInt(transform.eulerAngles.y / 90) % 4;
-        curTurnAngle = angles[angleIndex]; //relative orientation!!
-
-        Debug.DrawRay(playerCurPos + rayOffset, transform.up * -rayDistance, Color.red, 0.8f);
-        if (Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask)) //void check
+        if (curTurnAngle != 0.0f)
         {
-            isUnderJump = !Physics.Raycast(playerCurPos + rayOffset + new Vector3(0, 0.1f, 0), -transform.up, out hitFloor, rayDistance + 0.1f, layerMask); //can jump under?
-
-            HandleActionBasedOnAngle(); //need to check more things.
-        }
-        else //if void
-        {
-            if (curTurnAngle != 0.0f) //if void is not in front of player, just turn(rotate) in its place (turn update happens.)
-            {
-                listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
-                StartAction(); //cycle starts!!!
-            }
-            //if void is in front of player, no action and no turn update.
+            listCurTurn = listTurn;
+            StartAction();
         }
     }
-    protected void HandleActionBasedOnAngle()  //local direction and check whether 'wall or jumpable stair(over 1.0)' is in front of player's oriented direction
-    {
-        Vector3 rayDirection = Vector3.zero;
-        if (curTurnAngle == 0.0f)
-            rayDirection = transform.forward;
-        else if (curTurnAngle == 180.0f)
-            rayDirection = -transform.forward;
-        else if (curTurnAngle == -90.0f)
-            rayDirection = -transform.right;
-        else if (curTurnAngle == 90.0f)
-            rayDirection = transform.right;
 
-        Debug.DrawRay(playerCurPos, rayDirection * rayDistance, Color.blue, 0.8f);
-        if (Physics.Raycast(playerCurPos, rayDirection, out hitWall, rayDistance + 1.0f, layerMask)) //wall check
+    protected void TryToMoveToDirection()
+    {
+        Vector3 rayOffset = targetDirection * BLOCK_SIZE;
+        targetTranslation = playerCurPos + rayOffset;
+        float angleDifference = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
+        curTurnAngle = Mathf.Round(angleDifference / 90) * 90;
+
+        Vector3 rayStart = transform.position + rayOffset;
+
+        // First, check if there's an wall-like object to that target direction. 
+        if (Physics.Raycast(transform.position, targetDirection, out RaycastHit hit, BLOCK_SIZE))
         {
-            if (hitWall.collider.tag == "Lever") //lever.
+            switch (hit.collider.tag)
             {
-                Lever lever = hitWall.collider.gameObject.GetComponent<Lever>();
-                if (lever.canToggleDirection == rayDirection) //can push lever (right direction)
-                {
-                    lever.doPushLever = true; //push lever!!!
-                    ChooseAction(listStay, listTurn); //we should set animation trigger on Enter and Exit of PlayerIdle state.
-                    StartAction(); //cycle starts!!!
-                }
-                else
-                {
-                    if (curTurnAngle != 0.0f)
+                case "Lever":
                     {
-                        listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
-                        StartAction(); //cycle starts!!!
-                    }
-                }
-            }
-            else if (hitWall.collider.tag == "Box") //box.
-            {
-                Box box = hitWall.collider.gameObject.GetComponent<Box>(); // 100% sure that there is a Box script!
-                if (box.TryMove(rayDirection))
-                {
-                    ChooseAction(listMoveForward, listMoveSideRear); //we should use new state (like playerpush ..) and animation trigger on Enter and Exit of that state.
-                    StartAction(); //cycle starts!!!
-                }
-                else
-                {
-                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance + 1.0f, layerMask)) //available to jump over
-                    {
-                        curHopDir = 1.0f; //Jump Over
-                        targetTranslation += new Vector3(0, curHopDir, 0); //target readjust
-                        ChooseAction(listHopForward, listHopSideRear);
-                        StartAction(); //cycle starts!!!
-                    }
-                    else //if not
-                    {
-                        if (curTurnAngle != 0.0f) //if wall is not in front of player, just turn(rotate) in its place (turn update happens.)
+                        Lever lever = hit.collider.gameObject.GetComponent<Lever>();
+                        if (lever.canToggleDirection == targetDirection)
                         {
-                            listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
-                            StartAction(); //cycle starts!!!
+                            lever.doPushLever = true;
+                            ChooseAndStartAction(listStay, listTurn);
                         }
-                        //if wall is in front of player, no action and no turn update.
+                        else
+                        {
+                            RotateInPlace();
+                        }
+                        break;
                     }
-                }
-            }
-            else if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), rayDirection, out hitOverFloor, rayDistance + 1.0f, layerMask)) //available to jump over
-            {
-                curHopDir = 1.0f; //Jump Over
-                targetTranslation += new Vector3(0, curHopDir, 0); //target readjust
-                ChooseAction(listHopForward, listHopSideRear);
-                StartAction(); //cycle starts!!!
-            }
-            else //if not
-            {
-                if (curTurnAngle != 0.0f) //if wall is not in front of player, just turn(rotate) in its place (turn update happens.)
-                {
-                    listCurTurn = listTurn; //we should set animation trigger on Enter and Exit of PlayerTurn state.
-                    StartAction(); //cycle starts!!!
-                }
-                //if wall is in front of player, no action and no turn update.
+
+                case "Box":
+                    {
+                        Box box = hit.collider.gameObject.GetComponent<Box>();
+                        if (box.TryMove(targetDirection))
+                        {
+                            ChooseAndStartAction(listMoveForward, listMoveSideRear);
+                        }
+                        else
+                        {
+                            if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), targetDirection, out RaycastHit hitFloor, BLOCK_SIZE))
+                            // This is duplicated, and not using transform.position: but since this is working, I'll just leave it here.
+                            {
+                                curHopDir = BLOCK_SIZE / 2;
+                                targetTranslation += new Vector3(0, curHopDir, 0);
+                                ChooseAndStartAction(listHopForward, listHopSideRear);
+                            }
+                            else
+                            {
+                                RotateInPlace();
+                            }
+                        }
+                        break;
+                    }
+
+                default:
+                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), targetDirection, out RaycastHit hitOverFloor, BLOCK_SIZE))
+                    // can jump over
+                    {
+                        curHopDir = BLOCK_SIZE / 2; 
+                        targetTranslation += new Vector3(0, curHopDir, 0); 
+                        ChooseAndStartAction(listHopForward, listHopSideRear);
+                    }
+                    else
+                    {
+                        RotateInPlace();
+                    }
+                    break;
             }
         }
-        else
+        else // if there is no wall: then check if target position has floor
         {
-            if (isUnderJump)
+            Debug.DrawRay(rayStart, -transform.up * 2 * BLOCK_SIZE, Color.blue, 1.0f);
+            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, 2*BLOCK_SIZE))
             {
-                curHopDir = -1.0f; //Jump Under
-                targetTranslation += new Vector3(0, curHopDir, 0); //target readjust
-                ChooseAction(listHopForward, listHopSideRear);
-                isUnderJump = false;
+                GameObject floor = hitGround.collider.gameObject;
+
+                Collider playerCollider = GetComponent<Collider>();
+                Collider floorCollider = floor.GetComponent<Collider>();
+                float playerBottomY = Mathf.Round(playerCollider.bounds.center.y - playerCollider.bounds.extents.y);
+                float floorTopY = Mathf.Round(floorCollider.bounds.center.y + floorCollider.bounds.extents.y);
+
+                if (Mathf.Approximately(playerBottomY, floorTopY)) // flat move
+                {
+                    ChooseAndStartAction(listMoveForward, listMoveSideRear);
+                }
+                else if (Mathf.Approximately(playerBottomY, floorTopY + (BLOCK_SIZE / 2))) // jump down correctly (only 0.5 grid = 1.0f in the game scene)
+                {
+                    curHopDir = -(BLOCK_SIZE / 2);
+                    targetTranslation += new Vector3(0, curHopDir, 0);
+                    ChooseAndStartAction(listHopForward, listHopSideRear);
+                }
             }
             else
             {
-                ChooseAction(listMoveForward, listMoveSideRear); //Horizontal Move
+                RotateInPlace(); // temporary, need to implement "falling"
             }
-            StartAction(); //cycle starts!!!
         }
     }
-    protected void ChooseAction(List<IState<CharacterBase>> statelist1, List<IState<CharacterBase>> statelist2)
+
+    protected void ChooseAndStartAction(List<IState<CharacterBase>> statelist1, List<IState<CharacterBase>> statelist2)
     {
         listCurTurn = curTurnAngle == 0.0f ? statelist1 : statelist2;
+        StartAction();
     }
 
 }
