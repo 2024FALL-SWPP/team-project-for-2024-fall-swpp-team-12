@@ -49,7 +49,7 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
     public void DoneAction(CharacterBase sender)
     {
         Vector3 currentTranslation = _CharacterBase.transform.position;
-        if (Vector3.Distance(currentTranslation, targetTranslation) < 0.2f)
+        if (Vector3.Distance(currentTranslation, targetTranslation) < 0.1f || Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos) >= 2.0f)
         {
             _CharacterBase.transform.position = targetTranslation; 
             _CharacterBase.playerCurPos = _CharacterBase.transform.position; 

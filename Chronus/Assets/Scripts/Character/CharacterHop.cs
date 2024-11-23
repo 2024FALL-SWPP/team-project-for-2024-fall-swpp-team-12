@@ -81,7 +81,9 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
     public void DoneAction(CharacterBase sender)
     {
         Vector3 currentTranslation = _CharacterBase.transform.position;
-        if (Vector3.Distance(currentTranslation, targetTranslation) < 0.3f)
+        float gap = Mathf.Sqrt((currentTranslation.x - _CharacterBase.playerCurPos.x) * (currentTranslation.x - _CharacterBase.playerCurPos.x) +
+            (currentTranslation.z - _CharacterBase.playerCurPos.z) * (currentTranslation.z - _CharacterBase.playerCurPos.z));
+        if (Vector3.Distance(currentTranslation, targetTranslation) < 0.1f || gap >= 2.0f)
         {
             _CharacterBase.transform.position = targetTranslation;
             _CharacterBase.playerCurPos = _CharacterBase.transform.position;

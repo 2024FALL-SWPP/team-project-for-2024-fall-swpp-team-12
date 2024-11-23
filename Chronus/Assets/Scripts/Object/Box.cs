@@ -10,6 +10,7 @@ public class Box : MonoBehaviour
     
     public TurnLogIterator<Vector3> positionIterator;
     public bool isMoveComplete = false;
+    public bool isFallComplete = false;
     private bool isBeingPushed = false;
     private void Start()
     {
@@ -27,27 +28,36 @@ public class Box : MonoBehaviour
 
     private void Update()
     {
-        // Demo falling code. need fix.
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance))
+        if (TurnManager.turnManager.fallCLOCK && !isFallComplete)
         {
-            if (hit.collider.CompareTag("GroundFloor") || hit.collider.CompareTag("FirstFloor"))
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance))
             {
-                // Tile detected, keep Y position constraint to keep the box stable
-                rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+                if (hit.collider.CompareTag("GroundFloor") || hit.collider.CompareTag("FirstFloor") || hit.collider.CompareTag("Box"))
+                {
+                    // Tile detected, keep Y position constraint to keep the box stable
+                    rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+                    transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y) - 0.5f, transform.position.z);
+                    isFallComplete = true;
+                }
+            }
+            else
+            {
+                // If no tile is detected, allow the box to fall
+                rb.constraints = RigidbodyConstraints.FreezeRotation;
             }
         }
-        else
-        {
-            // If no tile is detected, allow the box to fall
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
-        }
-
+        
         // There should be a code indicating:
         // if it has touched the ground, then isMoveComplete = true. 
     }
     public void AdvanceTurn()
     {   
         if (!isBeingPushed) isMoveComplete = true;
+        isBeingPushed = false;
+    }
+    public void AdvanceFall()
+    {
+        //check if void or not
     }
     public bool TryMove(Vector3 direction)
     {
@@ -56,7 +66,8 @@ public class Box : MonoBehaviour
             if (hit.collider.CompareTag("Obstacle") || // need "Obstacle" tag for all walls.
                 hit.collider.CompareTag("Lever") ||
                 hit.collider.CompareTag("MovingObstacle") ||
-                hit.collider.CompareTag("Wall"))
+                hit.collider.CompareTag("Wall") ||
+                hit.collider.CompareTag("Player"))
             {
                 isBeingPushed = false;
                 return false;

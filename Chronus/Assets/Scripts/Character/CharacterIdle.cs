@@ -39,7 +39,8 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
             Vector3 direction = (_CharacterBase.targetTranslation - currentTranslation).normalized;
             _CharacterBase.transform.Translate(direction * moveStep, Space.World);
         }
-
+        //need "fall" condition (maybe don't need that)
+        //game over by fell condition also.
     }
     public void DoneAction(CharacterBase sender)
     {
@@ -53,6 +54,8 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
                 _CharacterBase.pushDirection = Vector3.zero;
                 _CharacterBase.pushSpeed = 0;
                 _CharacterBase.doneAction = true;
+                _CharacterBase.isMoveComplete = true;
+                _CharacterBase.pushDirection = Vector3.zero;
             }
         }
         else if (_CharacterBase.isRidingBox)
@@ -69,6 +72,7 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
         else
         {
             _CharacterBase.doneAction = true;
+            _CharacterBase.isMoveComplete = true;
         }
     }
 }

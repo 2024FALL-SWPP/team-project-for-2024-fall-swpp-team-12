@@ -14,7 +14,9 @@ public class MovingObstacle : MonoBehaviour
     // for time rewind
     private bool isVisible = false;
     public bool isMoveComplete = false;
-    public TurnLogIterator<Vector3> positionIterator;
+    public TurnLogIterator<(Vector3, bool, int)> positionIterator;
+
+    public bool isDependantOnSwitch = false;
 
     private void Start()
     {
@@ -24,15 +26,15 @@ public class MovingObstacle : MonoBehaviour
 
     public void InitializeLog() 
     {
-        var initialPositionLog = new List<Vector3> { transform.position };
-        positionIterator = new TurnLogIterator<Vector3>(initialPositionLog);
+        var initialPositionLog = new List<(Vector3, bool, int)> { (transform.position, isVisible, turnCount ) };
+        positionIterator = new TurnLogIterator<(Vector3, bool, int)>(initialPositionLog);
     }
 
     public void AdvanceTurn()
     {
-        turnCount++;
+        if (!isDependantOnSwitch) turnCount++; //count cycle by itself
         if (turnCount == turnCycle)
-        {   
+        {
             Invoke("Move", 0.2f);
             isVisible = !isVisible;
             turnCount = 0;
@@ -91,7 +93,7 @@ public class MovingObstacle : MonoBehaviour
 
     public void SaveCurrentPos()
     {
-        positionIterator.Add(transform.position);
+        positionIterator.Add((transform.position, isVisible, turnCount));
     }
     public void RemoveLog(int k)
     {
@@ -99,7 +101,9 @@ public class MovingObstacle : MonoBehaviour
     }
     public void RestoreState()
     {
-        transform.position = positionIterator.Current;
-        isVisible = transform.position != hiddenPosition;
+        var current = positionIterator.Current;
+        transform.position = current.Item1;
+        isVisible = current.Item2;
+        turnCount = current.Item3;
     }
 }

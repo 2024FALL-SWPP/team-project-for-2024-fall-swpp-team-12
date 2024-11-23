@@ -7,6 +7,7 @@ public abstract class CharacterBase : MonoBehaviour
     public Vector3 targetTranslation { get; set; }
     public Vector3 targetDirection { get; set; }
     public Animator animator;
+    private Rigidbody rb;
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
 
@@ -35,6 +36,7 @@ public abstract class CharacterBase : MonoBehaviour
     // can be changed from state's DoneAction func, through sender
     public bool doneAction = false; // for state machine
     public bool isMoveComplete = false; // for turn mechanism
+    public bool isFallComplete = false;
 
     protected virtual void Awake()
     {
@@ -43,6 +45,9 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Start()
     {
+        rb = gameObject.GetComponent<Rigidbody>();
+        rb.useGravity = true;
+        rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
         moveSpeedHor = 6.0f;
         moveSpeedVer = 0.5f * moveSpeedHor;
         turnSpeed = 480.0f;
@@ -70,7 +75,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (TurnManager.turnManager.CLOCK) // when turn is on progress
+        if (TurnManager.turnManager.CLOCK && !isMoveComplete) // when turn is on progress
         {
             sm.IsDoneAction();
             if (doneAction) // next state in the state list
@@ -84,8 +89,27 @@ public abstract class CharacterBase : MonoBehaviour
                 else
                 {
                     sm.SetState(idle);
-                    isMoveComplete = true;
+                    //isMoveComplete = true;
                 }
+            }
+        }
+        if (TurnManager.turnManager.fallCLOCK && !isFallComplete)
+        {
+            if (Physics.Raycast(playerCurPos, Vector3.down, out RaycastHit hit, rayDistance))
+            {
+                if (hit.collider.CompareTag("GroundFloor") || hit.collider.CompareTag("FirstFloor") || hit.collider.CompareTag("Box"))
+                {
+                    // Tile detected, keep Y position constraint to keep the box stable
+                    rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+                    transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y), transform.position.z);
+                    playerCurPos = transform.position;
+                    isFallComplete = true;
+                }
+            }
+            else
+            {
+                // If no tile is detected, allow the box to fall
+                rb.constraints = RigidbodyConstraints.FreezeRotation;
             }
         }
         sm.DoOperateUpdate();
@@ -122,6 +146,14 @@ public abstract class CharacterBase : MonoBehaviour
         listSeq = 0;
         sm.SetState(listCurTurn[listSeq]);
     }
+
+    public void AdvanceFall()
+    {
+        //Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask);
+        //check if void or not
+    }
+
+    // below this, functions for spatial check //
 
     protected void RotateInPlace()
     {

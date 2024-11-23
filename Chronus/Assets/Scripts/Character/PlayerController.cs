@@ -160,7 +160,7 @@ public class PlayerController : CharacterBase
     // Functions for Time Rewind mode //
     private void ToggleTimeRewindMode()
     {
-        if (TurnManager.turnManager.CLOCK) return; // assuring that every action should be ended (during the turn)
+        if (TurnManager.turnManager.CLOCK || TurnManager.turnManager.fallCLOCK) return; // assuring that every action should be ended (during the turn)
 
         if (!isTimeRewinding) TurnManager.turnManager.EnterTimeRewind();
         else TurnManager.turnManager.LeaveTimeRewind();
@@ -168,7 +168,7 @@ public class PlayerController : CharacterBase
 
     private void HandleTimeRewindInput(string command)
     {
-        if (TurnManager.turnManager.CLOCK || !isTimeRewinding) return; // active only in time rewind mode
+        if (TurnManager.turnManager.CLOCK || TurnManager.turnManager.fallCLOCK || !isTimeRewinding) return; // active only in time rewind mode
         switch (command)
         {
             case "q": // go to the 1 turn past
