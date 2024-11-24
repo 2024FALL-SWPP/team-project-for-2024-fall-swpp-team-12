@@ -8,10 +8,14 @@ public class Box : MonoBehaviour
     public float checkDistance = 0.5f;
     private Rigidbody rb;
     
-    public TurnLogIterator<Vector3> positionIterator;
+    public TurnLogIterator<(Vector3, bool)> positionIterator;
     public bool isMoveComplete = false;
     public bool isFallComplete = false;
     private bool isBeingPushed = false;
+    public bool willDropDeath = false;
+    private float rayJumpInterval = 1.0f;
+    private float maxFallHeight = 10.0f;
+    private int layerMask = (1 << 0) + (1 << 3); //detect default(0) and player(3) layer.
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
@@ -22,28 +26,45 @@ public class Box : MonoBehaviour
 
     public void InitializeLog()
     {
-        var initialPositionLog = new List<Vector3> { transform.position };
-        positionIterator = new TurnLogIterator<Vector3>(initialPositionLog);
+        var initialPositionLog = new List<(Vector3, bool)> { (transform.position, true) };
+        positionIterator = new TurnLogIterator<(Vector3, bool)>(initialPositionLog);
     }
 
     private void Update()
     {
-        if (TurnManager.turnManager.fallCLOCK && !isFallComplete)
+        if (willDropDeath && PlayerController.playerController.isTimeRewinding) //intercept by timerewinding
         {
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance))
+            KillBox();
+            return;
+        }
+        //intercept by gameover: at PlayerController - KillCharacter
+        if ((TurnManager.turnManager.CLOCK || willDropDeath) && !isFallComplete) //update fall also when willDropDeath, independantly
+        {
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance, layerMask))
             {
-                if (hit.collider.CompareTag("GroundFloor") || hit.collider.CompareTag("FirstFloor") || hit.collider.CompareTag("Box"))
+                // Tile detected, keep Y position constraint to keep the box stable
+                rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+                transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y) - 0.5f, transform.position.z);
+
+                if (willDropDeath) //hit the ground hard -> Drop Death
                 {
-                    // Tile detected, keep Y position constraint to keep the box stable
-                    rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                    transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y) - 0.5f, transform.position.z);
+                    KillBox();
+                }
+                else
+                {
                     isFallComplete = true;
+                    isMoveComplete = true; //all tasks done at this turn //toggle when Not willDropDeath.
                 }
             }
             else
             {
-                // If no tile is detected, allow the box to fall
-                rb.constraints = RigidbodyConstraints.FreezeRotation;
+                if (willDropDeath)
+                {
+                    if (transform.position.y < -maxFallHeight) //fall to the void -> Drop Death
+                    {
+                        KillBox();
+                    }
+                }
             }
         }
         
@@ -52,12 +73,43 @@ public class Box : MonoBehaviour
     }
     public void AdvanceTurn()
     {   
-        if (!isBeingPushed) isMoveComplete = true;
+        if (!isBeingPushed) AdvanceFall();
         isBeingPushed = false;
     }
-    public void AdvanceFall()
+
+    public void KillBox()
     {
-        //check if void or not
+        rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+        willDropDeath = false;
+        isFallComplete = true;
+        gameObject.SetActive(false);
+        //some particle effect and sound effect
+    }
+    public void AdvanceFall() //can refactor with characterbase.advancefall()
+    {
+        if (!willDropDeath)
+        {
+            // If no tile is detected, allow the box to fall
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit1, checkDistance, layerMask))
+            {
+                isMoveComplete = true; //bypass fall.
+            }
+            else
+            {
+                //check if the character can Survive from this height
+                if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit2, checkDistance + rayJumpInterval * maxFallHeight, layerMask))
+                {
+                    willDropDeath = true;
+                    isMoveComplete = true; //just pass turn and fall itself alone.
+                }
+                rb.constraints = RigidbodyConstraints.FreezeRotation;
+                isFallComplete = false; //fall start!
+            }
+        }
+        else
+        {
+            isMoveComplete = true;
+        }
     }
     public bool TryMove(Vector3 direction)
     {
@@ -134,8 +186,9 @@ public class Box : MonoBehaviour
         }
 
         transform.position = targetPosition;
-        isBeingPushed = false;
-        isMoveComplete = true;
+        //isMoveComplete = true;
+        //isFallComplete = false;
+        AdvanceFall();
 
         // Also, need to implement this: but has to be changed
 
@@ -179,7 +232,14 @@ public class Box : MonoBehaviour
     }
     public void SaveCurrentPos()
     {
-        positionIterator.Add(transform.position);
+        if (willDropDeath) //save before kill.
+        {
+            positionIterator.Add((Vector3.zero, false));
+        }
+        else
+        {
+            positionIterator.Add((transform.position, true));
+        }
     }
     public void RemoveLog(int k)
     {
@@ -187,6 +247,11 @@ public class Box : MonoBehaviour
     }
     public void RestoreState() // updating for time rewind
     {
-        transform.position = positionIterator.Current;
+        var current = positionIterator.Current;
+        if (current.Item2)
+        {
+            transform.position = current.Item1;
+        }
+        gameObject.SetActive(current.Item2);
     }
 }

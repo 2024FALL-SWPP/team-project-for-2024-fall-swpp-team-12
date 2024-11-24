@@ -35,8 +35,11 @@ public abstract class CharacterBase : MonoBehaviour
     // task of a state ended, need to jump to next state (next index of the state list)
     // can be changed from state's DoneAction func, through sender
     public bool doneAction = false; // for state machine
+
     public bool isMoveComplete = false; // for turn mechanism
-    public bool isFallComplete = false;
+    public bool isFallComplete = true;
+    public bool willDropDeath = false;
+    
 
     protected virtual void Awake()
     {
@@ -75,44 +78,93 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (TurnManager.turnManager.CLOCK && !isMoveComplete) // when turn is on progress
+        if (TurnManager.turnManager.CLOCK)
         {
-            sm.IsDoneAction();
-            if (doneAction) // next state in the state list
+            if (!isMoveComplete && isFallComplete) // when turn is on progress
             {
-                listSeq++; // next index
-                doneAction = false;
-                if (listSeq < listCurTurn.Count)
+                sm.IsDoneAction();
+                if (doneAction) // next state in the state list
                 {
-                    sm.SetState(listCurTurn[listSeq]);
+                    listSeq++; // next index
+                    doneAction = false;
+                    if (listSeq < listCurTurn.Count)
+                    {
+                        sm.SetState(listCurTurn[listSeq]);
+                    }
+                    else
+                    {
+                        sm.SetState(idle);
+                        //isMoveComplete = true;
+                    }
+                }
+            }
+            sm.DoOperateUpdate();
+        }
+        if ((TurnManager.turnManager.CLOCK || willDropDeath) && !isFallComplete)
+        {
+            if (Physics.Raycast(playerCurPos, Vector3.down, out RaycastHit hit, rayDistance, layerMask))
+            {
+                // Tile detected, keep Y position constraint to keep the box stable
+                rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+                transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y), transform.position.z);
+
+                if (willDropDeath) //hit the ground hard -> Drop Death
+                {
+                    this.KillCharacter();
                 }
                 else
                 {
-                    sm.SetState(idle);
-                    //isMoveComplete = true;
-                }
-            }
-        }
-        if (TurnManager.turnManager.fallCLOCK && !isFallComplete)
-        {
-            if (Physics.Raycast(playerCurPos, Vector3.down, out RaycastHit hit, rayDistance))
-            {
-                if (hit.collider.CompareTag("GroundFloor") || hit.collider.CompareTag("FirstFloor") || hit.collider.CompareTag("Box"))
-                {
-                    // Tile detected, keep Y position constraint to keep the box stable
-                    rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                    transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y), transform.position.z);
-                    playerCurPos = transform.position;
+                    playerCurPos = transform.position; //update position.
                     isFallComplete = true;
+                    isMoveComplete = true; //all tasks done at this turn
                 }
             }
             else
             {
-                // If no tile is detected, allow the box to fall
-                rb.constraints = RigidbodyConstraints.FreezeRotation;
+                if (willDropDeath)
+                {
+                    if (transform.position.y < -maxFallHeight) //fall to the void -> Drop Death
+                    {
+                        this.KillCharacter();
+                    }
+                }
             }
         }
-        sm.DoOperateUpdate();
+    }
+
+    public virtual void KillCharacter()  //gameover, initialize
+    {
+        rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+        willDropDeath = false;
+        isFallComplete = true;
+    }
+
+    public void AdvanceFall()
+    {
+        if (!willDropDeath)
+        {
+            // If no tile is detected, allow the box to fall
+            if (Physics.Raycast(playerCurPos, Vector3.down, out RaycastHit hit1, rayDistance, layerMask))
+            {
+                isMoveComplete = true; //bypass fall.
+            }
+            else
+            {
+                //check if the character can Survive from this height
+                if (!Physics.Raycast(playerCurPos, Vector3.down, out RaycastHit hit2, rayDistance + rayJumpInterval * maxFallHeight, layerMask))
+                {
+                    //cannot survive D:
+                    willDropDeath = true; //itself blocks input.
+                    isMoveComplete = true; //just pass turn and fall itself alone. (of course blocks input by willDropDeath)
+                }
+                rb.constraints = RigidbodyConstraints.FreezeRotation;
+                isFallComplete = false;
+            }
+        }
+        else
+        {
+            isMoveComplete = true;
+        }
     }
 
     protected virtual void HandleMovementInput(string command)
@@ -147,11 +199,6 @@ public abstract class CharacterBase : MonoBehaviour
         sm.SetState(listCurTurn[listSeq]);
     }
 
-    public void AdvanceFall()
-    {
-        //Physics.Raycast(playerCurPos + new Vector3(0, 0.1f, 0), -transform.up, out hitUnderFloor, rayDistance + rayJumpInterval + 0.1f, layerMask);
-        //check if void or not
-    }
 
     // below this, functions for spatial check //
 
