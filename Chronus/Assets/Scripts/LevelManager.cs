@@ -40,6 +40,8 @@ public class LevelManager : MonoBehaviour
 
         LoadLevel(currentLevelIndex);
         SceneManager.sceneLoaded += OnSceneLoaded; // sceneLoaded = a event called when a scene is loaded
+
+        InputManager.inputManager.OnReset += ResetLevel;
     }
 
     private void OnApplicationQuit()
@@ -113,46 +115,38 @@ public class LevelManager : MonoBehaviour
                 currentStart = nextStart.transform;
                 nextGoal.tag = "Untagged"; // to prevent multiple "GoalTile"s in one scene
                 nextStart.tag = "Untagged";
-
-                ApplyOffsetToScene(scene);
-                // add a transparent barrier to prevent going to the previous level
+                
+                // Apply offset to the scene.
+                GameObject[] rootObjects = scene.GetRootGameObjects();
+                foreach (GameObject obj in rootObjects) obj.transform.position += levelOffset;
+                
+                // Add a transparent barrier to prevent going to the previous level
                 if (levelBarrier != null) levelBarrier.transform.position = currentStart.position - new Vector3(0, 0, 1); 
+
                 // for camera, offset is "cumulated", so need to be controlled like this.
                 StartCoroutine(MoveCameraWithTransition(levelOffset - previousLevelOffset));
             }
 
             ResetLevel();
-            
-            // Get information from the new level
-            TurnManager.turnManager.InitializeObjectLists();
-            // Kill the phantom
-            PhantomController.phantomController.isPhantomExisting = false;
-            PhantomController.phantomController.gameObject.SetActive(false);
         }
     }
 
-    public void ResetLevel()
+    private void ResetLevel()
     {
-        // Get information from the new level
-        TurnManager.turnManager.InitializeObjectLists();
-        // Kill the phantom
-        PhantomController.phantomController.isPhantomExisting = false;
-        PhantomController.phantomController.gameObject.SetActive(false);
-    }
-
-    private void ApplyOffsetToScene(Scene scene)
-    {
-        GameObject[] rootObjects = scene.GetRootGameObjects();
-        foreach (GameObject obj in rootObjects)
-        {
-            obj.transform.position += levelOffset;
-        }
-
+        // Place player at the start point
         player.transform.position = new Vector3(
             currentStart.position.x,
             currentStart.position.y + playerTileDiff,
             currentStart.position.z
         );
+        // Reset player log
+        player.InitializeLog();
+        player.isTimeRewinding = false;
+        // Get information from the level
+        TurnManager.turnManager.InitializeObjectLists();
+        // Kill the phantom
+        PhantomController.phantomController.isPhantomExisting = false;
+        PhantomController.phantomController.gameObject.SetActive(false);
     }
 
     private IEnumerator MoveCameraWithTransition(Vector3 offset)

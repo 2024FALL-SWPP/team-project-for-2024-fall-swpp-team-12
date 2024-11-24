@@ -22,7 +22,11 @@ public class Lever : MonoBehaviour
         transform.GetChild(1).transform.localRotation = backwardRotation;
         canToggleDirection = transform.localRotation * Vector3.forward;
 
-        // Initialize platforms based on their initial state
+        InitializeLog();
+    }
+
+    public void InitializeLog()
+    {
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
 
         var initialState = new List<(Quaternion, bool, Vector3)>

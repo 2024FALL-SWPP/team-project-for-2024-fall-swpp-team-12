@@ -19,7 +19,11 @@ public class MovingObstacle : MonoBehaviour
     private void Start()
     {
         hiddenPosition = transform.position;
+        InitializeLog();
+    }
 
+    public void InitializeLog() 
+    {
         var initialPositionLog = new List<Vector3> { transform.position };
         positionIterator = new TurnLogIterator<Vector3>(initialPositionLog);
     }
