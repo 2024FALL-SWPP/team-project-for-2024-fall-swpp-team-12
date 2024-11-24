@@ -6,7 +6,6 @@ public class TimeRewindEffect : MonoBehaviour
 {
     public ParticleSystem newPositionEffect;
     public ParticleSystem surroundEffect;
-    public float cooldown = 1f;
 
     private Renderer playerRenderer;
     private bool isRewinding = false;
@@ -41,7 +40,7 @@ public class TimeRewindEffect : MonoBehaviour
             ToggleRewindMode();
         }
 
-        if (isRewindModeActive && Time.time >= lastAbilityTime + cooldown)
+        if (isRewindModeActive)
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
@@ -110,11 +109,12 @@ public class TimeRewindEffect : MonoBehaviour
 
         if (activeNewPositionEffect != null)
         {
-            activeNewPositionEffect.Play();
-            yield return new WaitForSeconds(Mathf.Min(activeNewPositionEffect.main.duration, 0.1f));
-            activeNewPositionEffect.Stop();
-            
             activeNewPositionEffect.transform.position = transform.position;
+            
+            activeNewPositionEffect.Play();
+            yield return new WaitForSeconds(0.3f);
+            activeNewPositionEffect.Stop();
+            activeNewPositionEffect.Clear();
         }
 
         transform.position = targetPosition;
