@@ -47,6 +47,8 @@ public class PhantomController : CharacterBase
     protected override void Update() 
     {
         if (!isPhantomExisting) return;
+        //intercept by timerewinding: at TurnManager - EnterTimeRewind
+        //intercept by gameover: at PlayerController - KillCharacter
         base.Update();
     }
 
@@ -54,5 +56,11 @@ public class PhantomController : CharacterBase
     {
         gameObject.SetActive(false);
         isPhantomExisting = false;
+    }
+
+    public override void KillCharacter()
+    {
+        base.KillCharacter();
+        KillPhantom();
     }
 }

@@ -140,6 +140,22 @@ public class PlayerController : CharacterBase
         commandIterator = new TurnLogIterator<string>(listCommandLog);
         positionIterator = new TurnLogIterator<(Vector3, Quaternion)>(listPosLog);
     }
+    
+    public override void KillCharacter()
+    {
+        base.KillCharacter();
+        //intercept by GameOver
+        if (!PhantomController.phantomController.isFallComplete) PhantomController.phantomController.KillCharacter(); //intercept during fall
+        else PhantomController.phantomController.KillPhantom(); //just normal kill
+        TurnManager.turnManager.boxList.ForEach(box => box.KillBox());
+
+        TurnManager.turnManager.CLOCK = false;
+        TurnManager.turnManager.ResetMoveComplete();
+        TurnManager.turnManager.ResetFallComplete();
+        //Initialize function let's go
+    }
+    
+    
 
     // Update() is redundant, because doing same thing from CharacterBase
 
@@ -160,7 +176,7 @@ public class PlayerController : CharacterBase
     // Functions for Time Rewind mode //
     private void ToggleTimeRewindMode()
     {
-        if (TurnManager.turnManager.CLOCK || TurnManager.turnManager.fallCLOCK) return; // assuring that every action should be ended (during the turn)
+        if (TurnManager.turnManager.CLOCK || willDropDeath) return; // assuring that every action should be ended (during the turn)
 
         if (!isTimeRewinding) TurnManager.turnManager.EnterTimeRewind();
         else TurnManager.turnManager.LeaveTimeRewind();
@@ -168,7 +184,7 @@ public class PlayerController : CharacterBase
 
     private void HandleTimeRewindInput(string command)
     {
-        if (TurnManager.turnManager.CLOCK || TurnManager.turnManager.fallCLOCK || !isTimeRewinding) return; // active only in time rewind mode
+        if (TurnManager.turnManager.CLOCK || willDropDeath || !isTimeRewinding) return; // active only in time rewind mode
         switch (command)
         {
             case "q": // go to the 1 turn past

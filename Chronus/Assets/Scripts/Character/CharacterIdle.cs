@@ -50,12 +50,13 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
             if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) <= 0.1f || Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos) >= 2.0f)
             {
                 _CharacterBase.transform.position = _CharacterBase.targetTranslation;
-                _CharacterBase.playerCurPos = _CharacterBase.transform.position;
+                _CharacterBase.playerCurPos = _CharacterBase.transform.position; //update position.
                 _CharacterBase.pushDirection = Vector3.zero;
                 _CharacterBase.pushSpeed = 0;
                 _CharacterBase.doneAction = true;
-                _CharacterBase.isMoveComplete = true;
-                _CharacterBase.pushDirection = Vector3.zero;
+                //_CharacterBase.isMoveComplete = true;
+                //_CharacterBase.isFallComplete = false;
+                _CharacterBase.AdvanceFall();
             }
         }
         else if (_CharacterBase.isRidingBox)
@@ -72,7 +73,9 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
         else
         {
             _CharacterBase.doneAction = true;
-            _CharacterBase.isMoveComplete = true;
+            //_CharacterBase.isMoveComplete = true;
+            //_CharacterBase.isFallComplete = false;
+            _CharacterBase.AdvanceFall();
         }
     }
 }
