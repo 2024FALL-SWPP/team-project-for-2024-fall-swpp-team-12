@@ -15,6 +15,11 @@ public class Box : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody>();
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+        InitializeLog();
+    }
+
+    public void InitializeLog()
+    {
         var initialPositionLog = new List<Vector3> { transform.position };
         positionIterator = new TurnLogIterator<Vector3>(initialPositionLog);
     }

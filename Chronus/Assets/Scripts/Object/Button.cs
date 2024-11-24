@@ -29,7 +29,11 @@ public class Button : MonoBehaviour
         plateOffPosition = transform.GetChild(1).transform.position;
         plateOnPosition = plateOffPosition + new Vector3(0, -0.1f, 0);
 
-        // Initialize platforms based on their initial state
+        InitializeLog();
+    }
+
+    public void InitializeLog()
+    {
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
 
         var initialState = new List<(Vector3, bool, int)> { (transform.GetChild(1).transform.position, isPressed, remainingTurns) };
@@ -42,7 +46,7 @@ public class Button : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (TurnManager.turnManager.player.isTimeRewinding) return;
-        if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
+        if (other.CompareTag("Player") || other.CompareTag("Box")) 
         {
             PressButton();
         }
@@ -50,16 +54,16 @@ public class Button : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         if (TurnManager.turnManager.player.isTimeRewinding) return;
-        if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
+        if (other.CompareTag("Player") || other.CompareTag("Box")) 
         {
             PressButton();
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player") || other.CompareTag("Box")) //update when firstCollisionCheck
+        if (other.CompareTag("Player") || other.CompareTag("Box")) 
         {
-
+            isPressed = false;
         }
     }
     public void AdvanceTurn()

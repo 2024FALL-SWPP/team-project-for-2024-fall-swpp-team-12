@@ -79,12 +79,11 @@ public class TurnLogIterator<T>
     }
 }
 
-
 public class PlayerController : CharacterBase
 {
-    public static PlayerController playerController; 
+    public static PlayerController playerController;
     private string curKey = "r"; // command log(wasdr)
-    public bool isTimeRewinding = false;     
+    public bool isTimeRewinding = false;
     // Iterators for logs
     public TurnLogIterator<string> commandIterator;
     public TurnLogIterator<(Vector3, Quaternion)> positionIterator;
@@ -95,35 +94,33 @@ public class PlayerController : CharacterBase
     protected override void Awake() // singleton
     {
         base.Awake();
-        if (PlayerController.playerController == null) { PlayerController.playerController = this; }
+        if (playerController == null) { playerController = this; }
     }
-    
+
     protected override void Start()
     {
         base.Start();
 
-        listCommandLog = new List<string>{""};
-        listPosLog = new List<(Vector3, Quaternion)> { (playerCurPos, playerCurRot) };
+        InitializeLog();
 
-        commandIterator = new TurnLogIterator<string>(listCommandLog);
-        positionIterator = new TurnLogIterator<(Vector3, Quaternion)>(listPosLog);
-
-        InputManager.inputManager.OnCommand += HandleMovementInput;
+        InputManager.inputManager.OnMovementControl += HandleMovementInput;
         InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindMode;
         InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInput;
     }
 
-    protected override void Update() 
+    public void InitializeLog()
     {
-        base.Update();
+        playerCurPos = transform.position;
+        playerCurRot = transform.rotation;
+        
+        listCommandLog = new List<string> { "" };
+        listPosLog = new List<(Vector3, Quaternion)> { (playerCurPos, playerCurRot) };
+
+        commandIterator = new TurnLogIterator<string>(listCommandLog);
+        positionIterator = new TurnLogIterator<(Vector3, Quaternion)>(listPosLog);
     }
 
-    protected override void HandleMovementInput(string command) 
-    {
-        if (TurnManager.turnManager.CLOCK || isTimeRewinding) return; // active when the turn is entirely ended, and not in time rewind mode
-        curKey = command;
-        base.HandleMovementInput(command);
-    }
+    // Update() is redundant, because doing same thing from CharacterBase
 
     protected override void StartAction() // when this is called, the global cycle(the turn) starts
     {
@@ -132,19 +129,20 @@ public class PlayerController : CharacterBase
         TurnManager.turnManager.StartTurn();
     }
 
+    protected override void HandleMovementInput(string command)
+    {
+        if (TurnManager.turnManager.CLOCK || isTimeRewinding) return; // active when the turn is entirely ended, and not in time rewind mode
+        curKey = command;
+        base.HandleMovementInput(command);
+    }
+
     // Functions for Time Rewind mode //
     private void ToggleTimeRewindMode()
     {
         if (TurnManager.turnManager.CLOCK) return; // assuring that every action should be ended (during the turn)
 
-        if (!isTimeRewinding) 
-        {
-            TurnManager.turnManager.EnterTimeRewind();
-        }
-        else 
-        {
-            TurnManager.turnManager.LeaveTimeRewind();
-        }
+        if (!isTimeRewinding) TurnManager.turnManager.EnterTimeRewind();
+        else TurnManager.turnManager.LeaveTimeRewind();
     }
 
     private void HandleTimeRewindInput(string command)

@@ -1,51 +1,55 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    public static InputManager inputManager; // singleton
-    public Action<string> OnCommand; // to PlayerController.HandleMovementInput()
-    public Action OnTimeRewindModeToggle; // to PlayerController.ToggleTimeRewind()
+    public static InputManager inputManager; 
+    public bool isPaused = false;
+    public Action<string> OnMovementControl; // to PlayerController.HandleMovementInput()
     public Action<string> OnTimeRewindControl; // to PlayerController.HandleTimeRewindInput()
+    public Action OnTimeRewindModeToggle; // to PlayerController.ToggleTimeRewind()
+    public Action OnPauseToggle, OnUndo, OnReset; // to UIManager / TurnManager / LevelManager
+    private Dictionary<KeyCode, Action> inputActions;
 
     private void Awake()
     {
         if (inputManager == null) { inputManager = this; }
     }
 
-    private void Update()
+    void Start()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        inputActions = new Dictionary<KeyCode, Action>
         {
-            OnCommand?.Invoke("w");
+            { KeyCode.W, () => OnMovementControl?.Invoke("w") },
+            { KeyCode.S, () => OnMovementControl?.Invoke("s") },
+            { KeyCode.A, () => OnMovementControl?.Invoke("a") },
+            { KeyCode.D, () => OnMovementControl?.Invoke("d") },
+            { KeyCode.R, () => OnMovementControl?.Invoke("r") },
+            { KeyCode.Q, () => OnTimeRewindControl?.Invoke("q") },
+            { KeyCode.E, () => OnTimeRewindControl?.Invoke("e") },
+            { KeyCode.Space, () => OnTimeRewindModeToggle?.Invoke() },
+            { KeyCode.Backspace, () => OnUndo?.Invoke() },
+            { KeyCode.Return, () => OnReset?.Invoke() }
+        };
+    }
+
+    void Update()
+    {
+        if (!isPaused)
+        {
+            foreach (var keyAction in inputActions)
+            {
+                if (Input.GetKeyDown(keyAction.Key))
+                {
+                    keyAction.Value.Invoke();
+                }
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            OnCommand?.Invoke("s");
-        }
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            OnCommand?.Invoke("a");
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            OnCommand?.Invoke("d");
-        }
-        else if (Input.GetKeyDown(KeyCode.R)) 
-        {
-            OnCommand?.Invoke("r");
-        }
-        else if (Input.GetKeyDown(KeyCode.Space)) 
-        {
-            OnTimeRewindModeToggle?.Invoke();
-        }
-        else if (Input.GetKeyDown(KeyCode.Q)) 
-        {
-            OnTimeRewindControl?.Invoke("q");
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            OnTimeRewindControl?.Invoke("e");
+            OnPauseToggle?.Invoke();
         }
     }
 }

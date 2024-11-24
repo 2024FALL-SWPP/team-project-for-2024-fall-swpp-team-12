@@ -24,6 +24,7 @@ public class TurnManager : MonoBehaviour
     void Start()
     {
         InitializeObjectLists();
+        InputManager.inputManager.OnUndo += HandleUndo;
     }
 
     void Update()
@@ -50,15 +51,16 @@ public class TurnManager : MonoBehaviour
     {
         CLOCK = false;
         player.positionIterator.Add((player.playerCurPos, player.playerCurRot));
+        if (phantom.isPhantomExisting) 
+        {
+            phantom.positionIterator.Add((phantom.gameObject.transform.position, phantom.gameObject.transform.rotation));
+        }
         boxList.ForEach(box => box.SaveCurrentPos());
         obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
         // lever & button is done at its script, saving its states. 
 
         // Check if player has cleared the level -> if cleared, go to next level
-        if (LevelManager.levelManager != null)
-        {
-            LevelManager.levelManager.CheckAndCompleteLevel();
-        }    
+        LevelManager.levelManager?.CheckAndCompleteLevel();    
     }
 
     private bool CheckAllMoveComplete() 
@@ -87,12 +89,14 @@ public class TurnManager : MonoBehaviour
     // maybe we need a separate ObjectManager to control all these lists & time rewind?
     public void InitializeObjectLists()
     {
+        rewindTurnCount = 0;
 
         GameObject[] boxObjects = GameObject.FindGameObjectsWithTag("Box");
         boxList.Clear();
         foreach (GameObject boxObject in boxObjects)
         {
             Box boxScript = boxObject.GetComponent<Box>();
+            boxScript.InitializeLog();
             boxList.Add(boxScript); 
         }
 
@@ -101,6 +105,7 @@ public class TurnManager : MonoBehaviour
         foreach (GameObject leverObject in leverObjects)
         {
             Lever leverScript = leverObject.GetComponent<Lever>();
+            leverScript.InitializeLog();
             leverList.Add(leverScript);
         }
 
@@ -109,6 +114,7 @@ public class TurnManager : MonoBehaviour
         foreach (GameObject buttonObject in buttonObjects)
         {
             Button buttonScript = buttonObject.GetComponent<Button>();
+            buttonScript.InitializeLog();
             buttonList.Add(buttonScript);
         }
 
@@ -117,6 +123,7 @@ public class TurnManager : MonoBehaviour
         foreach (GameObject obstacleObject in obstacleObjects)
         {
             MovingObstacle obstacleScript = obstacleObject.GetComponent<MovingObstacle>();
+            obstacleScript.InitializeLog();
             obstacleList.Add(obstacleScript);
         }
     }
@@ -152,9 +159,9 @@ public class TurnManager : MonoBehaviour
                 phantom.listCommandOrder.Add(player.commandIterator.Next());
             }
             phantom.order = 0;
+            phantom.InitializeLog();
 
             player.RemoveLastKEntriesFromLogs(rewindTurnCount);
-
             boxList.ForEach(box => box.RemoveLog(rewindTurnCount));
             leverList.ForEach(lever => lever.RemoveLog(rewindTurnCount));
             buttonList.ForEach(button => button.RemoveLog(rewindTurnCount));
@@ -216,15 +223,38 @@ public class TurnManager : MonoBehaviour
         }
 
         // Apply new position and rotation to the player
-        player.gameObject.transform.position = newTransform.Item1;
-        player.gameObject.transform.rotation = newTransform.Item2;
-        player.playerCurPos = newTransform.Item1;
-        player.playerCurRot = newTransform.Item2;
+        player.gameObject.transform.position = newTransform.position;
+        player.gameObject.transform.rotation = newTransform.rotation;
+        player.playerCurPos = newTransform.position;
+        player.playerCurRot = newTransform.rotation;
 
-        // // Restore object states based on the iterator's current position
+        // Restore object states based on the iterator's current position
         boxList.ForEach(box => box.RestoreState());
         leverList.ForEach(lever => lever.RestoreState());
         buttonList.ForEach(button => button.RestoreState());
         obstacleList.ForEach(obstacle => obstacle.RestoreState());
+    }
+
+    private void HandleUndo()
+    {
+        if (PlayerController.playerController.positionIterator.HasPrevious())
+        {
+            GoToThePast();
+
+            int deltaTurn = 1;
+            player.RemoveLastKEntriesFromLogs(deltaTurn);
+            boxList.ForEach(box => box.RemoveLog(deltaTurn));
+            leverList.ForEach(lever => lever.RemoveLog(deltaTurn));
+            buttonList.ForEach(button => button.RemoveLog(deltaTurn));
+            obstacleList.ForEach(obstacle => obstacle.RemoveLog(deltaTurn));
+
+            if (phantom.isPhantomExisting)
+            {
+                phantom.order--;
+                (Vector3 position, Quaternion rotation) prevPhantom = phantom.positionIterator.Previous();
+                phantom.gameObject.transform.position = prevPhantom.position;
+                phantom.gameObject.transform.rotation = prevPhantom.rotation;
+            }
+        }
     }
 }
