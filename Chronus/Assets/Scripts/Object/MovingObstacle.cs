@@ -94,10 +94,7 @@ public class MovingObstacle : MonoBehaviour
     }
     public void RemoveLog(int k)
     {
-        for (int i = 0; i < k; i++)
-        {
-            positionIterator.RemoveLast();
-        }
+        positionIterator.RemoveLastK(k);
     }
     public void RestoreState()
     {

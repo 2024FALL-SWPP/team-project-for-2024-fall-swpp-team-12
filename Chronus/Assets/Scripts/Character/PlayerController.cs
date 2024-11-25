@@ -77,6 +77,25 @@ public class TurnLogIterator<T>
             currentIndex = log.Count - 1;
         }
     }
+
+    public void RemoveLastK(int k)
+    {
+        if (k < 0)
+        {
+            throw new ArgumentException("k must be non-negative.", nameof(k));
+        }
+        if (k > log.Count)
+        {
+            throw new InvalidOperationException("Cannot remove more elements than exist in the log.");
+        }
+
+        log.RemoveRange(log.Count - k, k);
+
+        if (currentIndex >= log.Count)
+        {
+            currentIndex = log.Count - 1;
+        }
+    }
 }
 
 public class PlayerController : CharacterBase
@@ -175,18 +194,14 @@ public class PlayerController : CharacterBase
         }
     }
 
-    public void RemoveLastKEntriesFromLogs(int k)
+    public void RemoveLog(int k)
     {
         if (k < 0)
         {
             throw new ArgumentException("k must be non-negative.", nameof(k));
         }
 
-        // Remove last k entries from listCommandLog
-        for (int i = 0; i < k; i++)
-        {
-            commandIterator.RemoveLast();
-            positionIterator.RemoveLast();
-        }
+        commandIterator.RemoveLastK(k);
+        positionIterator.RemoveLastK(k);
     }
 }

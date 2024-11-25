@@ -160,7 +160,7 @@ public class TurnManager : MonoBehaviour
             }
             phantom.commandIterator.ResetToStart();
 
-            player.RemoveLastKEntriesFromLogs(rewindTurnCount);
+            player.RemoveLog(rewindTurnCount);
             boxList.ForEach(box => box.RemoveLog(rewindTurnCount));
             leverList.ForEach(lever => lever.RemoveLog(rewindTurnCount));
             buttonList.ForEach(button => button.RemoveLog(rewindTurnCount));
@@ -243,7 +243,7 @@ public class TurnManager : MonoBehaviour
             GoToThePast();
 
             int deltaTurn = 1;
-            player.RemoveLastKEntriesFromLogs(deltaTurn);
+            player.RemoveLog(deltaTurn);
             boxList.ForEach(box => box.RemoveLog(deltaTurn));
             leverList.ForEach(lever => lever.RemoveLog(deltaTurn));
             buttonList.ForEach(button => button.RemoveLog(deltaTurn));

@@ -156,10 +156,7 @@ public class Button : MonoBehaviour
     }
     public void RemoveLog(int k)
     {
-        for (int i = 0; i < k; i++)
-        {
-            commandIterator.RemoveLast();
-            stateIterator.RemoveLast();
-        }
+        commandIterator.RemoveLastK(k);
+        stateIterator.RemoveLastK(k);
     }
 }
