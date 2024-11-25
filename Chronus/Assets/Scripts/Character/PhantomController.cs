@@ -6,10 +6,11 @@ using UnityEngine.UIElements;
 public class PhantomController : CharacterBase
 {
     public static PhantomController phantomController; 
-    public List<string> listCommandOrder = new();
+
+    public TurnLogIterator<string> commandIterator;
     public TurnLogIterator<(Vector3, Quaternion)> positionIterator;
-    public List<(Vector3, Quaternion)> listPosLog;  
-    public int order = 0;
+    private List<string> listCommandOrder = new();
+    private List<(Vector3, Quaternion)> listPosLog;  
     public bool isPhantomExisting = false;
     protected override void Awake() 
     {
@@ -26,20 +27,22 @@ public class PhantomController : CharacterBase
 
     public void InitializeLog()
     {
+        listCommandOrder = new List<string> { "" };
+        commandIterator = new TurnLogIterator<string>(listCommandOrder);
         listPosLog = new List<(Vector3, Quaternion)> { (transform.position, transform.rotation) };
         positionIterator = new TurnLogIterator<(Vector3, Quaternion)>(listPosLog);
     }
 
     public void AdvanceTurn()
     {
-        if (order >= listCommandOrder.Count) 
+        if (!commandIterator.HasNext()) 
         {
             gameObject.SetActive(false);
             isPhantomExisting = false;    
             return;
         }
-        HandleMovementInput(listCommandOrder[order]);
-        order++;
+        string nextCommand = commandIterator.Next();  // Get the next command
+        HandleMovementInput(nextCommand);  // Execute the command
     }
 
     protected override void Update() 
