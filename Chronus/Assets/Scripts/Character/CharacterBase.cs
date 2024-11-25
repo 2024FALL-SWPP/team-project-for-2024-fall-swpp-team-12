@@ -19,6 +19,7 @@ public abstract class CharacterBase : MonoBehaviour
     public float curRotSpeed { get; set; }
 
     public Vector3 pushDirection = Vector3.zero; // to check if being pushed
+    public float pushSpeed = 0;
     private const float BLOCK_SIZE = 2.0f;
 
     // State management
@@ -126,6 +127,7 @@ public abstract class CharacterBase : MonoBehaviour
         if (curTurnAngle != 0.0f)
         {
             listCurTurn = listTurn;
+            targetTranslation = playerCurPos; // staying at the previous grid
             StartAction();
         }
     }
@@ -150,6 +152,7 @@ public abstract class CharacterBase : MonoBehaviour
                         if (lever.canToggleDirection == targetDirection)
                         {
                             lever.doPushLever = true;
+                            targetTranslation = playerCurPos; // because stuck at the wall
                             ChooseAndStartAction(listStay, listTurn);
                         }
                         else

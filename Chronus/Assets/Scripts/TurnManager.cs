@@ -49,8 +49,6 @@ public class TurnManager : MonoBehaviour
     private void EndTurn()
     {
         CLOCK = false;
-        // turn++;
-        Debug.Log("turn: " + rewindTurnCount);
         player.positionIterator.Add((player.playerCurPos, player.playerCurRot));
         boxList.ForEach(box => box.SaveCurrentPos());
         obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
