@@ -237,7 +237,9 @@ public class TurnManager : MonoBehaviour
 
     private void HandleUndo()
     {
-        if (PlayerController.playerController.positionIterator.HasPrevious())
+        // If player was time rewinding, just leave at the entered tile, with no phantom
+        // ^^ need to implement this!!
+        if (!CLOCK && !player.isTimeRewinding && player.positionIterator.HasPrevious())
         {
             GoToThePast();
 
