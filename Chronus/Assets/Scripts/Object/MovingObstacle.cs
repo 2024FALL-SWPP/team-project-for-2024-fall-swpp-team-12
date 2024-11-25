@@ -55,6 +55,7 @@ public class MovingObstacle : MonoBehaviour
         {   
             // If this is a block: going to push the player
             PlayerController.playerController.pushDirection = direction;
+            PlayerController.playerController.pushSpeed = moveSpeed;
             PlayerController.playerController.targetTranslation = targetPosition + direction * 2.0f;
             // Else, if this is a spear: just game over.
         }
@@ -65,6 +66,7 @@ public class MovingObstacle : MonoBehaviour
             {
                 // If this is a block: going to push the phantom
                 PhantomController.phantomController.pushDirection = direction;
+                PhantomController.phantomController.pushSpeed = moveSpeed;
                 PhantomController.phantomController.targetTranslation = targetPosition + direction * 2.0f;
                 // Else, if this is a spear: kill it.
             }

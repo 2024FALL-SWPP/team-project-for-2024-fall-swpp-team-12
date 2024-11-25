@@ -29,7 +29,7 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
         if (_CharacterBase.pushDirection != Vector3.zero)
         {
             targetTranslation = _CharacterBase.targetTranslation;
-            float moveStep = _CharacterBase.moveSpeedHor * Time.deltaTime;
+            float moveStep = _CharacterBase.pushSpeed * Time.deltaTime;
             Vector3 currentTranslation = _CharacterBase.transform.position;
             Vector3 direction = (targetTranslation - currentTranslation).normalized;
             _CharacterBase.transform.Translate(direction * moveStep, Space.World);
@@ -46,8 +46,9 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
             {
                 _CharacterBase.transform.position = targetTranslation;
                 _CharacterBase.playerCurPos = _CharacterBase.transform.position;
-                _CharacterBase.doneAction = true;
                 _CharacterBase.pushDirection = Vector3.zero;
+                _CharacterBase.pushSpeed = 0;
+                _CharacterBase.doneAction = true;
             }
         }
         else

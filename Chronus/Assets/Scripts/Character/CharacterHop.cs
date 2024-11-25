@@ -51,15 +51,16 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
         float hopStep = _CharacterBase.curHopSpeed * Time.deltaTime;
         _CharacterBase.transform.Translate(Vector3.up * _CharacterBase.curHopDir * hopStep);
 
-        float moveStep = _CharacterBase.curSpeed * Time.deltaTime;
         if (_CharacterBase.pushDirection != Vector3.zero)
         {
+            float moveStep = _CharacterBase.pushSpeed * Time.deltaTime;
             Vector3 currentTranslation = _CharacterBase.transform.position;
             Vector3 direction = (targetTranslation - currentTranslation).normalized;
             _CharacterBase.transform.Translate(2f * direction * moveStep, Space.World);
         }
         else
-        {
+        {   
+            float moveStep = _CharacterBase.curSpeed * Time.deltaTime;
             _CharacterBase.transform.Translate(Vector3.forward * moveStep);
         }
 
@@ -84,8 +85,9 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
         {
             _CharacterBase.transform.position = targetTranslation;
             _CharacterBase.playerCurPos = _CharacterBase.transform.position;
-            _CharacterBase.doneAction = true;
             _CharacterBase.pushDirection = Vector3.zero;
+            _CharacterBase.pushSpeed = 0;
+            _CharacterBase.doneAction = true;
         }
     }
 }
