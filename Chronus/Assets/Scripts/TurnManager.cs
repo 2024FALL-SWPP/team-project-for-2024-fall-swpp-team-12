@@ -153,13 +153,12 @@ public class TurnManager : MonoBehaviour
             // actually initializing the phantom
             phantom.gameObject.SetActive(true);
             phantom.isPhantomExisting = true;
-            phantom.listCommandOrder.Clear();
+            phantom.InitializeLog();
             while (player.commandIterator.HasNext())
             {
-                phantom.listCommandOrder.Add(player.commandIterator.Next());
+                phantom.commandIterator.Add(player.commandIterator.Next());
             }
-            phantom.order = 0;
-            phantom.InitializeLog();
+            phantom.commandIterator.ResetToStart();
 
             player.RemoveLastKEntriesFromLogs(rewindTurnCount);
             boxList.ForEach(box => box.RemoveLog(rewindTurnCount));
@@ -252,10 +251,13 @@ public class TurnManager : MonoBehaviour
 
             if (phantom.isPhantomExisting)
             {
-                phantom.order--;
+                phantom.commandIterator.Previous();
                 (Vector3 position, Quaternion rotation) prevPhantom = phantom.positionIterator.Previous();
+                phantom.positionIterator.RemoveLast();
                 phantom.gameObject.transform.position = prevPhantom.position;
                 phantom.gameObject.transform.rotation = prevPhantom.rotation;
+                phantom.playerCurPos = prevPhantom.position;
+                phantom.playerCurRot = prevPhantom.rotation;
             }
         }
     }

@@ -89,8 +89,8 @@ public class PlayerController : CharacterBase
     public TurnLogIterator<(Vector3, Quaternion)> positionIterator;
     public bool DidRewind => positionIterator != null && positionIterator.HasNext();
 
-    public List<string> listCommandLog; // command log for time rewind (objects) and phantom action (copy commands)
-    public List<(Vector3, Quaternion)> listPosLog; // position tracking log for time rewind (reset position)
+    private List<string> listCommandLog; // command log for time rewind (objects) and phantom action (copy commands)
+    private List<(Vector3, Quaternion)> listPosLog; // position tracking log for time rewind (reset position)
     protected override void Awake() // singleton
     {
         base.Awake();
