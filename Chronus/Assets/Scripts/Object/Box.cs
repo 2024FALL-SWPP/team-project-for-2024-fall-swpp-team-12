@@ -247,7 +247,7 @@ public class Box : MonoBehaviour
     }
     public void SaveCurrentPos()
     {
-        if (willDropDeath) //save before kill.
+        if (willDropDeath || !gameObject.activeSelf) //save before kill.
         {
             positionIterator.Add((Vector3.zero, false));
         }
