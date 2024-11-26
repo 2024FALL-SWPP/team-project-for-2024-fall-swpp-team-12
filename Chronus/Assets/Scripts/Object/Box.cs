@@ -94,6 +94,7 @@ public class Box : MonoBehaviour
         willDropDeath = false;
         isFallComplete = true;
         gameObject.SetActive(false);
+        if (TurnManager.turnManager.CLOCK && isWaitingToCheckFall) isMoveComplete = true;
         //some particle effect and sound effect
     }
     public void AdvanceFall() //can refactor with characterbase.advancefall()
