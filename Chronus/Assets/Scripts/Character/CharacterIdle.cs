@@ -54,9 +54,7 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
                 _CharacterBase.pushDirection = Vector3.zero;
                 _CharacterBase.pushSpeed = 0;
                 _CharacterBase.doneAction = true;
-                //_CharacterBase.isMoveComplete = true;
-                //_CharacterBase.isFallComplete = false;
-                _CharacterBase.AdvanceFall();
+                if (TurnManager.turnManager.CheckMovingObjectsMoveComplete()) _CharacterBase.AdvanceFall(); //wait for movingobstacles and boxes to move completely
             }
         }
         else if (_CharacterBase.isRidingBox)
@@ -73,9 +71,7 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
         else
         {
             _CharacterBase.doneAction = true;
-            //_CharacterBase.isMoveComplete = true;
-            //_CharacterBase.isFallComplete = false;
-            _CharacterBase.AdvanceFall();
+            if (TurnManager.turnManager.CheckMovingObjectsMoveComplete()) _CharacterBase.AdvanceFall(); //wait for movingobstacles and boxes to move completely
         }
     }
 }
