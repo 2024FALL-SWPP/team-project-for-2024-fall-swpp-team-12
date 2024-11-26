@@ -1,7 +1,9 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+
 public class TurnLogIterator<T>
 {
     private readonly List<T> log;
@@ -110,8 +112,11 @@ public class PlayerController : CharacterBase
     public TurnLogIterator<(Vector3, Quaternion)> positionIterator;
     public bool DidRewind => positionIterator != null && positionIterator.HasNext();
 
-    private List<string> listCommandLog; // command log for time rewind (objects) and phantom action (copy commands)
-    private List<(Vector3, Quaternion)> listPosLog; // position tracking log for time rewind (reset position)
+    public List<string> listCommandLog; // command log for time rewind (objects) and phantom action (copy commands)
+    public List<(Vector3, Quaternion)> listPosLog; // position tracking log for time rewind (reset position)
+    
+    private RewindDialUI rewindUI;
+
     protected override void Awake() // singleton
     {
         base.Awake();
@@ -127,6 +132,13 @@ public class PlayerController : CharacterBase
         InputManager.inputManager.OnMovementControl += HandleMovementInput;
         InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindMode;
         InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInput;
+
+        rewindUI = FindObjectOfType<RewindDialUI>();
+        if (rewindUI != null)
+        {
+            rewindUI.Initialize(listCommandLog);
+            rewindUI.gameObject.SetActive(false); 
+        }
     }
 
     public void InitializeLog()
@@ -178,6 +190,7 @@ public class PlayerController : CharacterBase
     {
         base.StartAction();
         commandIterator.Add(curKey); // command log update for the phantom
+        rewindUI?.UpdateRewindUI();
         TurnManager.turnManager.StartTurn();
     }
 
@@ -193,8 +206,23 @@ public class PlayerController : CharacterBase
     {
         if (TurnManager.turnManager.CLOCK || willDropDeath) return; // assuring that every action should be ended (during the turn)
 
-        if (!isTimeRewinding) TurnManager.turnManager.EnterTimeRewind();
-        else TurnManager.turnManager.LeaveTimeRewind();
+        if (!isTimeRewinding) 
+        {
+            TurnManager.turnManager.EnterTimeRewind();
+            
+            if (rewindUI != null)
+            {
+                rewindUI.EnterRewindMode();
+            }
+        }
+        else 
+        {
+            TurnManager.turnManager.LeaveTimeRewind();
+            if (rewindUI != null)
+            {
+                rewindUI.ExitRewindMode();
+            }
+        }
     }
 
     private void HandleTimeRewindInput(string command)
@@ -205,6 +233,7 @@ public class PlayerController : CharacterBase
             case "q": // go to the 1 turn past
                 if (positionIterator.HasPrevious())
                 {
+                    rewindUI?.MoveSlidingSquare(-1); // Move the sliding square left
                     Debug.Log("gotopast");
                     TurnManager.turnManager.GoToThePast();
                 }
@@ -217,6 +246,7 @@ public class PlayerController : CharacterBase
             case "e": // go to the 1 turn future
                 if (positionIterator.HasNext())
                 {
+                    rewindUI?.MoveSlidingSquare(1); // Move the sliding square right
                     TurnManager.turnManager.GoToTheFuture();
                 }
                 else
