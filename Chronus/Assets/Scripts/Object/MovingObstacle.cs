@@ -61,7 +61,7 @@ public class MovingObstacle : MonoBehaviour
         }
         if (PhantomController.phantomController.isPhantomExisting)
         {
-            Vector3 phantomTargetPosition = PlayerController.playerController.targetTranslation;
+            Vector3 phantomTargetPosition = PhantomController.phantomController.targetTranslation;
             if (phantomTargetPosition == targetPosition)
             {
                 // If this is a block: going to push the phantom
