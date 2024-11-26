@@ -23,14 +23,13 @@ public class RewindManager : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+
+        InputManager.inputManager.OnTimeRewindModeToggle += ToggleRewindMode;
     }
 
-    void Update()
+    void OnDestroy()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ToggleRewindMode();
-        }
+        InputManager.inputManager.OnTimeRewindModeToggle -= ToggleRewindMode;
     }
 
     void ToggleRewindMode()

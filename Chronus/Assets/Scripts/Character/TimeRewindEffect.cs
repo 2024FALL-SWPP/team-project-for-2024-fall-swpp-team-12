@@ -31,29 +31,19 @@ public class TimeRewindEffect : MonoBehaviour
             activeNewPositionEffect = Instantiate(newPositionEffect, transform.position, Quaternion.identity);
             activeNewPositionEffect.Stop();
         }
+
+        InputManager.inputManager.OnTimeRewindModeToggle += ToggleRewindMode;
+        InputManager.inputManager.OnTimeRewindControl += HandleRewindControl;
+    }
+
+    void OnDestroy()
+    {
+        InputManager.inputManager.OnTimeRewindModeToggle -= ToggleRewindMode;
+        InputManager.inputManager.OnTimeRewindControl -= HandleRewindControl;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ToggleRewindMode();
-        }
-
-        if (isRewindModeActive)
-        {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                Rewind();
-                lastAbilityTime = Time.time;
-            }
-            else if (Input.GetKeyDown(KeyCode.E))
-            {
-                FastForward();
-                lastAbilityTime = Time.time;
-            }
-        }
-
         if (activeSurroundEffect != null && activeSurroundEffect.isPlaying)
         {
             activeSurroundEffect.transform.position = transform.position;
@@ -81,9 +71,24 @@ public class TimeRewindEffect : MonoBehaviour
         }
     }
 
+    private void HandleRewindControl(string command)
+    {
+        if (!isRewindModeActive || isRewinding) return;
+
+        switch (command)
+        {
+            case "q":
+                Rewind();
+                break;
+            case "e":
+                FastForward();
+                break;
+        }
+    }
+
     void Rewind()
     {
-        if (isRewinding || !isRewindModeActive) return;
+        if (isRewinding) return;
 
         isRewinding = true;
         Vector3 previousPosition = transform.position;
@@ -92,7 +97,7 @@ public class TimeRewindEffect : MonoBehaviour
 
     void FastForward()
     {
-        if (isRewinding || !isRewindModeActive) return;
+        if (isRewinding) return;
 
         isRewinding = true;
         Vector3 nextPosition = transform.position;
@@ -116,8 +121,6 @@ public class TimeRewindEffect : MonoBehaviour
             activeNewPositionEffect.Stop();
             activeNewPositionEffect.Clear();
         }
-
-        transform.position = targetPosition;
 
         if (activeSurroundEffect != null)
         {
