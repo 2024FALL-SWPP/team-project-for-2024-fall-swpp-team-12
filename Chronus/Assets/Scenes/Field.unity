@@ -773,7 +773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 263794770735745872, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 263794770735745872, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -781,7 +781,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 263794770735745872, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12.8
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 263794770735745872, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1590,6 +1590,7 @@ MonoBehaviour:
   moveDistance: 2
   checkDistance: 0.5
   isMoveComplete: 0
+  isFallComplete: 1
   willDropDeath: 0
 --- !u!65 &445944869
 BoxCollider:
@@ -4753,6 +4754,7 @@ MonoBehaviour:
   moveDistance: 2
   checkDistance: 0.5
   isMoveComplete: 0
+  isFallComplete: 1
   willDropDeath: 0
 --- !u!65 &1488847113
 BoxCollider:

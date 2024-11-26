@@ -152,7 +152,8 @@ public class PlayerController : CharacterBase
         TurnManager.turnManager.CLOCK = false;
         TurnManager.turnManager.ResetMoveComplete();
         TurnManager.turnManager.ResetFallComplete();
-        //Initialize function let's go
+        
+        //Initialize function let's go (in F-014 maybe)
     }
     
     

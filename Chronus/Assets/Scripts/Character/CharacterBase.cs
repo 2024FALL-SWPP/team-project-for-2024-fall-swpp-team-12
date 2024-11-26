@@ -85,16 +85,20 @@ public abstract class CharacterBase : MonoBehaviour
                 sm.IsDoneAction();
                 if (doneAction) // next state in the state list
                 {
-                    listSeq++; // next index
                     doneAction = false;
-                    if (listSeq < listCurTurn.Count)
+                    if (listSeq >= 0)
                     {
-                        sm.SetState(listCurTurn[listSeq]);
-                    }
-                    else
-                    {
-                        sm.SetState(idle);
-                        //isMoveComplete = true;
+                        listSeq++; // next index
+                        if (listSeq < listCurTurn.Count)
+                        {
+                            sm.SetState(listCurTurn[listSeq]);
+                        }
+                        else
+                        {
+                            listSeq = -1; // no list update.
+                            sm.SetState(idle);
+                            //isMoveComplete = true;
+                        }
                     }
                 }
             }
@@ -102,7 +106,7 @@ public abstract class CharacterBase : MonoBehaviour
         }
         if ((TurnManager.turnManager.CLOCK || willDropDeath) && !isFallComplete)
         {
-            if (Physics.Raycast(playerCurPos, Vector3.down, out RaycastHit hit, rayDistance, layerMask))
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, rayDistance, layerMask))
             {
                 // Tile detected, keep Y position constraint to keep the box stable
                 rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
@@ -114,7 +118,7 @@ public abstract class CharacterBase : MonoBehaviour
                 }
                 else
                 {
-                    playerCurPos = transform.position; //update position.
+                    playerCurPos = transform.position; //update position after fall.
                     isFallComplete = true;
                     isMoveComplete = true; //all tasks done at this turn
                 }
@@ -135,8 +139,8 @@ public abstract class CharacterBase : MonoBehaviour
     public virtual void KillCharacter()  //gameover, initialize
     {
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-        willDropDeath = false;
-        isFallComplete = true;
+        willDropDeath = false; //already dead.
+        isFallComplete = true; //ended fall.
     }
 
     public void AdvanceFall()

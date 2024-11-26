@@ -80,6 +80,24 @@ public class TurnManager : MonoBehaviour
         );
     }
 
+    public bool CheckMovingObjectsMoveComplete()
+    // Check if moving obstacles and boxes of the current turn on the scene are complete.
+    //need for preventing player and phantom from not falling, staying on the air.
+    {
+        return (
+            boxList.All(box => box.isMoveComplete) &&
+            obstacleList.All(obstacle => obstacle.isMoveComplete)
+        );
+    }
+    public bool CheckMovingObstaclesMoveComplete()
+    // Check if moving obstacles and boxes of the current turn on the scene are complete.
+    //need for preventing player and phantom from not falling, staying on the air.
+    {
+        return (
+            obstacleList.All(obstacle => obstacle.isMoveComplete)
+        );
+    }
+
     public void ResetMoveComplete()
     {
         player.isMoveComplete = false;
@@ -143,6 +161,7 @@ public class TurnManager : MonoBehaviour
     {
         player.isTimeRewinding = true;
 
+        rewindTurnCount = 0; //always starts at 0.
         // kill already existing phantom, if not ended
         if (phantom.willDropDeath) phantom.KillCharacter(); //intercept during death fall
         else phantom.KillPhantom(); //just normal kill

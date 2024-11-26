@@ -13,6 +13,7 @@ public class Box : MonoBehaviour
     public bool isFallComplete = false;
     private bool isBeingPushed = false;
     public bool willDropDeath = false;
+    private bool isWaitingToCheckFall = false;
     private float rayJumpInterval = 1.0f;
     private float maxFallHeight = 10.0f;
     private int layerMask = (1 << 0) + (1 << 3); //detect default(0) and player(3) layer.
@@ -32,6 +33,11 @@ public class Box : MonoBehaviour
 
     private void Update()
     {
+        if (isWaitingToCheckFall)
+        {
+            if (TurnManager.turnManager.CheckMovingObstaclesMoveComplete()) AdvanceFall(); //wait for movingobstacles to move completely
+        }
+
         if (willDropDeath && PlayerController.playerController.isTimeRewinding) //intercept by timerewinding
         {
             KillBox();
@@ -72,8 +78,13 @@ public class Box : MonoBehaviour
         // if it has touched the ground, then isMoveComplete = true. 
     }
     public void AdvanceTurn()
-    {   
-        if (!isBeingPushed) AdvanceFall();
+    {
+        if (!isBeingPushed)
+        {
+            //AdvanceFall();
+            if (gameObject.activeSelf) isWaitingToCheckFall = true;  //wait.
+            else isMoveComplete = true;  //just pass
+        }
         isBeingPushed = false;
     }
 
@@ -87,6 +98,8 @@ public class Box : MonoBehaviour
     }
     public void AdvanceFall() //can refactor with characterbase.advancefall()
     {
+        if (isWaitingToCheckFall) isWaitingToCheckFall = false;
+
         if (!willDropDeath)
         {
             // If no tile is detected, allow the box to fall
@@ -188,7 +201,9 @@ public class Box : MonoBehaviour
         transform.position = targetPosition;
         //isMoveComplete = true;
         //isFallComplete = false;
-        AdvanceFall();
+
+        //AdvanceFall();
+        isWaitingToCheckFall = true; //wait.
 
         // Also, need to implement this: but has to be changed
 
