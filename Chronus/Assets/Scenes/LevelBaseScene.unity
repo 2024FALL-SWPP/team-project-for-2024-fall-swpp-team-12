@@ -886,8 +886,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 1851321079}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4ef91cbf6ce528439609f96d1802ded, type: 3}
+  m_Script: {fileID: 11500000, guid: c5779a42ddad146b2bd23a475d9f9062, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseUI: {fileID: 501294244}
+  pauseUI: {fileID: 0}
   resetUI: {fileID: 0}
