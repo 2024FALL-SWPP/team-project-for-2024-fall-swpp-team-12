@@ -63,7 +63,7 @@ public class Button : MonoBehaviour
     {
         if (other.CompareTag("Player") || other.CompareTag("Box")) 
         {
-            isPressed = false;
+            // isPressed = false;
         }
     }
     public void AdvanceTurn()
