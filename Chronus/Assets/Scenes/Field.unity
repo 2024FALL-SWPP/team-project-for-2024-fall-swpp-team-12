@@ -3284,7 +3284,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   newPositionEffect: {fileID: 5473588508934549075, guid: 035ce8c9cfc34104991ce416daf8aebe, type: 3}
   surroundEffect: {fileID: 1920325297268671249, guid: 889dd67908ff48640a817f0b0074814e, type: 3}
-  cooldown: 1
 --- !u!1001 &1312782838
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5072,7 +5071,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 715a4bfcd8ca9bc40992d98d801f12c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewindOverlayColor: {r: 1, g: 1, b: 1, a: 0.5}
+  rewindOverlayColor: {r: 1, g: 1, b: 1, a: 0.12941177}
   transitionSpeed: 3
   rewindStartAudio: {fileID: 8300000, guid: 55da9333239a57246a539976acf9e880, type: 3}
 --- !u!82 &1828245217

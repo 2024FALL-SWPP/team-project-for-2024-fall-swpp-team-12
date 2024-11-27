@@ -78,33 +78,21 @@ public class TimeRewindEffect : MonoBehaviour
         switch (command)
         {
             case "q":
-                Rewind();
-                break;
             case "e":
-                FastForward();
+                PerformTimeEffect();
                 break;
         }
     }
 
-    void Rewind()
+    void PerformTimeEffect()
     {
         if (isRewinding) return;
 
         isRewinding = true;
-        Vector3 previousPosition = transform.position;
-        StartCoroutine(TeleportWithEffects(previousPosition));
+        StartCoroutine(TeleportWithEffects());
     }
 
-    void FastForward()
-    {
-        if (isRewinding) return;
-
-        isRewinding = true;
-        Vector3 nextPosition = transform.position;
-        StartCoroutine(TeleportWithEffects(nextPosition));
-    }
-
-    IEnumerator TeleportWithEffects(Vector3 targetPosition)
+    IEnumerator TeleportWithEffects()
     {
         if (activeSurroundEffect != null)
         {
