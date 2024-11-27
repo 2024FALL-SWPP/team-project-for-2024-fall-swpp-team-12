@@ -10,6 +10,7 @@ public class Box : MonoBehaviour
     
     public TurnLogIterator<Vector3> positionIterator;
     public bool isMoveComplete = false;
+    private bool isBeingPushed = false;
     private void Start()
     {
         rb = gameObject.GetComponent<Rigidbody>();
@@ -45,10 +46,8 @@ public class Box : MonoBehaviour
         // if it has touched the ground, then isMoveComplete = true. 
     }
     public void AdvanceTurn()
-    {
-        // I guess it's not okay to just simply put this here, but it's temporary.
-        // There MUST be a problem because of this.
-        isMoveComplete = true;
+    {   
+        if (!isBeingPushed) isMoveComplete = true;
     }
     public bool TryMove(Vector3 direction)
     {
@@ -56,30 +55,76 @@ public class Box : MonoBehaviour
         {
             if (hit.collider.CompareTag("Obstacle") || // need "Obstacle" tag for all walls.
                 hit.collider.CompareTag("Lever") ||
-                hit.collider.CompareTag("MovingObstacle")) 
+                hit.collider.CompareTag("MovingObstacle") ||
+                hit.collider.CompareTag("Wall"))
             {
+                isBeingPushed = false;
                 return false;
             }
         }
+        
+        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, moveDistance/2)) //look up.
+        {
+            switch (hitUp.collider.tag)
+            {
+                case "Box": //box stack yeah
+                    {
+                        Box box = hitUp.collider.gameObject.GetComponent<Box>();
+                        box.TryMove(direction); //kind of recursion yeah
+                        break;
+                    }
+                case "Player": //player or phantom
+                    {
+                        if (hitUp.collider.name == "Player")
+                        {
+                            if (PlayerController.playerController.curKey == "r") //player would ride the box when it has nothing to do.
+                            {
+                                if (!Physics.Raycast(PlayerController.playerController.transform.position, direction, out RaycastHit hitWall, moveDistance)) // and no obstacles forward.
+                                {
+                                    //player will have 'idle' state and do operation update in that state.
+                                    PlayerController.playerController.isRidingBox = true;
+                                    PlayerController.playerController.targetTranslation = PlayerController.playerController.playerCurPos + direction * 2.0f;
+                                }
+                            }
+                        }
+                        else if (hitUp.collider.name == "Phantom")
+                        {
+                            if (PhantomController.phantomController.commandIterator.GetNext() == "r") //phantom would ride the box when it has nothing to do.
+                            {
+                                if (!Physics.Raycast(PhantomController.phantomController.transform.position, direction, out RaycastHit hitWall1, moveDistance)) // and no obstacles forward.
+                                {
+                                    //phantom will have 'idle' state and do operation update in that state.
+                                    PhantomController.phantomController.isRidingBox = true;
+                                    PhantomController.phantomController.targetTranslation = PhantomController.phantomController.playerCurPos + direction * 2.0f;
+                                }
+                            }
+                        }
 
+                        break;
+                    }
+            }
+        }
+        
+        isBeingPushed = true;
         StartCoroutine(SmoothMove(direction * moveDistance));
         return true;
     }
 
     private IEnumerator SmoothMove(Vector3 direction)
     {
-        float moveSpeed = 3.0f;
+        float moveSpeed = PlayerController.playerController.moveSpeedHor;
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = startPosition + direction;
 
-        while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
+        while (Vector3.Distance(transform.position, targetPosition) > 0.01f && Vector3.Distance(transform.position, startPosition) < 2.0f)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
             yield return null;
         }
 
         transform.position = targetPosition;
-        //isMoveComplete = true;
+        isBeingPushed = false;
+        isMoveComplete = true;
 
         // Also, need to implement this: but has to be changed
 

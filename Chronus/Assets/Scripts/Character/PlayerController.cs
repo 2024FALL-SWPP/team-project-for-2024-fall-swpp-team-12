@@ -54,6 +54,8 @@ public class TurnLogIterator<T>
 
     public int GetCurrentIndex() => currentIndex;
 
+    public T GetNext() => log[currentIndex + 1];
+
     public void Add(T item)
     {
         if (item == null) throw new ArgumentNullException(nameof(item));
@@ -101,7 +103,7 @@ public class TurnLogIterator<T>
 public class PlayerController : CharacterBase
 {
     public static PlayerController playerController;
-    private string curKey = "r"; // command log(wasdr)
+    public string curKey = "r"; // command log(wasdr)
     public bool isTimeRewinding = false;
     // Iterators for logs
     public TurnLogIterator<string> commandIterator;

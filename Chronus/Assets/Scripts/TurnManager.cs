@@ -137,6 +137,8 @@ public class TurnManager : MonoBehaviour
         // kill already existing phantom, if not ended
         phantom.isPhantomExisting = false;
         phantom.gameObject.SetActive(false);
+
+        rewindTurnCount = 0;
     }
 
     public void LeaveTimeRewind()

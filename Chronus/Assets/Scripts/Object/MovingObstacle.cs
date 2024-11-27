@@ -79,7 +79,8 @@ public class MovingObstacle : MonoBehaviour
 
     private IEnumerator MoveObstacle(Vector3 targetPosition)
     {
-        while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
+        Vector3 startPosition = transform.position;
+        while (Vector3.Distance(transform.position, targetPosition) > 0.01f && Vector3.Distance(transform.position, startPosition) < 2.0f)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
             yield return null;

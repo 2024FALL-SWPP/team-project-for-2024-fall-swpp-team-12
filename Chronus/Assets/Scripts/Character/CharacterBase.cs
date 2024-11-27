@@ -20,6 +20,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     public Vector3 pushDirection = Vector3.zero; // to check if being pushed
     public float pushSpeed = 0;
+    public bool isRidingBox = false;
     private const float BLOCK_SIZE = 2.0f;
 
     // State management
@@ -108,7 +109,7 @@ public abstract class CharacterBase : MonoBehaviour
                 break;
             case "r":
                 listCurTurn = listStay;
-                targetTranslation = playerCurPos;
+                if (!isRidingBox) targetTranslation = playerCurPos;
                 StartAction();
                 return;
         }
@@ -127,9 +128,10 @@ public abstract class CharacterBase : MonoBehaviour
         if (curTurnAngle != 0.0f)
         {
             listCurTurn = listTurn;
-            targetTranslation = playerCurPos; // staying at the previous grid
+            targetTranslation = playerCurPos; // staying at the previous grid // because stuck at the wall
             StartAction();
         }
+        //do nothing, no turn update.
     }
 
     protected void TryToMoveToDirection()
@@ -142,7 +144,7 @@ public abstract class CharacterBase : MonoBehaviour
         Vector3 rayStart = transform.position + rayOffset;
 
         // First, check if there's an wall-like object to that target direction. 
-        if (Physics.Raycast(transform.position, targetDirection, out RaycastHit hit, BLOCK_SIZE))
+        if (Physics.Raycast(transform.position - new Vector3(0,0.1f,0), targetDirection, out RaycastHit hit, BLOCK_SIZE))
         {
             switch (hit.collider.tag)
             {
@@ -152,7 +154,6 @@ public abstract class CharacterBase : MonoBehaviour
                         if (lever.canToggleDirection == targetDirection)
                         {
                             lever.doPushLever = true;
-                            targetTranslation = playerCurPos; // because stuck at the wall
                             ChooseAndStartAction(listStay, listTurn);
                         }
                         else
@@ -203,8 +204,8 @@ public abstract class CharacterBase : MonoBehaviour
         }
         else // if there is no wall: then check if target position has floor
         {
-            Debug.DrawRay(rayStart, -transform.up * 2 * BLOCK_SIZE, Color.blue, 1.0f);
-            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, 2*BLOCK_SIZE))
+            Debug.DrawRay(rayStart, -transform.up * BLOCK_SIZE, Color.blue, 1.0f);
+            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, BLOCK_SIZE))
             {
                 GameObject floor = hitGround.collider.gameObject;
 
