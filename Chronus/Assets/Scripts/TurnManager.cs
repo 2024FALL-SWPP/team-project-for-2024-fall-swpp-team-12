@@ -16,6 +16,9 @@ public class TurnManager : MonoBehaviour
     public List<Button> buttonList = new();
     public List<Lever> leverList = new();
     public List<MovingObstacle> obstacleList = new();
+
+    private RewindSliderUI rewindUI;
+
     private void Awake() 
     {
         if (turnManager == null) { turnManager = this; }
@@ -25,6 +28,7 @@ public class TurnManager : MonoBehaviour
     {
         InitializeObjectLists();
         InputManager.inputManager.OnUndo += HandleUndo;
+        rewindUI = FindObjectOfType<RewindSliderUI>();
     }
 
     void Update()
@@ -181,6 +185,7 @@ public class TurnManager : MonoBehaviour
         if (phantom.willDropDeath) phantom.KillCharacter(); //intercept during death fall
         else phantom.KillPhantom(); //just normal kill
         rewindTurnCount = 0;
+        rewindUI?.EnterRewindMode(player.listCommandLog);
     }
 
     public void LeaveTimeRewind()
@@ -211,6 +216,8 @@ public class TurnManager : MonoBehaviour
             obstacleList.ForEach(obstacle => obstacle.RemoveLog(rewindTurnCount));
         }
         player.isTimeRewinding = false;
+
+        rewindUI?.LeaveRewindMode();
     }
 
     public void GoToThePast()
@@ -279,6 +286,8 @@ public class TurnManager : MonoBehaviour
         leverList.ForEach(lever => lever.RestoreState());
         buttonList.ForEach(button => button.RestoreState());
         obstacleList.ForEach(obstacle => obstacle.RestoreState());
+
+        rewindUI?.MoveSlider(turnDelta);
     }
 
     private void HandleUndo()
