@@ -32,6 +32,12 @@ public abstract class CharacterBase : MonoBehaviour
     protected IState<CharacterBase> idle, move, turn, hop;
     // index of state list
     protected int listSeq = 0;
+
+    protected float rayDistance = 1.0f;
+    protected float rayJumpInterval = 1.0f;
+    protected float maxFallHeight = 10.0f;
+    protected int layerMask = 1 << 0;
+
     // task of a state ended, need to jump to next state (next index of the state list)
     // can be changed from state's DoneAction func, through sender
     public bool doneAction = false; // for state machine
