@@ -24,6 +24,7 @@ public class LevelManager : MonoBehaviour
     {
         if (levelManager == null) { levelManager = this; }
     }
+
     private void Start()
     {
         player = FindObjectOfType<PlayerController>();
@@ -75,6 +76,8 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator FinishLevel()
     {
+        Destroy(GameObject.Find("CameraOffsetAnchor"));
+
         // Keep track of the previous level to unload later
         if (currentLevelIndex > 0) previousLevelIndex = currentLevelIndex - 1;
 
@@ -145,13 +148,16 @@ public class LevelManager : MonoBehaviour
         // Get information from the level
         TurnManager.turnManager.InitializeObjectLists();
         // Kill the phantom
-        PhantomController.phantomController.isPhantomExisting = false;
-        PhantomController.phantomController.gameObject.SetActive(false);
+        //PhantomController.phantomController.isPhantomExisting = false;
+        //PhantomController.phantomController.gameObject.SetActive(false);
     }
 
     private IEnumerator MoveCameraWithTransition(Vector3 offset)
     {
-        Vector3 targetPosition = mainCamera.transform.position + offset;
+        // Assure that every scene has CameraOffsetAnchor (skipping null checking)
+        GameObject anchor = GameObject.Find("CameraOffsetAnchor");
+        Vector3 targetPosition = anchor.transform.position;
+        Quaternion targetRotation = anchor.transform.rotation;
 
         // Ease-in transition
         Vector3 velocity = Vector3.zero;
@@ -163,9 +169,17 @@ public class LevelManager : MonoBehaviour
                 ref velocity,
                 0.3f
             );
+
+            mainCamera.transform.rotation = Quaternion.Lerp(
+                mainCamera.transform.rotation,
+                targetRotation,
+                Time.deltaTime * 1f
+            );
             yield return null;
         }
+
         mainCamera.transform.position = targetPosition;
+        mainCamera.transform.rotation = targetRotation;
 
         // After the transition, unload the previous level if there is one to unload
         if (previousLevelIndex >= 0)
