@@ -232,8 +232,6 @@ public abstract class CharacterBase : MonoBehaviour
         float angleDifference = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
         curTurnAngle = Mathf.Round(angleDifference / 90) * 90;
 
-        Vector3 rayStart = transform.position + rayOffset;
-
         // First, check if there's an wall-like object to that target direction. 
         if (Physics.Raycast(transform.position - new Vector3(0,0.1f,0), targetDirection, out RaycastHit hit, BLOCK_SIZE))
         {
@@ -257,6 +255,11 @@ public abstract class CharacterBase : MonoBehaviour
                 case "Box":
                     {
                         Box box = hit.collider.gameObject.GetComponent<Box>();
+                        if (box.willDropDeath) //box is heading to death
+                        {
+                            RotateInPlace();
+                            break;
+                        }
                         if (box.TryMove(targetDirection))
                         {
                             ChooseAndStartAction(listMoveForward, listMoveSideRear);
@@ -295,9 +298,19 @@ public abstract class CharacterBase : MonoBehaviour
         }
         else // if there is no wall: then check if target position has floor
         {
+            Vector3 rayStart = transform.position + rayOffset;
             Debug.DrawRay(rayStart, -transform.up * BLOCK_SIZE, Color.blue, 1.0f);
-            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, BLOCK_SIZE))
+            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, rayDistance + rayJumpInterval*maxFallHeight))
             {
+                if (hitGround.collider.CompareTag("Box")) //box is heading to death
+                {
+                    Box box = hitGround.collider.gameObject.GetComponent<Box>();
+                    if (box.willDropDeath)
+                    {
+                        RotateInPlace();
+                        return;
+                    }
+                }
                 GameObject floor = hitGround.collider.gameObject;
 
                 Collider playerCollider = GetComponent<Collider>();
@@ -305,13 +318,14 @@ public abstract class CharacterBase : MonoBehaviour
                 float playerBottomY = Mathf.Round(playerCollider.bounds.center.y - playerCollider.bounds.extents.y);
                 float floorTopY = Mathf.Round(floorCollider.bounds.center.y + floorCollider.bounds.extents.y);
 
-                if (Mathf.Approximately(playerBottomY, floorTopY)) // flat move
+                if (Mathf.Approximately(playerBottomY, floorTopY)/* || (playerBottomY - floorTopY > (BLOCK_SIZE / 2))*/) // flat move
                 {
                     ChooseAndStartAction(listMoveForward, listMoveSideRear);
                 }
-                else if (Mathf.Approximately(playerBottomY, floorTopY + (BLOCK_SIZE / 2))) // jump down correctly (only 0.5 grid = 1.0f in the game scene)
+                else if (Mathf.Approximately(playerBottomY, floorTopY + (BLOCK_SIZE / 2)) || (playerBottomY - floorTopY > (BLOCK_SIZE / 2))) // jump down
                 {
-                    curHopDir = -(BLOCK_SIZE / 2);
+                    curHopDir = floorTopY - playerBottomY;
+                    //curHopDir = -(BLOCK_SIZE / 2);
                     targetTranslation += new Vector3(0, curHopDir, 0);
                     ChooseAndStartAction(listHopForward, listHopSideRear);
                 }
