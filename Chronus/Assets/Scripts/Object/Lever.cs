@@ -38,6 +38,11 @@ public class Lever : MonoBehaviour
         stateIterator = new TurnLogIterator<(Quaternion, bool, Vector3)>(initialState);
         commandIterator = new TurnLogIterator<string>(initialCommands);
     }
+    public void ResetToStart()
+    {
+        stateIterator.ResetToStart();
+        RestoreState();
+    }
 
     public void AdvanceTurn()
     {

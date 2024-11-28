@@ -29,6 +29,11 @@ public class MovingObstacle : MonoBehaviour
         var initialPositionLog = new List<(Vector3, bool, int)> { (transform.position, isVisible, turnCount ) };
         positionIterator = new TurnLogIterator<(Vector3, bool, int)>(initialPositionLog);
     }
+    public void ResetToStart()
+    {
+        positionIterator.ResetToStart();
+        RestoreState();
+    }
 
     public void AdvanceTurn()
     {

@@ -155,6 +155,21 @@ public class TurnManager : MonoBehaviour
         }
     }
 
+    public void ResetObjects()
+    {
+        player.ResetToStart();
+        boxList.ForEach(box => box.ResetToStart());
+        leverList.ForEach(lever => lever.ResetToStart());
+        buttonList.ForEach(button => button.ResetToStart());
+        obstacleList.ForEach(obstacle => obstacle.ResetToStart());
+
+        player.InitializeLog();
+        boxList.ForEach(box => box.InitializeLog());
+        leverList.ForEach(lever => lever.InitializeLog());
+        buttonList.ForEach(button => button.InitializeLog());
+        obstacleList.ForEach(obstacle => obstacle.InitializeLog());
+    }
+
     // Functions for time rewind 
     public void EnterTimeRewind()
     // entering time rewind mode: make an empty phantom(actually, the player) in current position 
@@ -218,11 +233,11 @@ public class TurnManager : MonoBehaviour
         rewindTurnCount -= turnDelta;
 
         // Use iterator to navigate through position logs
-        (Vector3 position, Quaternion rotation) newTransform;
+        //(Vector3 position, Quaternion rotation) newTransform;
 
         if (turnDelta == -1 && player.positionIterator.HasPrevious())
         {
-            newTransform = player.positionIterator.Previous();
+            /*newTransform = */player.positionIterator.Previous();
             player.commandIterator.Previous();
 
             boxList.ForEach(box => box.positionIterator.Previous());
@@ -234,7 +249,7 @@ public class TurnManager : MonoBehaviour
         }
         else if (turnDelta == 1 && player.positionIterator.HasNext())
         {
-            newTransform = player.positionIterator.Next();
+            /*newTransform = */player.positionIterator.Next();
             player.commandIterator.Next();
             
             boxList.ForEach(box => box.positionIterator.Next());
@@ -251,10 +266,13 @@ public class TurnManager : MonoBehaviour
         }
 
         // Apply new position and rotation to the player
+        player.RestoreState();
+        /*
         player.gameObject.transform.position = newTransform.position;
         player.gameObject.transform.rotation = newTransform.rotation;
         player.playerCurPos = newTransform.position;
         player.playerCurRot = newTransform.rotation;
+        */
 
         // Restore object states based on the iterator's current position
         boxList.ForEach(box => box.RestoreState());

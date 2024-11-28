@@ -151,6 +151,8 @@ public abstract class CharacterBase : MonoBehaviour
 
     public void AdvanceFall()
     {
+        //suffocated in a tile, wall, etc
+        
         if (!willDropDeath)
         {
             // If no tile is detected, allow the box to fall
