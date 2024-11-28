@@ -13,6 +13,7 @@ TagManager:
   - MovingObstacle
   - GoalTile
   - StartTile
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -20,8 +21,8 @@ TagManager:
   - Player
   - Water
   - UI
-  - GroundFloor
-  - FirstFloor
+  - 
+  - 
   - 
   - 
   - 

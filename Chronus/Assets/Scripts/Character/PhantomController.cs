@@ -55,7 +55,7 @@ public class PhantomController : CharacterBase
     public void KillPhantom()
     {
         gameObject.SetActive(false);
-        isPhantomExisting = false;
+        isPhantomExisting = false; //deactivate.
     }
 
     public override void KillCharacter()

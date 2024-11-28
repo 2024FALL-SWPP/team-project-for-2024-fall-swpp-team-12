@@ -42,6 +42,11 @@ public class Button : MonoBehaviour
         stateIterator = new TurnLogIterator<(Vector3, bool, int)>(initialState);
         commandIterator = new TurnLogIterator<string>(initialCommands);
     }
+    public void ResetToStart()
+    {
+        stateIterator.ResetToStart();
+        RestoreState();
+    }
 
     private void OnTriggerEnter(Collider other)
     {

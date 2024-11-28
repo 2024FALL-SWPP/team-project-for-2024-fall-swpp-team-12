@@ -140,20 +140,34 @@ public class PlayerController : CharacterBase
         commandIterator = new TurnLogIterator<string>(listCommandLog);
         positionIterator = new TurnLogIterator<(Vector3, Quaternion)>(listPosLog);
     }
-    
+
+    public void ResetToStart()
+    {
+        commandIterator.ResetToStart();
+        positionIterator.ResetToStart();
+        RestoreState();
+    }
+
+    private void GameOverAndReset()
+    {
+        //freeze y pos and bool variables of fall condition reset
+        if (!PhantomController.phantomController.isFallComplete) PhantomController.phantomController.KillCharacter(); //intercept during fall
+        else PhantomController.phantomController.KillPhantom(); //just normal kill
+        TurnManager.turnManager.boxList.ForEach(box => box.DropKillBox());
+
+        TurnManager.turnManager.CLOCK = false; //CLOCK off
+        //isMoveComplete reset
+        TurnManager.turnManager.ResetMoveComplete();
+        TurnManager.turnManager.ResetFallComplete();
+
+        //reset position or state & reset iterator
+        TurnManager.turnManager.ResetObjects();
+    }
+
     public override void KillCharacter()
     {
         base.KillCharacter();
-        //intercept by GameOver
-        if (!PhantomController.phantomController.isFallComplete) PhantomController.phantomController.KillCharacter(); //intercept during fall
-        else PhantomController.phantomController.KillPhantom(); //just normal kill
-        TurnManager.turnManager.boxList.ForEach(box => box.KillBox());
-
-        TurnManager.turnManager.CLOCK = false;
-        TurnManager.turnManager.ResetMoveComplete();
-        TurnManager.turnManager.ResetFallComplete();
-        
-        //Initialize function let's go (in F-014 maybe)
+        GameOverAndReset();
     }
     
     
@@ -222,5 +236,14 @@ public class PlayerController : CharacterBase
 
         commandIterator.RemoveLastK(k);
         positionIterator.RemoveLastK(k);
+    }
+
+    public void RestoreState()
+    {
+        (Vector3 position, Quaternion rotation) newTransform = positionIterator.Current;
+        transform.position = newTransform.position;
+        transform.rotation = newTransform.rotation;
+        playerCurPos = newTransform.position;
+        playerCurRot = newTransform.rotation;
     }
 }

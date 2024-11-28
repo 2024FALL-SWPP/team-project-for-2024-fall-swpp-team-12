@@ -31,6 +31,12 @@ public class Box : MonoBehaviour
         positionIterator = new TurnLogIterator<(Vector3, bool)>(initialPositionLog);
     }
 
+    public void ResetToStart()
+    {
+        positionIterator.ResetToStart();
+        RestoreState();
+    }
+
     private void Update()
     {
         if (isWaitingToCheckFall)
@@ -40,7 +46,7 @@ public class Box : MonoBehaviour
 
         if (willDropDeath && PlayerController.playerController.isTimeRewinding) //intercept by timerewinding
         {
-            KillBox();
+            DropKillBox();
             return;
         }
         //intercept by gameover: at PlayerController - KillCharacter
@@ -54,7 +60,7 @@ public class Box : MonoBehaviour
 
                 if (willDropDeath) //hit the ground hard -> Drop Death
                 {
-                    KillBox();
+                    DropKillBox();
                 }
                 else
                 {
@@ -68,7 +74,7 @@ public class Box : MonoBehaviour
                 {
                     if (transform.position.y < -maxFallHeight) //fall to the void -> Drop Death
                     {
-                        KillBox();
+                        DropKillBox();
                     }
                 }
             }
@@ -88,7 +94,7 @@ public class Box : MonoBehaviour
         isBeingPushed = false;
     }
 
-    public void KillBox()
+    public void DropKillBox()
     {
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
         willDropDeath = false;
@@ -127,17 +133,10 @@ public class Box : MonoBehaviour
     }
     public bool TryMove(Vector3 direction)
     {
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance))
-        {
-            if (hit.collider.CompareTag("Obstacle") || // need "Obstacle" tag for all walls.
-                hit.collider.CompareTag("Lever") ||
-                hit.collider.CompareTag("MovingObstacle") ||
-                hit.collider.CompareTag("Wall") ||
-                hit.collider.CompareTag("Player"))
-            {
-                isBeingPushed = false;
-                return false;
-            }
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, 0.3f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
+        { 
+            isBeingPushed = false;
+            return false;
         }
         
         if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, moveDistance/2)) //look up.

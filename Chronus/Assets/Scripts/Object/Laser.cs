@@ -38,7 +38,14 @@ public class Laser : MonoBehaviour
             lineRenderer.SetPosition(1, hit.point);
             if (hit.collider.CompareTag("Player"))
             {
-                Debug.Log("Game Over!");
+                if (hit.collider.name == "Player")
+                {
+                    PlayerController.playerController.KillCharacter();
+                }
+                if (hit.collider.name == "Phantom")
+                {
+                    PhantomController.phantomController.KillCharacter();
+                }
             }
         }
         else
