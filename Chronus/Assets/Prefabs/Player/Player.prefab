@@ -93,7 +93,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0.5, y: 1, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &8394453472789530727
 Rigidbody:
@@ -132,6 +132,8 @@ MonoBehaviour:
   curHopDir: 1
   curTurnAngle: 0
   pushDirection: {x: 0, y: 0, z: 0}
+  pushSpeed: 0
+  isRidingBox: 0
   cIdle: {fileID: 965985751615319944}
   cMove: {fileID: 8337172169193159353}
   cTurn: {fileID: 6567613761597493224}
@@ -140,8 +142,8 @@ MonoBehaviour:
   isMoveComplete: 0
   isFallComplete: 1
   willDropDeath: 0
+  curKey: r
   isTimeRewinding: 0
-  listCommandLog: []
 --- !u!114 &2144903796421854843
 MonoBehaviour:
   m_ObjectHideFlags: 0
