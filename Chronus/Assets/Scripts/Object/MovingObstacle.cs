@@ -40,7 +40,7 @@ public class MovingObstacle : MonoBehaviour
         if (!isDependantOnSwitch) turnCount++; //count cycle by itself
         if (turnCount == turnCycle)
         {
-            Invoke("Move", 0.2f);
+            Invoke("Move", 0.15f);
             isVisible = !isVisible;
             turnCount = 0;
         }
@@ -59,7 +59,7 @@ public class MovingObstacle : MonoBehaviour
 
     private void CheckOverlapWithCharacters(Vector3 targetPosition)
     {
-        direction = (targetPosition - transform.position).normalized;
+        direction = targetPosition - transform.position;
         // first, check if the target position overlaps with player's target position.
         Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
         if (playerTargetPosition == targetPosition)
@@ -67,7 +67,7 @@ public class MovingObstacle : MonoBehaviour
             // If this is a block: going to push the player
             PlayerController.playerController.pushDirection = direction;
             PlayerController.playerController.pushSpeed = moveSpeed;
-            PlayerController.playerController.targetTranslation = targetPosition + direction * 2.0f;
+            PlayerController.playerController.targetTranslation = targetPosition + direction;
             // Else, if this is a spear: just game over.
         }
         if (PhantomController.phantomController.isPhantomExisting)
@@ -78,7 +78,7 @@ public class MovingObstacle : MonoBehaviour
                 // If this is a block: going to push the phantom
                 PhantomController.phantomController.pushDirection = direction;
                 PhantomController.phantomController.pushSpeed = moveSpeed;
-                PhantomController.phantomController.targetTranslation = targetPosition + direction * 2.0f;
+                PhantomController.phantomController.targetTranslation = targetPosition + direction;
                 // Else, if this is a spear: kill it.
             }
         }
@@ -87,7 +87,8 @@ public class MovingObstacle : MonoBehaviour
     private IEnumerator MoveObstacle(Vector3 targetPosition)
     {
         Vector3 startPosition = transform.position;
-        while (Vector3.Distance(transform.position, targetPosition) > 0.01f && Vector3.Distance(transform.position, startPosition) < 2.0f)
+        float maxGap = Vector3.Distance(targetPosition, startPosition);
+        while (Vector3.Distance(transform.position, targetPosition) > 0.01f && Vector3.Distance(transform.position, startPosition) < maxGap)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
             yield return null;
