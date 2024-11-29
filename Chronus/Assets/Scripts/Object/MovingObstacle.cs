@@ -59,7 +59,7 @@ public class MovingObstacle : MonoBehaviour
 
     private void CheckOverlapWithCharacters(Vector3 targetPosition)
     {
-        direction = targetPosition - transform.position;
+        direction = (targetPosition - transform.position).normalized;
         // first, check if the target position overlaps with player's target position.
         Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
         if (playerTargetPosition == targetPosition)
@@ -67,7 +67,7 @@ public class MovingObstacle : MonoBehaviour
             // If this is a block: going to push the player
             PlayerController.playerController.pushDirection = direction;
             PlayerController.playerController.pushSpeed = moveSpeed;
-            PlayerController.playerController.targetTranslation = targetPosition + direction;
+            PlayerController.playerController.targetTranslation = targetPosition + direction * 2;
             // Else, if this is a spear: just game over.
         }
         if (PhantomController.phantomController.isPhantomExisting)
@@ -78,7 +78,7 @@ public class MovingObstacle : MonoBehaviour
                 // If this is a block: going to push the phantom
                 PhantomController.phantomController.pushDirection = direction;
                 PhantomController.phantomController.pushSpeed = moveSpeed;
-                PhantomController.phantomController.targetTranslation = targetPosition + direction;
+                PhantomController.phantomController.targetTranslation = targetPosition + direction * 2;
                 // Else, if this is a spear: kill it.
             }
         }
