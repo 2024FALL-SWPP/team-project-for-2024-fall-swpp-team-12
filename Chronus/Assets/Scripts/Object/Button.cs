@@ -32,6 +32,11 @@ public class Button : MonoBehaviour
         InitializeLog();
     }
 
+    private void Update()
+    {
+        
+    }
+
     public void InitializeLog()
     {
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
@@ -73,7 +78,32 @@ public class Button : MonoBehaviour
     }
     public void AdvanceTurn()
     {
-        StartCoroutine(WaitForPlayerMoveCompleteAndAdvance());
+        Debug.Log("Player move complete. Advancing turn...");
+
+        if (!isMoveComplete)
+        {
+            remainingTurns--;
+            if (isPressed)
+            {
+                Debug.Log("remainingTurns:" + remainingTurns);
+
+                if (remainingTurns <= 0)
+                {
+                    ResetButton();
+                }
+                else
+                {
+                    SaveCurrentState($"{remainingTurns}");
+                    isMoveComplete = true;
+                }
+            }
+            else
+            {
+                SaveCurrentState("No Update");
+                isMoveComplete = true;
+            }
+        }
+        //StartCoroutine(WaitForPlayerMoveCompleteAndAdvance());
     }
 
     private IEnumerator WaitForPlayerMoveCompleteAndAdvance()
