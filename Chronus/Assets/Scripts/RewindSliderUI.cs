@@ -19,6 +19,11 @@ public class RewindSliderUI : MonoBehaviour
     private int slidingSquareIndex = 4;
     private const int maxVisibleSlots = 5;
 
+    private void Awake()
+    {
+        slidingSquare.gameObject.SetActive(false);
+    }
+
     public void EnterRewindMode(List<string> commands)
     {
         gameObject.SetActive(true);
