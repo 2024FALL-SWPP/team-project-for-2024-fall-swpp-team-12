@@ -20,7 +20,7 @@ public class LevelManager : MonoBehaviour
     // then the tile the player is standing on is (1, -0.2, 1)
     private readonly string baseSceneName = "LevelBaseScene";
 
-    private void Awake() 
+    private void Awake()
     {
         if (levelManager == null) { levelManager = this; }
     }
@@ -118,13 +118,13 @@ public class LevelManager : MonoBehaviour
                 currentStart = nextStart.transform;
                 nextGoal.tag = "Untagged"; // to prevent multiple "GoalTile"s in one scene
                 nextStart.tag = "Untagged";
-                
+
                 // Apply offset to the scene.
                 GameObject[] rootObjects = scene.GetRootGameObjects();
                 foreach (GameObject obj in rootObjects) obj.transform.position += levelOffset;
-                
+
                 // Add a transparent barrier to prevent going to the previous level
-                if (levelBarrier != null) levelBarrier.transform.position = currentStart.position - new Vector3(0, 0, 1); 
+                if (levelBarrier != null) levelBarrier.transform.position = currentStart.position - new Vector3(0, 0, 1);
 
                 StartCoroutine(MoveCameraWithTransition());
             }
@@ -160,7 +160,8 @@ public class LevelManager : MonoBehaviour
 
         // Ease-in transition
         Vector3 velocity = Vector3.zero;
-        while (Vector3.Distance(mainCamera.transform.position, targetPosition) > 0.1f)
+        while (Vector3.Distance(mainCamera.transform.position, targetPosition) > 0.1f ||
+            Quaternion.Angle(mainCamera.transform.rotation, targetRotation) > 0.1f)
         {
             mainCamera.transform.position = Vector3.SmoothDamp(
                 mainCamera.transform.position,
@@ -172,7 +173,7 @@ public class LevelManager : MonoBehaviour
             mainCamera.transform.rotation = Quaternion.Lerp(
                 mainCamera.transform.rotation,
                 targetRotation,
-                Time.deltaTime / 0.25f
+                Time.deltaTime / 0.3f
             );
             yield return null;
         }
