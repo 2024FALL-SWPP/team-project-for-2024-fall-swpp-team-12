@@ -819,6 +819,14 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7332264089347800436, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
+      propertyPath: m_Size.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7332264089347800436, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
+      propertyPath: m_Size.z
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5cdc9edb7caf708458803e1bb1a4a1c1, type: 3}
 --- !u!1001 &288072171
@@ -6789,6 +6797,14 @@ PrefabInstance:
     - target: {fileID: 2277932104638024313, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2417013240605120036, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
+      propertyPath: m_Size.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2417013240605120036, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
+      propertyPath: m_Size.z
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2417013240605120036, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
       propertyPath: m_IsTrigger
