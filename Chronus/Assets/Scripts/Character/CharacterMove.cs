@@ -5,19 +5,28 @@ using UnityEngine;
 public class CharacterMove : MonoBehaviour, IState<CharacterBase>
 {
     private CharacterBase _CharacterBase;
-    private Vector3 targetTranslation;
+    private Vector3 tempTargetTranslation;
+
+    private float smallHopRate;
+    private float speedVer;
+    private bool meetLocalMax;
 
     public void OperateEnter(CharacterBase sender)
     {
         _CharacterBase = sender;
         _CharacterBase.curSpeed = _CharacterBase.moveSpeedHor;
 
+        tempTargetTranslation = _CharacterBase.targetTranslation;
+
         if (_CharacterBase.animator != null)
         {
             _CharacterBase.animator.SetBool("isMoving", true);
         }
 
-        targetTranslation = _CharacterBase.targetTranslation;
+        //small hop motion (part of animation yeah)
+        smallHopRate = 1.7f;
+        speedVer = _CharacterBase.moveSpeedVer * smallHopRate;
+        meetLocalMax = false;
     }
 
     public void OperateExit(CharacterBase sender)
@@ -30,31 +39,63 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
 
     public void OperateUpdate(CharacterBase sender)
     {
-        // There's no way. Need to capture targetTranslation changes. (to check if being pushed)
-        targetTranslation = _CharacterBase.targetTranslation;
+
 
         if (_CharacterBase.pushDirection != Vector3.zero)
         {
             float moveStep = _CharacterBase.pushSpeed * Time.deltaTime;
             Vector3 currentTranslation = _CharacterBase.transform.position;
-            Vector3 direction = (targetTranslation - currentTranslation).normalized;
+            Vector3 direction = (_CharacterBase.targetTranslation - currentTranslation).normalized;
             _CharacterBase.transform.Translate(direction * moveStep, Space.World);
         }
         else
         {
             float moveStep = _CharacterBase.curSpeed * Time.deltaTime;
             _CharacterBase.transform.Translate(Vector3.forward * moveStep);
+
+
+            //small hop motion (log graph shape, non-linear it is.) (part of animation yeah)
+            if (!meetLocalMax) speedVer -= Mathf.Log(speedVer + 1.0f) * 0.01f;
+            else speedVer -= Mathf.Log(-speedVer + 1.0f) * 0.01f;
+
+            //small hop motion (part of animation yeah)
+            float smallHopStep = speedVer * Time.deltaTime;
+            _CharacterBase.transform.Translate(Vector3.up * smallHopStep);
+            if (!meetLocalMax)
+            {
+                Vector3 currentTranslation = _CharacterBase.transform.position;
+                float planeDistance = Mathf.Sqrt((_CharacterBase.targetTranslation.x - currentTranslation.x) * (_CharacterBase.targetTranslation.x - currentTranslation.x)
+                    + (_CharacterBase.targetTranslation.z - currentTranslation.z) * (_CharacterBase.targetTranslation.z - currentTranslation.z));
+                float maxGap = Mathf.Sqrt((_CharacterBase.targetTranslation.x - _CharacterBase.playerCurPos.x) * (_CharacterBase.targetTranslation.x - _CharacterBase.playerCurPos.x) +
+                (_CharacterBase.targetTranslation.z - _CharacterBase.playerCurPos.z) * (_CharacterBase.targetTranslation.z - _CharacterBase.playerCurPos.z));
+                if (planeDistance < 0.5f * maxGap)
+                {//less than half distance
+                    meetLocalMax = true;
+                    speedVer = -3.0f * smallHopRate;
+                }
+            }
         }
     }
     public void DoneAction(CharacterBase sender)
     {
         Vector3 currentTranslation = _CharacterBase.transform.position;
-        if (Vector3.Distance(currentTranslation, targetTranslation) < 0.1f || Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos) >= 2.0f)
+        float gap;
+        float maxGap;
+        gap = (_CharacterBase.targetTranslation == _CharacterBase.playerCurPos)
+            ? Vector3.Distance(currentTranslation, tempTargetTranslation)
+            : Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos);
+        maxGap = (_CharacterBase.targetTranslation == _CharacterBase.playerCurPos)
+            ? Vector3.Distance(_CharacterBase.targetTranslation, tempTargetTranslation)
+            : Vector3.Distance(_CharacterBase.targetTranslation, _CharacterBase.playerCurPos);
+        if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) < 0.1f || gap >= maxGap)
         {
-            _CharacterBase.transform.position = targetTranslation; 
-            _CharacterBase.playerCurPos = _CharacterBase.transform.position; 
-            _CharacterBase.pushDirection = Vector3.zero;
-            _CharacterBase.pushSpeed = 0;
+            _CharacterBase.transform.position = _CharacterBase.targetTranslation; 
+            _CharacterBase.playerCurPos = _CharacterBase.transform.position;
+            if (_CharacterBase.pushDirection != Vector3.zero)
+            {
+                _CharacterBase.pushDirection = Vector3.zero;
+                _CharacterBase.pushSpeed = 0;
+            }
             _CharacterBase.doneAction = true;
         }
     }

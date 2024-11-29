@@ -17,12 +17,19 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
     {
         _CharacterBase = sender;
         //turn left or right speed  x 2   =   turn behind speed
-        _CharacterBase.curRotSpeed = _CharacterBase.turnSpeed * Mathf.Abs(_CharacterBase.curTurnAngle) / 90.0f;
-
+        _CharacterBase.curRotSpeed = _CharacterBase.turnSpeed * _CharacterBase.curTurnAngle / 90.0f;
         targetYRotation = _CharacterBase.playerCurRot.eulerAngles.y + _CharacterBase.curTurnAngle;
+        if (targetYRotation >= 360.0f)
+        {
+            targetYRotation -= 360.0f;
+        }
+        else if (targetYRotation < 0.0f)
+        {
+            targetYRotation += 360.0f;
+        }
 
         //small hop motion (part of animation yeah)
-        smallHopRate = 1.0f;
+        smallHopRate = 1.3f;
         speedVer = _CharacterBase.moveSpeedVer * smallHopRate;
         meetLocalMax = false;
     }
@@ -46,7 +53,7 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         if (_CharacterBase)
         {
             float rotationStep = _CharacterBase.curRotSpeed * Time.deltaTime;
-            _CharacterBase.transform.Rotate(0f, Mathf.Sign(_CharacterBase.curTurnAngle) * rotationStep, 0f);
+            _CharacterBase.transform.Rotate(0f, rotationStep, 0f);
 
             //small hop motion (part of animation yeah)
             float smallHopStep = speedVer * Time.deltaTime;
@@ -68,8 +75,11 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         float currentYRotation = _CharacterBase.transform.eulerAngles.y;
         float gap = Mathf.DeltaAngle(_CharacterBase.playerCurRot.eulerAngles.y, currentYRotation);
         float angle = Mathf.Abs(Mathf.DeltaAngle(currentYRotation, targetYRotation));
-        if (angle < 1.0f || (gap >= Mathf.Abs(_CharacterBase.curTurnAngle) && gap >= 0) || (gap <= -90.0f && gap < 0)) 
+        if (angle < 1.0f || 
+            (_CharacterBase.curTurnAngle > 0 && (gap >= _CharacterBase.curTurnAngle || gap < 0)) || 
+            (_CharacterBase.curTurnAngle < 0 && (gap <= _CharacterBase.curTurnAngle || gap > 0))) 
         {
+            Debug.Log(gap);
             CompleteRotation(targetYRotation);
             CompleteTranslation();
             _CharacterBase.doneAction = true;

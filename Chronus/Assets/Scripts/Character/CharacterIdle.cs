@@ -47,7 +47,9 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
         if (_CharacterBase.pushDirection != Vector3.zero) //obstacle push > box ride
         {
             Vector3 currentTranslation = _CharacterBase.transform.position;
-            if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) <= 0.1f || Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos) >= 2.0f)
+            float gap = Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos);
+            float maxGap = Vector3.Distance(_CharacterBase.targetTranslation, _CharacterBase.playerCurPos);
+            if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) <= 0.1f || gap >= maxGap)
             {
                 _CharacterBase.transform.position = _CharacterBase.targetTranslation;
                 _CharacterBase.playerCurPos = _CharacterBase.transform.position; //update position.
@@ -60,7 +62,9 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
         else if (_CharacterBase.isRidingBox)
         {
             Vector3 currentTranslation = _CharacterBase.transform.position;
-            if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) <= 0.1f || Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos) >= 2.0f)
+            float gap = Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos);
+            float maxGap = Vector3.Distance(_CharacterBase.targetTranslation, _CharacterBase.playerCurPos);
+            if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) <= 0.1f || gap >= maxGap)
             {
                 _CharacterBase.transform.position = _CharacterBase.targetTranslation;
                 _CharacterBase.playerCurPos = _CharacterBase.transform.position;
