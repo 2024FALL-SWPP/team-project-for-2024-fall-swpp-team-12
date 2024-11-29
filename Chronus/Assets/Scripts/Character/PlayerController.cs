@@ -115,6 +115,13 @@ public class PlayerController : CharacterBase
     public List<string> listCommandLog; // command log for time rewind (objects) and phantom action (copy commands)
     public List<(Vector3, Quaternion)> listPosLog; // position tracking log for time rewind (reset position)
 
+    // Blinking effect
+    public Renderer[] playerRenderers;
+    public Coroutine blinkCoroutine;
+    public int blinkCount = 3; 
+    public float blinkInterval = 0.2f;
+    private bool isBlinking = false;
+
     protected override void Awake() // singleton
     {
         base.Awake();
@@ -130,6 +137,16 @@ public class PlayerController : CharacterBase
         InputManager.inputManager.OnMovementControl += HandleMovementInput;
         InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindMode;
         InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInput;
+
+
+        // Initialize Renderers
+        var meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        var skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+
+        // Combine both types of renderers into one array
+        playerRenderers = new Renderer[meshRenderers.Length + skinnedMeshRenderers.Length];
+        meshRenderers.CopyTo(playerRenderers, 0);
+        skinnedMeshRenderers.CopyTo(playerRenderers, meshRenderers.Length);
     }
 
     public void InitializeLog()
@@ -170,10 +187,85 @@ public class PlayerController : CharacterBase
     public override void KillCharacter()
     {
         base.KillCharacter();
-        GameOverAndReset();
+        if (willDropDeath) 
+        {
+            StartCoroutine(HandleFallingBlink());
+        }
+        else // player dies due to a laser or other causes
+        {
+            if (!isBlinking) StartCoroutine(HandleBlinkAndReset());
+        }
     }
     
+    public void StartBlinking()
+    {
+        if (playerRenderers == null || playerRenderers.Length == 0) return;
+
+        if (blinkCoroutine != null)
+        {
+            StopCoroutine(blinkCoroutine);
+        }
+        blinkCoroutine = StartCoroutine(PlayBlinkEffect());
+    }
     
+    // Coroutine to handle blinking effect
+    public IEnumerator PlayBlinkEffect()
+    {
+        isBlinking = true;
+
+        for (int i = 0; i < blinkCount; i++)
+        {
+            foreach (var renderer in playerRenderers)
+            {
+                renderer.enabled = false;
+            }
+            yield return new WaitForSeconds(blinkInterval);
+
+            foreach (var renderer in playerRenderers)
+            {
+                renderer.enabled = true;
+            }
+            yield return new WaitForSeconds(blinkInterval);
+        }
+
+        isBlinking = false;
+    }
+    
+    private IEnumerator HandleFallingBlink()
+    {
+        isBlinking = true;
+
+        while (willDropDeath)
+        {
+            foreach (var renderer in playerRenderers)
+            {
+                renderer.enabled = false;
+            }
+            yield return new WaitForSeconds(blinkInterval);
+
+            foreach (var renderer in playerRenderers)
+            {
+                renderer.enabled = true;
+            }
+            yield return new WaitForSeconds(blinkInterval);
+        }
+
+        GameOverAndReset();
+        yield return PlayBlinkEffect(); // Blink 3 times at the starting point
+        isBlinking = false;
+    }
+
+    // Coroutine to handle blinking at the current position and reset
+    private IEnumerator HandleBlinkAndReset()
+    {
+        // Blink at the current position
+        yield return PlayBlinkEffect();
+
+        // Reset to the starting position and blink again
+        GameOverAndReset();
+        yield return PlayBlinkEffect();
+
+    }
 
     // Update() is redundant, because doing same thing from CharacterBase
 
@@ -194,7 +286,7 @@ public class PlayerController : CharacterBase
     // Functions for Time Rewind mode //
     private void ToggleTimeRewindMode()
     {
-        if (TurnManager.turnManager.CLOCK || willDropDeath) return; // assuring that every action should be ended (during the turn)
+        if (isBlinking || TurnManager.turnManager.CLOCK || willDropDeath) return; // assuring that every action should be ended (during the turn)
 
         if (!isTimeRewinding) 
         {
@@ -255,3 +347,5 @@ public class PlayerController : CharacterBase
         playerCurRot = newTransform.rotation;
     }
 }
+
+
