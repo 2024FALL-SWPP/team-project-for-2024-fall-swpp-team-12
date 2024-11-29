@@ -126,8 +126,7 @@ public class LevelManager : MonoBehaviour
                 // Add a transparent barrier to prevent going to the previous level
                 if (levelBarrier != null) levelBarrier.transform.position = currentStart.position - new Vector3(0, 0, 1); 
 
-                // for camera, offset is "cumulated", so need to be controlled like this.
-                StartCoroutine(MoveCameraWithTransition(levelOffset - previousLevelOffset));
+                StartCoroutine(MoveCameraWithTransition());
             }
 
             ResetLevel();
@@ -148,11 +147,11 @@ public class LevelManager : MonoBehaviour
         // Get information from the level
         TurnManager.turnManager.InitializeObjectLists();
         // Kill the phantom
-        //PhantomController.phantomController.isPhantomExisting = false;
-        //PhantomController.phantomController.gameObject.SetActive(false);
+        PhantomController.phantomController.isPhantomExisting = false;
+        PhantomController.phantomController.gameObject.SetActive(false);
     }
 
-    private IEnumerator MoveCameraWithTransition(Vector3 offset)
+    private IEnumerator MoveCameraWithTransition()
     {
         // Assure that every scene has CameraOffsetAnchor (skipping null checking)
         GameObject anchor = GameObject.Find("CameraOffsetAnchor");
@@ -173,7 +172,7 @@ public class LevelManager : MonoBehaviour
             mainCamera.transform.rotation = Quaternion.Lerp(
                 mainCamera.transform.rotation,
                 targetRotation,
-                Time.deltaTime * 1f
+                Time.deltaTime / 0.25f
             );
             yield return null;
         }
