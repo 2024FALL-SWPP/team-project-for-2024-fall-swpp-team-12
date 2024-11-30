@@ -45,6 +45,7 @@ public abstract class CharacterBase : MonoBehaviour
     public bool isMoveComplete = false; // for turn mechanism
     public bool isFallComplete = true;
     public bool willDropDeath = false;
+    public bool willLaserKillCharacter = false;
     
 
     protected virtual void Awake()
@@ -112,6 +113,13 @@ public abstract class CharacterBase : MonoBehaviour
         }
         if ((TurnManager.turnManager.CLOCK || willDropDeath) && !isFallComplete)
         {
+            if (willLaserKillCharacter) //check after fall
+            {
+                willLaserKillCharacter = false;
+                this.KillCharacter();
+                return;
+            }
+
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, rayDistance, layerMask))
             {
                 // Tile detected, keep Y position constraint to keep the box stable
@@ -151,8 +159,12 @@ public abstract class CharacterBase : MonoBehaviour
 
     public void AdvanceFall()
     {
-        //suffocated in a tile, wall, etc
-        
+        if (willLaserKillCharacter) //check before fall (after all obstacles move)
+        {
+            willLaserKillCharacter = false;
+            this.KillCharacter();
+            return;
+        }
         if (!willDropDeath)
         {
             // If no tile is detected, allow the box to fall
