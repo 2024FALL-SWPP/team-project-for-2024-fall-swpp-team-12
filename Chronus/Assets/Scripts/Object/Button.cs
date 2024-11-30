@@ -23,7 +23,6 @@ public class Button : MonoBehaviour
     public bool isMoveComplete = false;
 
     public TurnLogIterator<(Vector3, bool, int)> stateIterator;
-    public TurnLogIterator<string> commandIterator;
     private void Start()
     {
         plateOffPosition = transform.GetChild(1).transform.position;
@@ -42,10 +41,8 @@ public class Button : MonoBehaviour
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
 
         var initialState = new List<(Vector3, bool, int)> { (transform.GetChild(1).transform.position, isPressed, remainingTurns) };
-        var initialCommands = new List<string>{""};
 
         stateIterator = new TurnLogIterator<(Vector3, bool, int)>(initialState);
-        commandIterator = new TurnLogIterator<string>(initialCommands);
     }
     public void ResetToStart()
     {
@@ -53,101 +50,54 @@ public class Button : MonoBehaviour
         RestoreState();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void BePressedByObjects(Collider other)
     {
-        if (TurnManager.turnManager.player.isTimeRewinding) return;
-        if (other.CompareTag("Player") || other.CompareTag("Box")) 
+        if (!TurnManager.turnManager.CLOCK) return;
+        if (other.CompareTag("Player") || other.CompareTag("Box"))
         {
             PressButton();
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        BePressedByObjects(other);
     }
     private void OnTriggerStay(Collider other)
     {
-        if (TurnManager.turnManager.player.isTimeRewinding) return;
-        if (other.CompareTag("Player") || other.CompareTag("Box")) 
-        {
-            PressButton();
-        }
+        BePressedByObjects(other);
     }
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player") || other.CompareTag("Box")) 
-        {
-            // isPressed = false;
-        }
-    }
+
     public void AdvanceTurn()
     {
-        Debug.Log("Player move complete. Advancing turn...");
-
-        if (!isMoveComplete)
+        if (isPressed)
         {
             remainingTurns--;
-            if (isPressed)
-            {
-                Debug.Log("remainingTurns:" + remainingTurns);
+            Debug.Log("remainingTurns:" + remainingTurns);
 
-                if (remainingTurns <= 0)
-                {
-                    ResetButton();
-                }
-                else
-                {
-                    SaveCurrentState($"{remainingTurns}");
-                    isMoveComplete = true;
-                }
-            }
-            else
-            {
-                SaveCurrentState("No Update");
-                isMoveComplete = true;
-            }
+            if (remainingTurns <= 0) ResetButton();
         }
-        //StartCoroutine(WaitForPlayerMoveCompleteAndAdvance());
+        StartCoroutine(WaitForOthersMoveCompleteAndAdvance());
     }
 
-    private IEnumerator WaitForPlayerMoveCompleteAndAdvance()
+    private IEnumerator WaitForOthersMoveCompleteAndAdvance()
     {
-        // Wait until isMoveComplete becomes true
-        yield return new WaitUntil(() => TurnManager.turnManager.player.isMoveComplete);
+        // Wait until Others' isMoveComplete becomes true (including fall)
+        yield return new WaitUntil(() => TurnManager.turnManager.CheckMoveCompleteExceptButton());
 
-        if (!isMoveComplete)
-        {
-            remainingTurns--;
-            if (isPressed)
-            {
-                if (remainingTurns <= 0)
-                {
-                    ResetButton();
-                }
-                else
-                {
-                    SaveCurrentState($"{remainingTurns}");
-                    isMoveComplete = true;
-                }
-            }
-            else
-            {
-                SaveCurrentState("No Update");
-                isMoveComplete = true;
-            }
-        }
+        isMoveComplete = true;
     }
 
     private void PressButton()
     {
+        remainingTurns = resetTurnCount; //reset count (when enter, stay)
+
         if (!isPressed) {
             targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
             transform.GetChild(1).transform.position = plateOnPosition;
 
-            remainingTurns = resetTurnCount;
-
-            {isPressed = true; Debug.Log("pressed");}
-
-            // Log button press state
-            SaveCurrentState("Activated");
-
-            isMoveComplete = true;
+            isPressed = true;
+            Debug.Log("pressed");
         }
     }
 
@@ -156,20 +106,14 @@ public class Button : MonoBehaviour
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); // Revert to initial state
         transform.GetChild(1).transform.position = plateOffPosition;
 
-        remainingTurns = 0; //idle state of turnActivated.
+        //need particle
 
         isPressed = false;
-
-        // Log button reset state
-        SaveCurrentState("Deactivated");
-
-        isMoveComplete = true;
     }
 
-    private void SaveCurrentState(string command)
+    public void SaveCurrentState()
     {
-        // Log the command and current state
-        commandIterator.Add(command);
+        // Log the current state
         stateIterator.Add((transform.GetChild(1).transform.position, isPressed, remainingTurns));
     }
 
@@ -185,7 +129,6 @@ public class Button : MonoBehaviour
     }
     public void RemoveLog(int k)
     {
-        commandIterator.RemoveLastK(k);
         stateIterator.RemoveLastK(k);
     }
 }

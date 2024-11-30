@@ -14,7 +14,6 @@ public class Lever : MonoBehaviour
     public bool isMoveComplete = false;
 
     public TurnLogIterator<(Quaternion, bool, Vector3)> stateIterator;
-    public TurnLogIterator<string> commandIterator;
 
     private void Start()
     {
@@ -33,10 +32,8 @@ public class Lever : MonoBehaviour
         {
             (transform.GetChild(1).transform.rotation, isActivated, canToggleDirection)
         };
-        var initialCommands = new List<string>{""};
 
         stateIterator = new TurnLogIterator<(Quaternion, bool, Vector3)>(initialState);
-        commandIterator = new TurnLogIterator<string>(initialCommands);
     }
     public void ResetToStart()
     {
@@ -55,13 +52,12 @@ public class Lever : MonoBehaviour
         {
             if (!isMoveComplete)
             {
-                SaveCurrentState("No Update");
                 isMoveComplete = true;
             }
         }
     }
 
-    public void ToggleLever()
+    public void ToggleLever() // Log lever toggle state
     {
         isActivated = !isActivated;
         transform.GetChild(1).transform.localRotation = isActivated ? forwardRotation : backwardRotation;
@@ -69,16 +65,12 @@ public class Lever : MonoBehaviour
 
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive ^ isActivated));
 
-        // Log lever toggle state
-        SaveCurrentState(isActivated ? "Activate" : "Deactivate");
-
         isMoveComplete = true;
     }
 
-    private void SaveCurrentState(string command)
+    public void SaveCurrentState()
     {
-        // Log the command and current state
-        commandIterator.Add(command);
+        // Log the current state
         stateIterator.Add((transform.GetChild(1).transform.rotation, isActivated, canToggleDirection));
     }
 
@@ -95,7 +87,6 @@ public class Lever : MonoBehaviour
 
     public void RemoveLog(int k)
     {
-        commandIterator.RemoveLastK(k);
         stateIterator.RemoveLastK(k);
     }
 }

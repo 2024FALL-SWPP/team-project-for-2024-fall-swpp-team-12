@@ -9,8 +9,10 @@ public class PhantomController : CharacterBase
 
     public TurnLogIterator<string> commandIterator;
     public TurnLogIterator<(Vector3, Quaternion)> positionIterator;
+    public TurnLogIterator<bool> existIterator;
     private List<string> listCommandOrder = new();
-    private List<(Vector3, Quaternion)> listPosLog;  
+    private List<(Vector3, Quaternion)> listPosLog;
+    private List<bool> listExistLog;
     public bool isPhantomExisting = false;
     protected override void Awake() 
     {
@@ -31,6 +33,14 @@ public class PhantomController : CharacterBase
         commandIterator = new TurnLogIterator<string>(listCommandOrder);
         listPosLog = new List<(Vector3, Quaternion)> { (transform.position, transform.rotation) };
         positionIterator = new TurnLogIterator<(Vector3, Quaternion)>(listPosLog);
+        listExistLog = new List<bool> { false };
+        existIterator = new TurnLogIterator<bool>(listExistLog);
+    }
+    public void ResetToStart()
+    {
+        positionIterator.ResetToStart();
+        existIterator.ResetToStart();
+        RestoreState();
     }
 
     public void AdvanceTurn()
@@ -61,6 +71,45 @@ public class PhantomController : CharacterBase
     public override void KillCharacter()
     {
         base.KillCharacter();
+        //willDropDeath = false;
         KillPhantom();
     }
+
+    public void SaveCurrentPosAndRot()
+    {
+        if (willDropDeath || !isPhantomExisting) //save before kill.
+        {
+            positionIterator.Add((Vector3.zero, Quaternion.identity));
+            Debug.Log("what");
+            existIterator.Add(false);
+
+        }
+        else
+        {
+            positionIterator.Add((transform.position, transform.rotation));
+            existIterator.Add(true);
+        }
+    }
+    public void RemoveLog(int k)
+    {
+        positionIterator.RemoveLastK(k);
+        existIterator.RemoveLastK(k);
+    }
+
+    public void RestoreState() // updating for time rewind
+    {
+        var current = positionIterator.Current;
+        if (existIterator.Current)
+        {
+            transform.position = current.Item1;
+            transform.rotation = current.Item2;
+            playerCurPos = current.Item1;
+            playerCurRot = current.Item2;
+            isPhantomExisting = true;
+        }
+        else isPhantomExisting = false;
+
+        gameObject.SetActive(existIterator.Current);
+    }
+
 }

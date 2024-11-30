@@ -38,7 +38,7 @@ public class Laser : MonoBehaviour
             lineRenderer.SetPosition(1, hit.point);
             if (TurnManager.turnManager.CLOCK && hit.collider.CompareTag("Player"))
             {
-                if (hit.collider.name == "Player" && !PlayerController.playerController.willLaserKillCharacter)
+                if (!PlayerController.playerController.isBlinking && hit.collider.name == "Player" && !PlayerController.playerController.willLaserKillCharacter)
                 {
                     PlayerController.playerController.willLaserKillCharacter = true;
                 }
