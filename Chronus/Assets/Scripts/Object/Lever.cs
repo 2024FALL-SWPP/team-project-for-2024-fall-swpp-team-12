@@ -27,7 +27,7 @@ public class Lever : MonoBehaviour
 
     public void InitializeLog()
     {
-        targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
+        targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive));
 
         var initialState = new List<(Quaternion, bool, Vector3)>
         {
@@ -67,7 +67,7 @@ public class Lever : MonoBehaviour
         transform.GetChild(1).transform.localRotation = isActivated ? forwardRotation : backwardRotation;
         canToggleDirection = -canToggleDirection;
 
-        targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive ^ isActivated)); 
+        targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive ^ isActivated));
 
         // Log lever toggle state
         SaveCurrentState(isActivated ? "Activate" : "Deactivate");

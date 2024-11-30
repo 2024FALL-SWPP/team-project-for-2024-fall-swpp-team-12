@@ -278,7 +278,7 @@ public class PlayerController : CharacterBase
 
     protected override void HandleMovementInput(string command)
     {
-        if (TurnManager.turnManager.CLOCK || isTimeRewinding) return; // active when the turn is entirely ended, and not in time rewind mode
+        if (TurnManager.turnManager.CLOCK || willDropDeath || isTimeRewinding) return; // active when the turn is entirely ended, and not in time rewind mode
         curKey = command;
         base.HandleMovementInput(command);
     }

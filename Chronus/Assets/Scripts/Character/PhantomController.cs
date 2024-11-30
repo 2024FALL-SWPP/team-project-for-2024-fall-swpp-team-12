@@ -55,7 +55,7 @@ public class PhantomController : CharacterBase
     public void KillPhantom()
     {
         gameObject.SetActive(false);
-        isPhantomExisting = false; //deactivate.
+        isPhantomExisting = false; //deactivate. -> can update turn instead of isMoveComplete.
     }
 
     public override void KillCharacter()

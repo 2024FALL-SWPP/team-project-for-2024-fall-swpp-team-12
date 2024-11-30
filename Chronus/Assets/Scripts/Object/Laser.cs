@@ -4,7 +4,7 @@ public class Laser : MonoBehaviour
 {
     public float laserSpeed = 20f; 
     public float laserLength = 100f; // arbitrary maximum length
-    private LineRenderer lineRenderer; 
+    private LineRenderer lineRenderer;
 
     void Start()
     {
@@ -23,7 +23,10 @@ public class Laser : MonoBehaviour
 
     void Update()
     {
-        CastLaser();
+        if (TurnManager.turnManager.CLOCK || !PlayerController.playerController.isTimeRewinding)
+        {
+            CastLaser();
+        }
     }
 
     void CastLaser()
@@ -38,13 +41,14 @@ public class Laser : MonoBehaviour
             lineRenderer.SetPosition(1, hit.point);
             if (hit.collider.CompareTag("Player"))
             {
-                if (hit.collider.name == "Player")
+                if (hit.collider.name == "Player" && !PlayerController.playerController.willLaserKillCharacter)
                 {
-                    PlayerController.playerController.KillCharacter();
+                    PlayerController.playerController.willLaserKillCharacter = true;
+                    Debug.Log("BUURN");
                 }
-                if (hit.collider.name == "Phantom")
+                if (hit.collider.name == "Phantom" && !PhantomController.phantomController.willLaserKillCharacter)
                 {
-                    PhantomController.phantomController.KillCharacter();
+                    PhantomController.phantomController.willLaserKillCharacter = true;
                 }
             }
         }
