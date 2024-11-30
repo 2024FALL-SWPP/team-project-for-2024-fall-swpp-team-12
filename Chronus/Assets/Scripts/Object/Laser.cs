@@ -23,10 +23,7 @@ public class Laser : MonoBehaviour
 
     void Update()
     {
-        if (TurnManager.turnManager.CLOCK || !PlayerController.playerController.isTimeRewinding)
-        {
-            CastLaser();
-        }
+        CastLaser();
     }
 
     void CastLaser()
@@ -39,12 +36,11 @@ public class Laser : MonoBehaviour
             // stop at the collision(hit) point 
             lineRenderer.SetPosition(0, start);
             lineRenderer.SetPosition(1, hit.point);
-            if (hit.collider.CompareTag("Player"))
+            if (TurnManager.turnManager.CLOCK && hit.collider.CompareTag("Player"))
             {
                 if (hit.collider.name == "Player" && !PlayerController.playerController.willLaserKillCharacter)
                 {
                     PlayerController.playerController.willLaserKillCharacter = true;
-                    Debug.Log("BUURN");
                 }
                 if (hit.collider.name == "Phantom" && !PhantomController.phantomController.willLaserKillCharacter)
                 {
