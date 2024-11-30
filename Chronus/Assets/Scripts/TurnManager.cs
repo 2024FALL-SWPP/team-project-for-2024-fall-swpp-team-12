@@ -86,17 +86,16 @@ public class TurnManager : MonoBehaviour
     //need for preventing player and phantom from not falling, staying on the air.
     {
         return (
-            boxList.All(box => box.isMoveComplete) &&
-            obstacleList.All(obstacle => obstacle.isMoveComplete)
+            boxList.All(box => box.isMoveComplete || !box.isFallComplete) &&
+            CheckMovingObstaclesMoveComplete()
         );
     }
+
     public bool CheckMovingObstaclesMoveComplete()
-    // Check if moving obstacles and boxes of the current turn on the scene are complete.
-    //need for preventing player and phantom from not falling, staying on the air.
+    // Check if moving obstacles of the current turn on the scene are complete.
+    //need for preventing boxes from not falling, staying on the air.
     {
-        return (
-            obstacleList.All(obstacle => obstacle.isMoveComplete)
-        );
+        return obstacleList.All(obstacle => obstacle.isMoveComplete);
     }
 
     public void ResetMoveComplete()
@@ -108,11 +107,12 @@ public class TurnManager : MonoBehaviour
         buttonList.ForEach(button => button.isMoveComplete = false);
         obstacleList.ForEach(obstacle => obstacle.isMoveComplete = false);
     }
+    /*
     public void ResetFallComplete()
     {
         phantom.isFallComplete = true;
         boxList.ForEach(box => box.isFallComplete = true);
-    }
+    }*/
 
     // maybe we need a separate ObjectManager to control all these lists & time rewind?
     public void InitializeObjectLists()

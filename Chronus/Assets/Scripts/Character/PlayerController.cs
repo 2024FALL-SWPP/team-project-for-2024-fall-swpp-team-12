@@ -178,10 +178,11 @@ public class PlayerController : CharacterBase
         TurnManager.turnManager.CLOCK = false; //CLOCK off
         //isMoveComplete reset
         TurnManager.turnManager.ResetMoveComplete();
-        TurnManager.turnManager.ResetFallComplete();
+        //TurnManager.turnManager.ResetFallComplete();
 
         //reset position or state & reset iterator
         TurnManager.turnManager.ResetObjects();
+
     }
 
     public override void KillCharacter()

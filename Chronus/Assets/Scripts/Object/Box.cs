@@ -106,7 +106,7 @@ public class Box : MonoBehaviour
     }
     public void AdvanceFall() //can refactor with characterbase.advancefall()
     {
-        if (isWaitingToCheckFall) isWaitingToCheckFall = false;
+        isWaitingToCheckFall = false;
 
         if (!willDropDeath)
         {

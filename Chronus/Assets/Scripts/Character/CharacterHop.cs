@@ -84,12 +84,16 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
         Vector3 currentTranslation = _CharacterBase.transform.position;
         float gap;
         float maxGap;
-        if (_CharacterBase.targetTranslation == _CharacterBase.playerCurPos)
+        float gapVer;
+        float maxGapVer;
+        if (_CharacterBase.targetTranslation.x == _CharacterBase.playerCurPos.x && _CharacterBase.targetTranslation.z == _CharacterBase.playerCurPos.z)
         {
             gap = Mathf.Sqrt((currentTranslation.x - tempTargetTranslation.x) * (currentTranslation.x - tempTargetTranslation.x) +
             (currentTranslation.z - tempTargetTranslation.z) * (currentTranslation.z - tempTargetTranslation.z));
             maxGap = Mathf.Sqrt((_CharacterBase.targetTranslation.x - tempTargetTranslation.x) * (_CharacterBase.targetTranslation.x - tempTargetTranslation.x) +
                 (_CharacterBase.targetTranslation.z - tempTargetTranslation.z) * (_CharacterBase.targetTranslation.z - tempTargetTranslation.z));
+            gapVer = Vector3.Distance(currentTranslation, _CharacterBase.playerCurPos);
+            maxGapVer = Vector3.Distance(_CharacterBase.targetTranslation, _CharacterBase.playerCurPos);
         }
         else
         {
@@ -97,8 +101,9 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
             (currentTranslation.z - _CharacterBase.playerCurPos.z) * (currentTranslation.z - _CharacterBase.playerCurPos.z));
             maxGap = Mathf.Sqrt((_CharacterBase.targetTranslation.x - _CharacterBase.playerCurPos.x) * (_CharacterBase.targetTranslation.x - _CharacterBase.playerCurPos.x) +
                 (_CharacterBase.targetTranslation.z - _CharacterBase.playerCurPos.z) * (_CharacterBase.targetTranslation.z - _CharacterBase.playerCurPos.z));
+            gapVer = maxGapVer = 0;
         }
-        if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) < 0.1f || gap >= maxGap)
+        if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) < 0.1f || gap >= maxGap && gapVer>= maxGapVer)
         {
             _CharacterBase.transform.position = _CharacterBase.targetTranslation;
             _CharacterBase.playerCurPos = _CharacterBase.transform.position;
