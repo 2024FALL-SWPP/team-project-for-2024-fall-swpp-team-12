@@ -57,7 +57,7 @@ public class TurnManager : MonoBehaviour
 
         obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
         player.SaveCurPosAndRot();
-        phantom.SaveCurrentPosAndRot();
+        //phantom.SaveCurrentPosAndRot();
         boxList.ForEach(box => box.SaveCurrentPos());
         leverList.ForEach(lever => lever.SaveCurrentState());
         buttonList.ForEach(button => button.SaveCurrentState());
@@ -168,14 +168,14 @@ public class TurnManager : MonoBehaviour
     public void ResetObjects()
     {
         player.ResetToStart();
-        phantom.ResetToStart();
+        //phantom.ResetToStart();
         boxList.ForEach(box => box.ResetToStart());
         leverList.ForEach(lever => lever.ResetToStart());
         buttonList.ForEach(button => button.ResetToStart());
         obstacleList.ForEach(obstacle => obstacle.ResetToStart());
 
         player.InitializeLog();
-        phantom.InitializeLog();
+        //phantom.InitializeLog();
         boxList.ForEach(box => box.InitializeLog());
         leverList.ForEach(lever => lever.InitializeLog());
         buttonList.ForEach(button => button.InitializeLog());
@@ -218,7 +218,7 @@ public class TurnManager : MonoBehaviour
             phantom.commandIterator.ResetToStart();
 
             player.RemoveLog(rewindTurnCount);
-            phantom.RemoveLog(rewindTurnCount);
+            //phantom.RemoveLog(rewindTurnCount);
             boxList.ForEach(box => box.RemoveLog(rewindTurnCount));
             leverList.ForEach(lever => lever.RemoveLog(rewindTurnCount));
             buttonList.ForEach(button => button.RemoveLog(rewindTurnCount));
@@ -256,8 +256,8 @@ public class TurnManager : MonoBehaviour
             player.positionIterator.Previous();
             player.commandIterator.Previous();
 
-            phantom.positionIterator.Previous();
-            phantom.existIterator.Previous();
+            //phantom.positionIterator.Previous();
+            //phantom.existIterator.Previous();
             boxList.ForEach(box => box.positionIterator.Previous());
             leverList.ForEach(lever => lever.stateIterator.Previous());
             buttonList.ForEach(button => button.stateIterator.Previous());
@@ -268,8 +268,8 @@ public class TurnManager : MonoBehaviour
             player.positionIterator.Next();
             player.commandIterator.Next();
 
-            phantom.positionIterator.Next();
-            phantom.existIterator.Next();
+            //phantom.positionIterator.Next();
+            //phantom.existIterator.Next();
             boxList.ForEach(box => box.positionIterator.Next());
             leverList.ForEach(lever => lever.stateIterator.Next());
             buttonList.ForEach(button => button.stateIterator.Next());
@@ -300,17 +300,17 @@ public class TurnManager : MonoBehaviour
         if (!PlayerController.playerController.isBlinking && !PlayerController.playerController.willDropDeath && !CLOCK && !player.isTimeRewinding && player.positionIterator.HasPrevious())
         {
             GoToThePast();
-            phantom.RestoreState(); //phantom restores state also.
+            //phantom.RestoreState(); //phantom restores state also.
 
             int deltaTurn = 1;
             player.RemoveLog(deltaTurn);
-            phantom.RemoveLog(deltaTurn);
+            //phantom.RemoveLog(deltaTurn);
             boxList.ForEach(box => box.RemoveLog(deltaTurn));
             leverList.ForEach(lever => lever.RemoveLog(deltaTurn));
             buttonList.ForEach(button => button.RemoveLog(deltaTurn));
             obstacleList.ForEach(obstacle => obstacle.RemoveLog(deltaTurn));
 
-            phantom.commandIterator.Previous(); // no remove, just checkout previous
+            //phantom.commandIterator.Previous(); // no remove, just checkout previous
         }
     }
 }

@@ -90,7 +90,7 @@ public class Button : MonoBehaviour
 
     private void PressButton()
     {
-        remainingTurns = resetTurnCount; //reset count (when enter, stay)
+        remainingTurns = resetTurnCount-1; //reset count (when enter, stay)
 
         if (!isPressed) {
             targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
