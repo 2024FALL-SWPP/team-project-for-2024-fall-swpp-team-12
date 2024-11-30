@@ -58,6 +58,12 @@ public class TurnLogIterator<T>
 
     public T GetNext() => log[currentIndex + 1];
 
+    public void SetCurrent(T item)
+    {
+        if (item == null) throw new ArgumentNullException(nameof(item));
+        log[currentIndex] = item;
+    }
+
     public void Add(T item)
     {
         if (item == null) throw new ArgumentNullException(nameof(item));
@@ -99,6 +105,12 @@ public class TurnLogIterator<T>
         {
             currentIndex = log.Count - 1;
         }
+    }
+
+    public void Clear()
+    {
+        log.Clear();
+        currentIndex = 0;
     }
 }
 
