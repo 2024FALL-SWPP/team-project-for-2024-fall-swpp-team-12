@@ -147,6 +147,7 @@ public class LevelManager : MonoBehaviour
         // Get information from the level
         TurnManager.turnManager.InitializeObjectLists();
         // Kill the phantom
+        PhantomController.phantomController.InitializeLog();
         PhantomController.phantomController.isPhantomExisting = false;
         PhantomController.phantomController.gameObject.SetActive(false);
     }

@@ -37,7 +37,6 @@ public class TurnManager : MonoBehaviour
         if (CheckAllMoveComplete())
         {
             EndTurn();
-            ResetMoveComplete();
         }
     }
 
@@ -54,15 +53,16 @@ public class TurnManager : MonoBehaviour
 
     private void EndTurn()
     {
-        CLOCK = false;
+        //Debug.Log("turn: " + rewindTurnCount);
+
         obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
-        player.positionIterator.Add((player.playerCurPos, player.playerCurRot));
-        if (phantom.isPhantomExisting) 
-        {
-            phantom.positionIterator.Add((phantom.gameObject.transform.position, phantom.gameObject.transform.rotation));
-        }
+        player.SaveCurPosAndRot();
+        phantom.SaveCurrentPosAndRot();
         boxList.ForEach(box => box.SaveCurrentPos());
-        // lever & button is done at its script, saving its states.
+        leverList.ForEach(lever => lever.SaveCurrentState());
+        buttonList.ForEach(button => button.SaveCurrentState());
+
+        ResetMoveComplete();
 
         // Check if player has cleared the level -> if cleared, go to next level
         LevelManager.levelManager?.CheckAndCompleteLevel();    
@@ -72,11 +72,18 @@ public class TurnManager : MonoBehaviour
     // Check if all movements of the current turn on the scene are complete.
     {
         return (
+            buttonList.All(button => button.isMoveComplete) &&
+            CheckMoveCompleteExceptButton()
+        );
+    }
+
+    public bool CheckMoveCompleteExceptButton()
+    {
+        return (
             player.isMoveComplete &&
             (!phantom.isPhantomExisting || phantom.isMoveComplete) &&
             boxList.All(box => box.isMoveComplete) &&
             leverList.All(lever => lever.isMoveComplete) &&
-            buttonList.All(button => button.isMoveComplete) &&
             obstacleList.All(obstacle => obstacle.isMoveComplete)
         );
     }
@@ -106,6 +113,8 @@ public class TurnManager : MonoBehaviour
         leverList.ForEach(lever => lever.isMoveComplete = false);
         buttonList.ForEach(button => button.isMoveComplete = false);
         obstacleList.ForEach(obstacle => obstacle.isMoveComplete = false);
+
+        CLOCK = false;
     }
     /*
     public void ResetFallComplete()
@@ -159,12 +168,14 @@ public class TurnManager : MonoBehaviour
     public void ResetObjects()
     {
         player.ResetToStart();
+        phantom.ResetToStart();
         boxList.ForEach(box => box.ResetToStart());
         leverList.ForEach(lever => lever.ResetToStart());
         buttonList.ForEach(button => button.ResetToStart());
         obstacleList.ForEach(obstacle => obstacle.ResetToStart());
 
         player.InitializeLog();
+        phantom.InitializeLog();
         boxList.ForEach(box => box.InitializeLog());
         leverList.ForEach(lever => lever.InitializeLog());
         buttonList.ForEach(button => button.InitializeLog());
@@ -207,6 +218,7 @@ public class TurnManager : MonoBehaviour
             phantom.commandIterator.ResetToStart();
 
             player.RemoveLog(rewindTurnCount);
+            phantom.RemoveLog(rewindTurnCount);
             boxList.ForEach(box => box.RemoveLog(rewindTurnCount));
             leverList.ForEach(lever => lever.RemoveLog(rewindTurnCount));
             buttonList.ForEach(button => button.RemoveLog(rewindTurnCount));
@@ -217,12 +229,12 @@ public class TurnManager : MonoBehaviour
         rewindUI?.LeaveRewindMode();
     }
 
-    public void GoToThePast()
+    public void GoToThePast() //previous - restore
     {
         GoToThePastOrFuture(-1);
     }
 
-    public void GoToTheFuture()
+    public void GoToTheFuture() //next - restore
     {
         GoToThePastOrFuture(1);
     }
@@ -241,26 +253,26 @@ public class TurnManager : MonoBehaviour
 
         if (turnDelta == -1 && player.positionIterator.HasPrevious())
         {
-            /*newTransform = */player.positionIterator.Previous();
+            player.positionIterator.Previous();
             player.commandIterator.Previous();
 
+            phantom.positionIterator.Previous();
+            phantom.existIterator.Previous();
             boxList.ForEach(box => box.positionIterator.Previous());
             leverList.ForEach(lever => lever.stateIterator.Previous());
-            leverList.ForEach(lever => lever.commandIterator.Previous());
             buttonList.ForEach(button => button.stateIterator.Previous());
-            buttonList.ForEach(button => button.commandIterator.Previous());
             obstacleList.ForEach(obstacle => obstacle.positionIterator.Previous());
         }
         else if (turnDelta == 1 && player.positionIterator.HasNext())
         {
-            /*newTransform = */player.positionIterator.Next();
+            player.positionIterator.Next();
             player.commandIterator.Next();
-            
+
+            phantom.positionIterator.Next();
+            phantom.existIterator.Next();
             boxList.ForEach(box => box.positionIterator.Next());
             leverList.ForEach(lever => lever.stateIterator.Next());
-            leverList.ForEach(lever => lever.commandIterator.Next());
             buttonList.ForEach(button => button.stateIterator.Next());
-            buttonList.ForEach(button => button.commandIterator.Next());
             obstacleList.ForEach(obstacle => obstacle.positionIterator.Next());
         }
         else
@@ -271,12 +283,6 @@ public class TurnManager : MonoBehaviour
 
         // Apply new position and rotation to the player
         player.RestoreState();
-        /*
-        player.gameObject.transform.position = newTransform.position;
-        player.gameObject.transform.rotation = newTransform.rotation;
-        player.playerCurPos = newTransform.position;
-        player.playerCurRot = newTransform.rotation;
-        */
 
         // Restore object states based on the iterator's current position
         boxList.ForEach(box => box.RestoreState());
@@ -287,31 +293,24 @@ public class TurnManager : MonoBehaviour
         rewindUI?.MoveSlider(turnDelta);
     }
 
-    private void HandleUndo()
+    private void HandleUndo() //previous(1) - restore - removelog
     {
         // If player was time rewinding, just leave at the entered tile, with no phantom
         // ^^ need to implement this!!
-        if (!CLOCK && !player.isTimeRewinding && player.positionIterator.HasPrevious())
+        if (!PlayerController.playerController.isBlinking && !PlayerController.playerController.willDropDeath && !CLOCK && !player.isTimeRewinding && player.positionIterator.HasPrevious())
         {
             GoToThePast();
+            phantom.RestoreState(); //phantom restores state also.
 
             int deltaTurn = 1;
             player.RemoveLog(deltaTurn);
+            phantom.RemoveLog(deltaTurn);
             boxList.ForEach(box => box.RemoveLog(deltaTurn));
             leverList.ForEach(lever => lever.RemoveLog(deltaTurn));
             buttonList.ForEach(button => button.RemoveLog(deltaTurn));
             obstacleList.ForEach(obstacle => obstacle.RemoveLog(deltaTurn));
 
-            if (phantom.isPhantomExisting)
-            {
-                phantom.commandIterator.Previous();
-                (Vector3 position, Quaternion rotation) prevPhantom = phantom.positionIterator.Previous();
-                phantom.positionIterator.RemoveLast();
-                phantom.gameObject.transform.position = prevPhantom.position;
-                phantom.gameObject.transform.rotation = prevPhantom.rotation;
-                phantom.playerCurPos = prevPhantom.position;
-                phantom.playerCurRot = prevPhantom.rotation;
-            }
+            phantom.commandIterator.Previous(); // no remove, just checkout previous
         }
     }
 }

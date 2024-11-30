@@ -120,7 +120,7 @@ public class PlayerController : CharacterBase
     public Coroutine blinkCoroutine;
     public int blinkCount = 3; 
     public float blinkInterval = 0.2f;
-    private bool isBlinking = false;
+    public bool isBlinking = false;
 
     protected override void Awake() // singleton
     {
@@ -188,16 +188,10 @@ public class PlayerController : CharacterBase
     public override void KillCharacter()
     {
         base.KillCharacter();
-        if (willDropDeath) 
-        {
-            StartCoroutine(HandleFallingBlink());
-        }
-        else // player dies due to a laser or other causes
-        {
-            if (!isBlinking) StartCoroutine(HandleBlinkAndReset());
-        }
+        isBlinking = true; //switch on before coroutine.
+        StartCoroutine(HandleBlinkAndReset());
     }
-    
+    /*
     public void StartBlinking()
     {
         if (playerRenderers == null || playerRenderers.Length == 0) return;
@@ -207,13 +201,11 @@ public class PlayerController : CharacterBase
             StopCoroutine(blinkCoroutine);
         }
         blinkCoroutine = StartCoroutine(PlayBlinkEffect());
-    }
+    }*/
     
     // Coroutine to handle blinking effect
-    public IEnumerator PlayBlinkEffect()
+    private IEnumerator PlayBlinkEffect(int blinkCount)
     {
-        isBlinking = true;
-
         for (int i = 0; i < blinkCount; i++)
         {
             foreach (var renderer in playerRenderers)
@@ -228,44 +220,17 @@ public class PlayerController : CharacterBase
             }
             yield return new WaitForSeconds(blinkInterval);
         }
-
-        isBlinking = false;
-    }
-    
-    private IEnumerator HandleFallingBlink()
-    {
-        isBlinking = true;
-
-        while (willDropDeath)
-        {
-            foreach (var renderer in playerRenderers)
-            {
-                renderer.enabled = false;
-            }
-            yield return new WaitForSeconds(blinkInterval);
-
-            foreach (var renderer in playerRenderers)
-            {
-                renderer.enabled = true;
-            }
-            yield return new WaitForSeconds(blinkInterval);
-        }
-
-        GameOverAndReset();
-        yield return PlayBlinkEffect(); // Blink 3 times at the starting point
-        isBlinking = false;
     }
 
     // Coroutine to handle blinking at the current position and reset
     private IEnumerator HandleBlinkAndReset()
     {
         // Blink at the current position
-        yield return PlayBlinkEffect();
-
+        yield return PlayBlinkEffect(blinkCount);
         // Reset to the starting position and blink again
         GameOverAndReset();
-        yield return PlayBlinkEffect();
-
+        isBlinking = false; //can move now.
+        yield return PlayBlinkEffect(blinkCount-1);
     }
 
     // Update() is redundant, because doing same thing from CharacterBase
@@ -279,7 +244,7 @@ public class PlayerController : CharacterBase
 
     protected override void HandleMovementInput(string command)
     {
-        if (TurnManager.turnManager.CLOCK || willDropDeath || isTimeRewinding) return; // active when the turn is entirely ended, and not in time rewind mode
+        if (isBlinking || TurnManager.turnManager.CLOCK || willDropDeath || isTimeRewinding) return; // active when the turn is entirely ended, and not in time rewind mode
         curKey = command;
         base.HandleMovementInput(command);
     }
@@ -287,9 +252,9 @@ public class PlayerController : CharacterBase
     // Functions for Time Rewind mode //
     private void ToggleTimeRewindMode()
     {
-        if (isBlinking || TurnManager.turnManager.CLOCK || willDropDeath) return; // assuring that every action should be ended (during the turn)
+        if (!isTimeRewinding && (isBlinking || TurnManager.turnManager.CLOCK || willDropDeath)) return; // assuring that every action should be ended (during the turn)
 
-        if (!isTimeRewinding) 
+        if (!isTimeRewinding)
         {
             TurnManager.turnManager.EnterTimeRewind();
         }
@@ -301,7 +266,7 @@ public class PlayerController : CharacterBase
 
     private void HandleTimeRewindInput(string command)
     {
-        if (TurnManager.turnManager.CLOCK || willDropDeath || !isTimeRewinding) return; // active only in time rewind mode
+        if (!isTimeRewinding) return; // active only in time rewind mode
         switch (command)
         {
             case "q": // go to the 1 turn past
@@ -326,6 +291,10 @@ public class PlayerController : CharacterBase
                 }
                 break;
         }
+    }
+    public void SaveCurPosAndRot()
+    {
+        positionIterator.Add((playerCurPos, playerCurRot));
     }
 
     public void RemoveLog(int k)

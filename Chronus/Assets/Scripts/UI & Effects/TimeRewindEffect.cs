@@ -52,6 +52,10 @@ public class TimeRewindEffect : MonoBehaviour
 
     void ToggleRewindMode()
     {
+        if (!PlayerController.playerController.isTimeRewinding &&
+            (PlayerController.playerController.isBlinking || TurnManager.turnManager.CLOCK || PlayerController.playerController.willDropDeath)) return;
+        // assuring that every action should be ended (during the turn)
+
         isRewindModeActive = !isRewindModeActive;
 
         if (isRewindModeActive)
