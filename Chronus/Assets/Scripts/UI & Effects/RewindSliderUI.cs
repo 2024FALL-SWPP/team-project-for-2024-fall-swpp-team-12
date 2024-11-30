@@ -4,14 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class RewindSliderUI : MonoBehaviour
-{
-    [SerializeField] private List<Image> slots;
+{   
+    [SerializeField] private List<Image> slots; // Foreground sprites
+    [SerializeField] private List<Image> frameImages; // Background frame sprites
+    //[SerializeField] private List<Image> slots;
     [SerializeField] private Sprite upArrow;
     [SerializeField] private Sprite downArrow;
     [SerializeField] private Sprite leftArrow;
     [SerializeField] private Sprite rightArrow;
     [SerializeField] private Sprite idleCircle;
     [SerializeField] private Sprite rewindPoint;
+    [SerializeField] private Sprite frame;
     [SerializeField] private RectTransform slidingSquare;
 
     private List<string> commandList;
@@ -22,6 +25,12 @@ public class RewindSliderUI : MonoBehaviour
     private void Awake()
     {
         slidingSquare.gameObject.SetActive(false);
+
+        foreach (var frameImage in frameImages)
+        {
+            frameImage.sprite = frame;
+            //frameImage.color = Color.white; // Ensure visibility
+        }
     }
 
     public void EnterRewindMode(List<string> commands)
@@ -55,10 +64,12 @@ public class RewindSliderUI : MonoBehaviour
             {
                 string command = commandList[logIndex];
                 slots[i].sprite = GetCommandSprite(command);
+                //slots[i].color = Color.white;
             }
             else
             {
                 slots[i].sprite = null;
+                //slots[i].color = new Color(1, 1, 1, 0);
             }
         }
     }
