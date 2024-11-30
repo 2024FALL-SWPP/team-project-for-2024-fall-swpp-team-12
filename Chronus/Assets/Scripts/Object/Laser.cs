@@ -23,10 +23,7 @@ public class Laser : MonoBehaviour
 
     void Update()
     {
-        if (TurnManager.turnManager.CLOCK || !PlayerController.playerController.isTimeRewinding)
-        {
-            CastLaser();
-        }
+        CastLaser();
     }
 
     void CastLaser()
