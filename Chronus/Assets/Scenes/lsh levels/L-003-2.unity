@@ -922,7 +922,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveDistance: 2
-  checkDistance: 0.5
   isMoveComplete: 0
   isFallComplete: 0
   willDropDeath: 0
@@ -3064,7 +3063,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveDistance: 2
-  checkDistance: 0.5
   isMoveComplete: 0
   isFallComplete: 0
   willDropDeath: 0
@@ -3759,6 +3757,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GoalTile
       objectReference: {fileID: 0}
+    - target: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
+      propertyPath: m_TagString
+      value: GoalTile
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
 --- !u!4 &1325954946 stripped
@@ -4115,7 +4117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 1.01
       objectReference: {fileID: 0}
     - target: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4791,7 +4793,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveDistance: 2
-  checkDistance: 0.5
   isMoveComplete: 0
   isFallComplete: 0
   willDropDeath: 0

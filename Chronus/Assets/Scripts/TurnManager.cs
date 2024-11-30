@@ -55,9 +55,6 @@ public class TurnManager : MonoBehaviour
     private void EndTurn()
     {
         CLOCK = false;
-        // turn++;
-        Debug.Log("turn: " + rewindTurnCount);
-
         obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
         player.positionIterator.Add((player.playerCurPos, player.playerCurRot));
         if (phantom.isPhantomExisting) 

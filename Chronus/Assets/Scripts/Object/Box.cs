@@ -5,12 +5,12 @@ using UnityEngine;
 public class Box : MonoBehaviour
 {
     public float moveDistance = 2.0f;
-    public float checkDistance = 0.5f;
+    private float checkDistance;
     private Rigidbody rb;
     
     public TurnLogIterator<(Vector3, bool)> positionIterator;
     public bool isMoveComplete = false;
-    public bool isFallComplete = false;
+    public bool isFallComplete = true;
     private bool isBeingPushed = false;
     public bool willDropDeath = false;
     private bool isWaitingToCheckFall = false;
@@ -19,6 +19,7 @@ public class Box : MonoBehaviour
     private int layerMask = (1 << 0) + (1 << 3); //detect default(0) and player(3) layer.
     private void Start()
     {
+        checkDistance = transform.localScale.z / 100;
         rb = gameObject.GetComponent<Rigidbody>();
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
@@ -56,7 +57,7 @@ public class Box : MonoBehaviour
             {
                 // Tile detected, keep Y position constraint to keep the box stable
                 rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-                transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y) - 0.5f, transform.position.z);
+                transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y) - 1.0f + checkDistance, transform.position.z);
 
                 if (willDropDeath) //hit the ground hard -> Drop Death
                 {
@@ -133,7 +134,7 @@ public class Box : MonoBehaviour
     }
     public bool TryMove(Vector3 direction)
     {
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, 0.3f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance*0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
         { 
             isBeingPushed = false;
             return false;
@@ -204,46 +205,6 @@ public class Box : MonoBehaviour
 
         //AdvanceFall();
         isWaitingToCheckFall = true; //wait.
-
-        // Also, need to implement this: but has to be changed
-
-        /*
-        if (Physics.Raycast(box.transform.position, direction, out RaycastHit obstacleHit, pushDistance, layerMask)) //cannot push box
-                {
-                    Debug.Log("cannotpush");
-                    //StartCoroutine(JumpOntoBox(box));
-                    canRideBox = false;
-                    canPushBox = false;
-                }
-                else //can push box
-                {
-                    Rigidbody rb = box.GetComponent<Rigidbody>();
-                    //smoothly move
-                    if (Physics.Raycast(box.transform.position, transform.up, out RaycastHit playerHit, pushDistance, layerMask))
-                    {
-                        if (playerHit.collider.CompareTag("Player"))
-                        {
-                            canRideBox = true;
-                            playerHit.collider.gameObject.GetComponent<Transform>().transform.position += direction * pushDistance;
-                            PlayerController.playerController.playerCurPos = playerHit.collider.gameObject.GetComponent<Transform>().transform.position;
-                        }
-                        else if (playerHit.collider.CompareTag("Phantom")) 
-                        {
-                            canRideBox = false;
-                            // kill phantom.
-                        }
-                        else
-                        {
-                            canRideBox = false;
-                        }
-                    }
-                    else
-                    {
-                        canRideBox = false;
-                    }
-                    rb.MovePosition(box.transform.position + direction * pushDistance); //statemachine replace is neeeeded
-                    canPushBox = true;
-        */
     }
     public void SaveCurrentPos()
     {

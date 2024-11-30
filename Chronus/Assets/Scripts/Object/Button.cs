@@ -81,15 +81,11 @@ public class Button : MonoBehaviour
         // Wait until isMoveComplete becomes true
         yield return new WaitUntil(() => TurnManager.turnManager.player.isMoveComplete);
 
-        Debug.Log("Player move complete. Advancing turn...");
-
         if (!isMoveComplete)
         {
             remainingTurns--;
             if (isPressed)
             {
-                Debug.Log("remainingTurns:" + remainingTurns);
-
                 if (remainingTurns <= 0)
                 {
                     ResetButton();
@@ -145,7 +141,6 @@ public class Button : MonoBehaviour
         // Log the command and current state
         commandIterator.Add(command);
         stateIterator.Add((transform.GetChild(1).transform.position, isPressed, remainingTurns));
-        Debug.Log("saving: " + isPressed);
     }
 
     public void RestoreState()
@@ -153,7 +148,6 @@ public class Button : MonoBehaviour
         var state = stateIterator.Current;
         transform.GetChild(1).transform.position = state.Item1;
         isPressed = state.Item2;
-        Debug.Log("button:" + isPressed);
         remainingTurns = state.Item3;
 
         targetStates.ForEach(state => state.target.SetActive(isPressed ? !state.isInitiallyActive : state.isInitiallyActive));
