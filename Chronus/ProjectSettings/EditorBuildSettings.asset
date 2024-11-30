@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Tutorial/L-001.unity
+    path: Assets/Scenes/LevelBaseScene.unity
     guid: 388a43714c3fe54408772b8f9c869a53
   - enabled: 1
     path: Assets/Scenes/Tutorial/L-001-1.unity
@@ -29,4 +29,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelDesign1/L-002-3.unity
     guid: 376f36735ed96bd48a0245e4f0f1f245
+  - enabled: 1
+    path: Assets/Scenes/lsh levels/L-003-1.unity
+    guid: ae75df4513c2a48439dc77db3dd47fe3
+  - enabled: 1
+    path: Assets/Scenes/lsh levels/L-003-2.unity
+    guid: daafc53cbcf74d34cb9c2557d85d8bff
+  - enabled: 1
+    path: Assets/Scenes/lsh levels/L-003-3.unity
+    guid: 947dfae666a2b244b87ceffe69c9e843
   m_configObjects: {}
