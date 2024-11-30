@@ -8,11 +8,9 @@ public class PhantomController : CharacterBase
     public static PhantomController phantomController; 
 
     public TurnLogIterator<string> commandIterator;
-    public TurnLogIterator<(Vector3, Quaternion)> positionIterator;
-    public TurnLogIterator<bool> existIterator;
+    public TurnLogIterator<(Vector3, Quaternion, bool)> positionIterator;
     private List<string> listCommandOrder = new();
-    private List<(Vector3, Quaternion)> listPosLog;
-    private List<bool> listExistLog;
+    private List<(Vector3, Quaternion, bool)> listPosLog;
     public bool isPhantomExisting = false;
     protected override void Awake() 
     {
@@ -24,6 +22,8 @@ public class PhantomController : CharacterBase
     {
         base.Start();
         gameObject.SetActive(false);
+
+        InitializeLog();
         // this phantom is actually invoked at PlayerController
     }
 
@@ -31,15 +31,12 @@ public class PhantomController : CharacterBase
     {
         listCommandOrder = new List<string> { "" };
         commandIterator = new TurnLogIterator<string>(listCommandOrder);
-        listPosLog = new List<(Vector3, Quaternion)> { (transform.position, transform.rotation) };
-        positionIterator = new TurnLogIterator<(Vector3, Quaternion)>(listPosLog);
-        listExistLog = new List<bool> { false };
-        existIterator = new TurnLogIterator<bool>(listExistLog);
+        listPosLog = new List<(Vector3, Quaternion, bool)> { (transform.position, transform.rotation, false) };
+        positionIterator = new TurnLogIterator<(Vector3, Quaternion, bool)>(listPosLog);
     }
     public void ResetToStart()
     {
         positionIterator.ResetToStart();
-        existIterator.ResetToStart();
         RestoreState();
     }
 
@@ -79,27 +76,22 @@ public class PhantomController : CharacterBase
     {
         if (willDropDeath || !isPhantomExisting) //save before kill.
         {
-            positionIterator.Add((Vector3.zero, Quaternion.identity));
-            Debug.Log("what");
-            existIterator.Add(false);
-
+            positionIterator.Add((Vector3.zero, Quaternion.identity, false));
         }
         else
         {
-            positionIterator.Add((transform.position, transform.rotation));
-            existIterator.Add(true);
+            positionIterator.Add((playerCurPos, playerCurRot, true));
         }
     }
     public void RemoveLog(int k)
     {
         positionIterator.RemoveLastK(k);
-        existIterator.RemoveLastK(k);
     }
 
     public void RestoreState() // updating for time rewind
     {
         var current = positionIterator.Current;
-        if (existIterator.Current)
+        if (current.Item3)
         {
             transform.position = current.Item1;
             transform.rotation = current.Item2;
@@ -109,7 +101,7 @@ public class PhantomController : CharacterBase
         }
         else isPhantomExisting = false;
 
-        gameObject.SetActive(existIterator.Current);
+        gameObject.SetActive(current.Item3);
     }
 
 }
