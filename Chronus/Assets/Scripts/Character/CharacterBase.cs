@@ -36,7 +36,7 @@ public abstract class CharacterBase : MonoBehaviour
     protected float rayDistance = 1.0f;
     protected float rayJumpInterval = 1.0f;
     protected float maxFallHeight = 10.0f;
-    protected int layerMask = 1 << 0;
+    protected int layerMask = (1 << 0) | (1 << 6); //default, lever
 
     // task of a state ended, need to jump to next state (next index of the state list)
     // can be changed from state's DoneAction func, through sender
@@ -236,6 +236,21 @@ public abstract class CharacterBase : MonoBehaviour
         //do nothing, no turn update.
     }
 
+    protected void TryJumpOver() //targetDirection, targetTranslation: global by aspect of this block
+    {
+        if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), targetDirection, out RaycastHit hitOverFloor, BLOCK_SIZE, layerMask))
+        // can jump over
+        {
+            curHopDir = BLOCK_SIZE / 2;
+            targetTranslation += new Vector3(0, curHopDir, 0);
+            ChooseAndStartAction(listHopForward, listHopSideRear);
+        }
+        else
+        {
+            RotateInPlace();
+        }
+    }
+
     protected void TryToMoveToDirection()
     {
         Vector3 rayOffset = targetDirection * BLOCK_SIZE;
@@ -244,7 +259,7 @@ public abstract class CharacterBase : MonoBehaviour
         curTurnAngle = Mathf.Round(angleDifference / 90) * 90;
 
         // First, check if there's an wall-like object to that target direction. 
-        if (Physics.Raycast(transform.position - new Vector3(0,0.1f,0), targetDirection, out RaycastHit hit, BLOCK_SIZE))
+        if (Physics.Raycast(transform.position - new Vector3(0,0.1f,0), targetDirection, out RaycastHit hit, BLOCK_SIZE, layerMask))
         {
             switch (hit.collider.tag)
             {
@@ -277,41 +292,23 @@ public abstract class CharacterBase : MonoBehaviour
                         }
                         else
                         {
-                            if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), targetDirection, out RaycastHit hitFloor, BLOCK_SIZE))
-                            // This is duplicated, and not using transform.position: but since this is working, I'll just leave it here.
-                            {
-                                curHopDir = BLOCK_SIZE / 2;
-                                targetTranslation += new Vector3(0, curHopDir, 0);
-                                ChooseAndStartAction(listHopForward, listHopSideRear);
-                            }
-                            else
-                            {
-                                RotateInPlace();
-                            }
+                            TryJumpOver();
                         }
                         break;
                     }
 
                 default:
-                    if (!Physics.Raycast(playerCurPos + new Vector3(0, 0.5f, 0), targetDirection, out RaycastHit hitOverFloor, BLOCK_SIZE))
-                    // can jump over
                     {
-                        curHopDir = BLOCK_SIZE / 2; 
-                        targetTranslation += new Vector3(0, curHopDir, 0); 
-                        ChooseAndStartAction(listHopForward, listHopSideRear);
+                        TryJumpOver();
+                        break;
                     }
-                    else
-                    {
-                        RotateInPlace();
-                    }
-                    break;
             }
         }
         else // if there is no wall: then check if target position has floor
         {
             Vector3 rayStart = transform.position + rayOffset;
             Debug.DrawRay(rayStart, -transform.up * BLOCK_SIZE, Color.blue, 1.0f);
-            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, rayDistance + rayJumpInterval*maxFallHeight))
+            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, rayDistance + rayJumpInterval*maxFallHeight, layerMask))
             {
                 if (hitGround.collider.CompareTag("Box")) //box is heading to death
                 {
@@ -343,7 +340,7 @@ public abstract class CharacterBase : MonoBehaviour
             }
             else
             {
-                RotateInPlace(); // temporary, need to implement "falling"
+                RotateInPlace();
             }
         }
     }

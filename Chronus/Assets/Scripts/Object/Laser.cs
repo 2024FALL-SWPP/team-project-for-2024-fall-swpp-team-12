@@ -5,6 +5,7 @@ public class Laser : MonoBehaviour
     public float laserSpeed = 20f; 
     public float laserLength = 100f; // arbitrary maximum length
     private LineRenderer lineRenderer;
+    private int layerMask;
 
     void Start()
     {
@@ -12,6 +13,7 @@ public class Laser : MonoBehaviour
         lineRenderer.positionCount = 2; // start and end point
         lineRenderer.startWidth = 0.1f;
         lineRenderer.endWidth = 0.1f; // 0.05f;
+        layerMask = (1 << 0) | (1 << 3) | (1 << 7); //default and LeverStick
     }
 
     public void ToggleLaser()
@@ -31,7 +33,7 @@ public class Laser : MonoBehaviour
         Vector3 start = transform.position;
         Vector3 direction = transform.forward;
 
-        if (Physics.Raycast(start, direction, out RaycastHit hit, Mathf.Infinity))
+        if (Physics.Raycast(start, direction, out RaycastHit hit, Mathf.Infinity, layerMask))
         {
             // stop at the collision(hit) point 
             lineRenderer.SetPosition(0, start);
