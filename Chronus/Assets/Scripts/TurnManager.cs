@@ -43,7 +43,7 @@ public class TurnManager : MonoBehaviour
     public void StartTurn() //by player
     {
         CLOCK = true;
-        if (phantom.isPhantomExisting) phantom.AdvanceTurn();
+        phantom.AdvanceTurn();
         boxList.ForEach(box => box.AdvanceTurn()); //problem here: box move -> button press -> ????
         leverList.ForEach(lever => lever.AdvanceTurn());
         buttonList.ForEach(button => button.AdvanceTurn());
@@ -312,7 +312,7 @@ public class TurnManager : MonoBehaviour
             buttonList.ForEach(button => button.RemoveLog(deltaTurn));
             obstacleList.ForEach(obstacle => obstacle.RemoveLog(deltaTurn));
 
-            phantom.commandIterator.Previous(); // no remove, just checkout previous
+            phantom.commandIterator.SetIndexPrevious(); // no remove, just checkout previous
         }
     }
 }
