@@ -6,6 +6,7 @@ public abstract class CharacterBase : MonoBehaviour
 {
     public Vector3 targetTranslation { get; set; }
     public Vector3 targetDirection { get; set; }
+
     public Animator animator;
     private Rigidbody rb;
     public Vector3 playerCurPos;
@@ -156,7 +157,7 @@ public abstract class CharacterBase : MonoBehaviour
         isFallComplete = true; //ended fall.
     }
 
-    public void AdvanceFall()
+    public virtual void AdvanceFall()
     {
         if (willLaserKillCharacter) //check before fall (after all obstacles move)
         {

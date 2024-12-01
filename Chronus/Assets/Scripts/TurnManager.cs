@@ -44,6 +44,7 @@ public class TurnManager : MonoBehaviour
     {
         CLOCK = true;
         phantom.AdvanceTurn();
+        PlayerController.playerController.checkOverlappingBox = false;
         boxList.ForEach(box => box.AdvanceTurn()); //problem here: box move -> button press -> ????
         leverList.ForEach(lever => lever.AdvanceTurn());
         buttonList.ForEach(button => button.AdvanceTurn());

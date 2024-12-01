@@ -12,6 +12,9 @@ public class PhantomController : CharacterBase
     private List<string> listCommandOrder = new();
     private List<(Vector3, Quaternion, bool)> listPosLog;
     public bool isPhantomExisting = false;
+
+    public bool willBoxKillPhantom = false;
+
     protected override void Awake() 
     {
         base.Awake();
@@ -67,6 +70,17 @@ public class PhantomController : CharacterBase
         //intercept by timerewinding: at TurnManager - EnterTimeRewind
         //intercept by gameover: at PlayerController - KillCharacter
         base.Update();
+    }
+
+    public override void AdvanceFall()
+    {
+        if (willBoxKillPhantom) //check before fall (after all obstacles move)
+        {
+            willBoxKillPhantom = false;
+            this.KillCharacter();
+            return;
+        }
+        base.AdvanceFall();
     }
 
     public void KillPhantom()

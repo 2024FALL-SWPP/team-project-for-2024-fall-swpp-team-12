@@ -133,9 +133,12 @@ public class PlayerController : CharacterBase
     // Blinking effect
     public Renderer[] playerRenderers;
     public Coroutine blinkCoroutine;
-    public int blinkCount = 3; 
+    public int blinkCount = 3;
     public float blinkInterval = 0.2f;
     public bool isBlinking = false;
+
+    public Vector3 tempTagetPositionOfBox { get; set; }
+    public bool checkOverlappingBox = false;
 
     protected override void Awake() // singleton
     {
@@ -162,6 +165,8 @@ public class PlayerController : CharacterBase
         playerRenderers = new Renderer[meshRenderers.Length + skinnedMeshRenderers.Length];
         meshRenderers.CopyTo(playerRenderers, 0);
         skinnedMeshRenderers.CopyTo(playerRenderers, meshRenderers.Length);
+
+        tempTagetPositionOfBox = Vector3.zero;
     }
 
     public void InitializeLog()
