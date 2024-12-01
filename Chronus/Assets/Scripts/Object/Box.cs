@@ -11,12 +11,15 @@ public class Box : MonoBehaviour
     public TurnLogIterator<(Vector3, bool)> positionIterator;
     public bool isMoveComplete = false;
     public bool isFallComplete = true;
+
     private bool isBeingPushed = false;
     public bool willDropDeath = false;
     private bool isWaitingToCheckFall = false;
+    private bool didPlayerBeatPhantomToThePunch = false;
+
     private float rayJumpInterval = 1.0f;
     private float maxFallHeight = 10.0f;
-    private int layerMask = (1 << 0) + (1 << 3); //detect default(0) and player(3) layer.
+    private int layerMask = (1 << 0) | (1 << 3) | (1 << 6); //detect default(0), player(3), and lever(6) layer.
     private void Start()
     {
         checkDistance = transform.localScale.z / 100;
@@ -55,6 +58,20 @@ public class Box : MonoBehaviour
         {
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance, layerMask))
             {
+                if (hit.collider.CompareTag("Player") && !willDropDeath) //Stamp Kill
+                {
+                    if (hit.collider.name == "Player")
+                    {
+                        PlayerController.playerController.KillCharacter();
+                        return;
+                    }
+                    if (hit.collider.name == "Phantom")
+                    {
+                        PhantomController.phantomController.KillCharacter();
+                        return;
+                    }
+                }
+
                 // Tile detected, keep Y position constraint to keep the box stable
                 rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
                 transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y) - 1.0f + checkDistance, transform.position.z);
@@ -93,6 +110,7 @@ public class Box : MonoBehaviour
             else isMoveComplete = true;  //just pass
         }
         isBeingPushed = false;
+        didPlayerBeatPhantomToThePunch = false;
     }
 
     public void DropKillBox()
@@ -100,6 +118,7 @@ public class Box : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
         willDropDeath = false;
         isFallComplete = true;
+
         gameObject.SetActive(false);
         if (TurnManager.turnManager.CLOCK && isWaitingToCheckFall) isMoveComplete = true;
         //some particle effect and sound effect
@@ -134,13 +153,16 @@ public class Box : MonoBehaviour
     }
     public bool TryMove(Vector3 direction)
     {
+        if (didPlayerBeatPhantomToThePunch) return false; //Player did -> Phantom cannot do.
+        else didPlayerBeatPhantomToThePunch = true;
+
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance*0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
         { 
             isBeingPushed = false;
             return false;
         }
         
-        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, moveDistance/2)) //look up.
+        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, moveDistance/2, layerMask)) //look up.
         {
             switch (hitUp.collider.tag)
             {

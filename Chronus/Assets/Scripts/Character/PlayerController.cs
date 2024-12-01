@@ -202,6 +202,8 @@ public class PlayerController : CharacterBase
 
     public override void KillCharacter()
     {
+        if (isBlinking) return;
+
         base.KillCharacter();
         isBlinking = true; //switch on before coroutine.
         StartCoroutine(HandleBlinkAndReset());

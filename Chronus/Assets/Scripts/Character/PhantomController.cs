@@ -78,7 +78,6 @@ public class PhantomController : CharacterBase
     public override void KillCharacter()
     {
         base.KillCharacter();
-        //willDropDeath = false;
         KillPhantom();
     }
 
