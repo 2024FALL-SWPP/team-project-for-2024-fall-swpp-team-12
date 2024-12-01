@@ -127,7 +127,7 @@ public abstract class CharacterBase : MonoBehaviour
 
                 if (willDropDeath) //hit the ground hard -> Drop Death
                 {
-                    this.KillCharacter();
+                    KillCharacter();
                 }
                 else
                 {
@@ -142,7 +142,7 @@ public abstract class CharacterBase : MonoBehaviour
                 {
                     if (transform.position.y < -maxFallHeight) //fall to the void -> Drop Death
                     {
-                        this.KillCharacter();
+                        KillCharacter();
                     }
                 }
             }

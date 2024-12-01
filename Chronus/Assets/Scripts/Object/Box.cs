@@ -96,9 +96,6 @@ public class Box : MonoBehaviour
                 }
             }
         }
-        
-        // There should be a code indicating:
-        // if it has touched the ground, then isMoveComplete = true. 
     }
     public void AdvanceTurn()
     {
@@ -219,11 +216,8 @@ public class Box : MonoBehaviour
         }
 
         transform.position = targetPosition;
-        //isMoveComplete = true;
-        //isFallComplete = false;
 
-        //AdvanceFall();
-        isWaitingToCheckFall = true; //wait.
+        isWaitingToCheckFall = true; 
     }
     public void SaveCurrentPos()
     {
