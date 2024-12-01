@@ -104,7 +104,6 @@ public abstract class CharacterBase : MonoBehaviour
                         {
                             listSeq = -1; // no list update.
                             sm.SetState(idle);
-                            //isMoveComplete = true;
                         }
                     }
                 }
