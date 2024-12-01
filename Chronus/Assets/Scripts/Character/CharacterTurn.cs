@@ -79,7 +79,6 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
             (_CharacterBase.curTurnAngle > 0 && (gap >= _CharacterBase.curTurnAngle || gap < 0)) || 
             (_CharacterBase.curTurnAngle < 0 && (gap <= _CharacterBase.curTurnAngle || gap > 0))) 
         {
-            Debug.Log(gap);
             CompleteRotation(targetYRotation);
             CompleteTranslation();
             _CharacterBase.doneAction = true;
