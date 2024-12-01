@@ -50,6 +50,9 @@ public class TurnLogIterator<T>
         throw new InvalidOperationException("No previous turn available.");
     }
 
+    public void SetIndexNext() => currentIndex++;
+    public void SetIndexPrevious() => currentIndex--;
+
     public void ResetToStart() => currentIndex = 0;
 
     public void ResetToEnd() => currentIndex = log.Count - 1;
