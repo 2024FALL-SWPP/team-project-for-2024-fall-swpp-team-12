@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Box : MonoBehaviour
 {
+    public Vector3 targetTranslation;
     public float moveDistance = 2.0f;
     private float checkDistance;
     private Rigidbody rb;
@@ -21,6 +22,8 @@ public class Box : MonoBehaviour
     private int layerMask = (1 << 0) | (1 << 3) | (1 << 6); //detect default(0), player(3), and lever(6) layer.
     private void Start()
     {
+        targetTranslation = transform.position;
+
         checkDistance = transform.localScale.z / 100;
         rb = gameObject.GetComponent<Rigidbody>();
         rb.useGravity = true;
@@ -105,7 +108,6 @@ public class Box : MonoBehaviour
             if (gameObject.activeSelf) isWaitingToCheckFall = true;  //wait.
             else isMoveComplete = true;  //just pass
         }
-        isBeingPushed = false;
     }
 
     public void DropKillBox()
@@ -121,6 +123,18 @@ public class Box : MonoBehaviour
     public void AdvanceFall() //can refactor with characterbase.advancefall()
     {
         isWaitingToCheckFall = false;
+
+        //Check overlapping target position - Phantom
+        if (PhantomController.phantomController.isPhantomExisting && isBeingPushed)
+        {
+            Vector3 phantomTargetPosition = PhantomController.phantomController.targetTranslation;
+            if (phantomTargetPosition.x == targetTranslation.x && phantomTargetPosition.z == targetTranslation.z &&
+                phantomTargetPosition.y == Mathf.Ceil(targetTranslation.y)) //for size max 100. cannot check for taller box.
+            {
+                PhantomController.phantomController.willBoxKillPhantom = true;
+            }
+        }
+        isBeingPushed = false;
 
         if (!willDropDeath)
         {
@@ -146,16 +160,46 @@ public class Box : MonoBehaviour
             isMoveComplete = true;
         }
     }
+
     public bool TryMove(Vector3 direction)
     {
         if (isBeingPushed) return false; // preventing player & phantom simultaneous push 
 
+        //Check Wall Forward
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance*0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
-        { 
-            isBeingPushed = false;
+        {
+            targetTranslation = transform.position;
             return false;
         }
-        
+
+        targetTranslation = transform.position + direction * moveDistance;
+
+        //Check overlapping target position - Player
+        Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
+        if (playerTargetPosition.x == targetTranslation.x && playerTargetPosition.z == targetTranslation.z &&
+            playerTargetPosition.y == Mathf.Ceil(targetTranslation.y)) //for size max 100. cannot check for taller box.
+        {
+            targetTranslation = transform.position; //roll back
+            return false;
+        }
+        //Check overlapping target position - Box
+        if (PlayerController.playerController.checkOverlappingBox) //only check when 2nd trymove.
+        {
+            Vector3 boxTargetPosition = PlayerController.playerController.tempTagetPositionOfBox;
+            if (boxTargetPosition.x == targetTranslation.x && boxTargetPosition.z == targetTranslation.z &&
+                Mathf.Ceil(boxTargetPosition.y) == Mathf.Ceil(targetTranslation.y)) //for size max 100. cannot check for taller box.
+            {
+                targetTranslation = transform.position; //roll back
+                return false;
+            }
+        }
+        else
+        {
+            PlayerController.playerController.tempTagetPositionOfBox = targetTranslation;
+            PlayerController.playerController.checkOverlappingBox = true;
+        }
+
+        //Check Rider
         if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, moveDistance/2, layerMask)) //look up.
         {
             switch (hitUp.collider.tag)
@@ -197,25 +241,23 @@ public class Box : MonoBehaviour
                     }
             }
         }
-        
+
         isBeingPushed = true;
-        StartCoroutine(SmoothMove(direction * moveDistance));
+        StartCoroutine(SmoothMove(direction, PlayerController.playerController.moveSpeedHor));
         return true;
     }
 
-    private IEnumerator SmoothMove(Vector3 direction)
+    private IEnumerator SmoothMove(Vector3 direction, float moveSpeed)
     {
-        float moveSpeed = PlayerController.playerController.moveSpeedHor;
         Vector3 startPosition = transform.position;
-        Vector3 targetPosition = startPosition + direction;
 
-        while (Vector3.Distance(transform.position, targetPosition) > 0.01f && Vector3.Distance(transform.position, startPosition) < 2.0f)
+        while (Vector3.Distance(transform.position, targetTranslation) > 0.01f && Vector3.Distance(transform.position, startPosition) < 2.0f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetTranslation, moveSpeed * Time.deltaTime);
             yield return null;
         }
 
-        transform.position = targetPosition;
+        transform.position = targetTranslation;
 
         isWaitingToCheckFall = true; 
     }
