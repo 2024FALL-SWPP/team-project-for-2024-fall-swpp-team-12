@@ -15,7 +15,6 @@ public class Box : MonoBehaviour
     private bool isBeingPushed = false;
     public bool willDropDeath = false;
     private bool isWaitingToCheckFall = false;
-    private bool didPlayerBeatPhantomToThePunch = false;
 
     private float rayJumpInterval = 1.0f;
     private float maxFallHeight = 10.0f;
@@ -110,7 +109,6 @@ public class Box : MonoBehaviour
             else isMoveComplete = true;  //just pass
         }
         isBeingPushed = false;
-        didPlayerBeatPhantomToThePunch = false;
     }
 
     public void DropKillBox()
@@ -153,8 +151,7 @@ public class Box : MonoBehaviour
     }
     public bool TryMove(Vector3 direction)
     {
-        if (didPlayerBeatPhantomToThePunch) return false; //Player did -> Phantom cannot do.
-        else didPlayerBeatPhantomToThePunch = true;
+        if (isBeingPushed) return false; // preventing player & phantom simultaneous push 
 
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance*0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
         { 
