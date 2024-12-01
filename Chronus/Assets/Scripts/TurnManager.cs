@@ -54,7 +54,6 @@ public class TurnManager : MonoBehaviour
     private void EndTurn()
     {
         //Debug.Log("turn: " + rewindTurnCount);
-
         obstacleList.ForEach(obstacle => obstacle.SaveCurrentPos());
         player.SaveCurPosAndRot();
         phantom.SaveCurrentPosAndRot();
@@ -212,7 +211,7 @@ public class TurnManager : MonoBehaviour
 
             phantom.positionIterator.SetCurrent((phantom.playerCurPos, phantom.playerCurRot, true));
 
-            //Command Order List
+            //Command Order List Initialize!!!
             phantom.commandIterator.Clear();
             phantom.commandIterator.Add("");
             while (player.commandIterator.HasNext())
@@ -312,7 +311,7 @@ public class TurnManager : MonoBehaviour
             buttonList.ForEach(button => button.RemoveLog(deltaTurn));
             obstacleList.ForEach(obstacle => obstacle.RemoveLog(deltaTurn));
 
-            phantom.commandIterator.SetIndexPrevious(); // no remove, just checkout previous
+            if (phantom.commandIterator.GetCurrentIndex() >= 0) phantom.commandIterator.SetIndexPrevious(); // no remove, just checkout previous
         }
     }
 }

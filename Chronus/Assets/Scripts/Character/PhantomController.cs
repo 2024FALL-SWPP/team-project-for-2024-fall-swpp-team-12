@@ -42,19 +42,22 @@ public class PhantomController : CharacterBase
 
     public void AdvanceTurn()
     {
-        if (isPhantomExisting && !commandIterator.HasNext()) 
+        if (isPhantomExisting && !commandIterator.HasNext()) //finished lifetime
         {
             KillPhantom();
         }
 
-        if (commandIterator.HasNext())
+        if (commandIterator.GetCurrentIndex() >= 0)
         {
-            string nextCommand = commandIterator.Next();  // Get the next command
-            HandleMovementInput(nextCommand);  // Execute the command
-        }
-        else
-        {
-            commandIterator.SetIndexNext();
+            if (commandIterator.HasNext())
+            {
+                string nextCommand = commandIterator.Next();  // Get the next command
+                HandleMovementInput(nextCommand);  // Execute the command
+            }
+            else
+            {
+                commandIterator.SetIndexNext();
+            }
         }
     }
 
