@@ -54,8 +54,12 @@ public class PhantomController : CharacterBase
         {
             if (commandIterator.HasNext())
             {
-                string nextCommand = commandIterator.Next();  // Get the next command
-                HandleMovementInput(nextCommand);  // Execute the command
+                if (isPhantomExisting)
+                {
+                    string nextCommand = commandIterator.Next();  // Get the next command
+                    HandleMovementInput(nextCommand);  // Execute the command
+                }
+                else commandIterator.Next();
             }
             else
             {
