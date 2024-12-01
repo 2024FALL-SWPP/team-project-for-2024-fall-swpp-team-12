@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 4562608736209009957}
   - component: {fileID: 2931452100720880860}
   - component: {fileID: 4620623369045813754}
-  m_Layer: 0
+  - component: {fileID: 5950515571392750800}
+  m_Layer: 7
   m_Name: Lever
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,6 +84,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &5950515571392750800
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812417234926798404}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.0039999997, y: 0.0040000007, z: 0.019999996}
+  m_Center: {x: -8.1490725e-10, y: 5.896713e-10, z: -0.009893041}
 --- !u!1 &3481353983208219693
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,8 +160,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2, y: 2, z: 2}
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Size: {x: 2, y: 1, z: 2}
+  m_Center: {x: 0, y: 0.4, z: 0}
 --- !u!114 &4364314393864779162
 MonoBehaviour:
   m_ObjectHideFlags: 0
