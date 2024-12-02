@@ -62,23 +62,33 @@ public class MovingObstacle : MonoBehaviour
         direction = (targetPosition - transform.position).normalized;
         // first, check if the target position overlaps with player's target position.
         Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
-        if (playerTargetPosition == targetPosition)
+        if (playerTargetPosition.x == targetPosition.x && playerTargetPosition.z == targetPosition.z &&
+            (playerTargetPosition.y >= targetPosition.y - 1 && playerTargetPosition.y <= targetPosition.y + 1))
         {   
             // If this is a block: going to push the player
             PlayerController.playerController.pushDirection = direction;
             PlayerController.playerController.pushSpeed = moveSpeed;
-            PlayerController.playerController.targetTranslation = targetPosition + direction * 2;
+            PlayerController.playerController.targetTranslation = 
+                new Vector3(
+                targetPosition.x + direction.x * 2,
+                PlayerController.playerController.targetTranslation.y, 
+                targetPosition.z + direction.z * 2);
             // Else, if this is a spear: just game over.
         }
         if (PhantomController.phantomController.isPhantomExisting)
         {
             Vector3 phantomTargetPosition = PhantomController.phantomController.targetTranslation;
-            if (phantomTargetPosition == targetPosition)
+            if (phantomTargetPosition.x == targetPosition.x && phantomTargetPosition.z == targetPosition.z &&
+                (phantomTargetPosition.y >= targetPosition.y - 1 && phantomTargetPosition.y <= targetPosition.y + 1))
             {
                 // If this is a block: going to push the phantom
                 PhantomController.phantomController.pushDirection = direction;
                 PhantomController.phantomController.pushSpeed = moveSpeed;
-                PhantomController.phantomController.targetTranslation = targetPosition + direction * 2;
+                PhantomController.phantomController.targetTranslation =
+                    new Vector3(
+                    targetPosition.x + direction.x * 2,
+                    PhantomController.phantomController.targetTranslation.y,
+                    targetPosition.z + direction.z * 2);
                 // Else, if this is a spear: kill it.
             }
         }

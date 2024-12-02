@@ -56,6 +56,8 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Start()
     {
+        targetTranslation = transform.position;
+
         rb = gameObject.GetComponent<Rigidbody>();
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
