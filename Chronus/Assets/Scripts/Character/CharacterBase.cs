@@ -37,7 +37,7 @@ public abstract class CharacterBase : MonoBehaviour
     protected float rayDistance = 1.0f;
     protected float rayJumpInterval = 1.0f;
     protected float maxFallHeight = 10.0f;
-    protected int layerMask = (1 << 0) | (1 << 6); //default, lever
+    protected int layerMask = (1 << 0) | (1 << 6) | (1 << 8); //default, lever, box
 
     // task of a state ended, need to jump to next state (next index of the state list)
     // can be changed from state's DoneAction func, through sender

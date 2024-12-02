@@ -19,7 +19,8 @@ public class Box : MonoBehaviour
 
     private float rayJumpInterval = 1.0f;
     private float maxFallHeight = 10.0f;
-    private int layerMask = (1 << 0) | (1 << 3) | (1 << 6); //detect default(0), player(3), and lever(6) layer.
+    private int layerMask = (1 << 0) | (1 << 3) | (1 << 6) | (1 << 8); //detect default(0), player(3), lever(6) and box(8) layer.
+    private int layerMaskFall = (1 << 0) | (1 << 3) | (1 << 6); //don't detect other boxes.
     private void Start()
     {
         targetTranslation = transform.position;

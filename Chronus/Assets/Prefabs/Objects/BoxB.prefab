@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2889927929955507743}
   - component: {fileID: 2889927929955507742}
   - component: {fileID: 2889927929955507729}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BoxB
   m_TagString: Box
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!65 &2889927929955507742
 BoxCollider:
@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3817fa54d2d09b438c115d856401cce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetTranslation: {x: 0, y: 0, z: 0}
   moveDistance: 2
   isMoveComplete: 0
   isFallComplete: 1
