@@ -2210,11 +2210,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0270982a7ba4ab24eb278822794059c8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0270982a7ba4ab24eb278822794059c8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0270982a7ba4ab24eb278822794059c8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2281,9 +2281,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetTranslation: {x: 0, y: 0, z: 0}
   moveDistance: 2
+  checkDistance: 0
   isMoveComplete: 0
   isFallComplete: 1
   willDropDeath: 0
+  boxLayer: 0
 --- !u!65 &445944869
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6339,9 +6341,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetTranslation: {x: 0, y: 0, z: 0}
   moveDistance: 2
+  checkDistance: 0
   isMoveComplete: 0
   isFallComplete: 1
   willDropDeath: 0
+  boxLayer: 0
 --- !u!65 &1488847113
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9120,7 +9124,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0270982a7ba4ab24eb278822794059c8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0270982a7ba4ab24eb278822794059c8, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9128,7 +9132,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0270982a7ba4ab24eb278822794059c8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0270982a7ba4ab24eb278822794059c8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9405,9 +9409,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetTranslation: {x: 0, y: 0, z: 0}
   moveDistance: 2
+  checkDistance: 0
   isMoveComplete: 0
   isFallComplete: 1
   willDropDeath: 0
+  boxLayer: 0
 --- !u!65 &2117464333
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9671,7 +9677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6905030743511302446, guid: ad98de692bad24441b85e8d9dadd806e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6905030743511302446, guid: ad98de692bad24441b85e8d9dadd806e, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9679,7 +9685,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6905030743511302446, guid: ad98de692bad24441b85e8d9dadd806e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6905030743511302446, guid: ad98de692bad24441b85e8d9dadd806e, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9721,6 +9727,10 @@ PrefabInstance:
     - target: {fileID: 8294636706162919894, guid: e5276887a87ed054395fc1de9f0a50c2, type: 3}
       propertyPath: m_Name
       value: Laser
+      objectReference: {fileID: 0}
+    - target: {fileID: 8294636706162919894, guid: e5276887a87ed054395fc1de9f0a50c2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8294636706162919895, guid: e5276887a87ed054395fc1de9f0a50c2, type: 3}
       propertyPath: m_RootOrder
