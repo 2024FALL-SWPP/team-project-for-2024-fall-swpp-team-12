@@ -5,6 +5,10 @@ public class InputManagerTesting : MonoBehaviour
 {
     public static InputManagerTesting instance; //singleton
     private InputManager inputManager;
+    
+    public bool case1 = false;
+    public bool case2 = false;
+    public bool case3 = false;
 
     public bool case1 = false; // Pushing same box to different direction (-> + ^)
     public bool case2 = false; // Box target is the same as player target
