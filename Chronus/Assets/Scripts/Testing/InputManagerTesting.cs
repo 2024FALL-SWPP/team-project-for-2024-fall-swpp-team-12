@@ -23,49 +23,49 @@ public class InputManagerTesting : MonoBehaviour
         yield return new WaitForSeconds(2);
         
         inputManager.OnMovementControl?.Invoke("d"); 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         inputManager.OnMovementControl?.Invoke("w"); 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         inputManager.OnMovementControl?.Invoke("w"); 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         inputManager.OnMovementControl?.Invoke("a"); 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         inputManager.OnMovementControl?.Invoke("s"); 
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         
         inputManager.OnTimeRewindModeToggle?.Invoke();
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         inputManager.OnTimeRewindControl?.Invoke("q");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         
         inputManager.OnTimeRewindControl?.Invoke("q");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         
         inputManager.OnTimeRewindControl?.Invoke("q");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         
         inputManager.OnTimeRewindControl?.Invoke("q");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         
         inputManager.OnTimeRewindModeToggle?.Invoke();
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         inputManager.OnMovementControl?.Invoke("r");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         
         inputManager.OnMovementControl?.Invoke("r");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         
         inputManager.OnMovementControl?.Invoke("r");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         
         inputManager.OnMovementControl?.Invoke("a");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         inputManager.OnMovementControl -= LogAction;
         inputManager.OnTimeRewindControl -= LogAction;
