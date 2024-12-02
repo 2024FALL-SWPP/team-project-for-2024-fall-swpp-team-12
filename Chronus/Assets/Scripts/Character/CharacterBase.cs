@@ -47,7 +47,7 @@ public abstract class CharacterBase : MonoBehaviour
     public bool isFallComplete = true;
     public bool willDropDeath = false;
     public bool willLaserKillCharacter = false;
-    
+
 
     protected virtual void Awake()
     {
@@ -262,7 +262,7 @@ public abstract class CharacterBase : MonoBehaviour
         curTurnAngle = Mathf.Round(angleDifference / 90) * 90;
 
         // First, check if there's an wall-like object to that target direction. 
-        if (Physics.Raycast(transform.position - new Vector3(0,0.1f,0), targetDirection, out RaycastHit hit, BLOCK_SIZE, layerMask))
+        if (Physics.Raycast(transform.position - new Vector3(0, 0.1f, 0), targetDirection, out RaycastHit hit, BLOCK_SIZE, layerMask))
         {
             switch (hit.collider.tag)
             {
@@ -311,7 +311,7 @@ public abstract class CharacterBase : MonoBehaviour
         {
             Vector3 rayStart = transform.position + rayOffset;
             Debug.DrawRay(rayStart, -transform.up * BLOCK_SIZE, Color.blue, 1.0f);
-            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, rayDistance + rayJumpInterval*maxFallHeight, layerMask))
+            if (Physics.Raycast(rayStart, -transform.up, out RaycastHit hitGround, rayDistance + rayJumpInterval * maxFallHeight, layerMask))
             {
                 if (hitGround.collider.CompareTag("Box")) //box is heading to death
                 {

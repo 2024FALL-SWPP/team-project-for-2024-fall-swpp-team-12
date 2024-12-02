@@ -173,7 +173,7 @@ public class PlayerController : CharacterBase
     {
         playerCurPos = transform.position;
         playerCurRot = transform.rotation;
-        
+
         listCommandLog = new List<string> { "" };
         listPosLog = new List<(Vector3, Quaternion)> { (playerCurPos, playerCurRot) };
 
@@ -224,7 +224,7 @@ public class PlayerController : CharacterBase
         }
         blinkCoroutine = StartCoroutine(PlayBlinkEffect());
     }*/
-    
+
     // Coroutine to handle blinking effect
     private IEnumerator PlayBlinkEffect(int blinkCount)
     {
@@ -252,7 +252,7 @@ public class PlayerController : CharacterBase
         // Reset to the starting position and blink again
         GameOverAndReset();
         isBlinking = false; //can move now.
-        yield return PlayBlinkEffect(blinkCount-1);
+        yield return PlayBlinkEffect(blinkCount - 1);
     }
 
     // Update() is redundant, because doing same thing from CharacterBase
@@ -280,7 +280,7 @@ public class PlayerController : CharacterBase
         {
             TurnManager.turnManager.EnterTimeRewind();
         }
-        else 
+        else
         {
             TurnManager.turnManager.LeaveTimeRewind();
         }

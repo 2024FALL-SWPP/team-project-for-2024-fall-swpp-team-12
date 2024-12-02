@@ -8,7 +8,7 @@ public class Box : MonoBehaviour
     public float moveDistance = 2.0f;
     public float checkDistance;
     private Rigidbody rb;
-    
+
     public TurnLogIterator<(Vector3, bool)> positionIterator;
     public bool isMoveComplete = false;
     public bool isFallComplete = true;
@@ -221,7 +221,7 @@ public class Box : MonoBehaviour
         boxLayer = layer;
 
         //Check Wall Forward
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance*0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance * 0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
         {
             targetTranslation = transform.position;
             return false;
@@ -315,7 +315,7 @@ public class Box : MonoBehaviour
 
         transform.position = targetTranslation;
 
-        isWaitingToCheckFall = true; 
+        isWaitingToCheckFall = true;
     }
     public void SaveCurrentPos()
     {

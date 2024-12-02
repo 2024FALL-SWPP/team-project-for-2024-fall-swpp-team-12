@@ -24,9 +24,9 @@ public class MovingObstacle : MonoBehaviour
         InitializeLog();
     }
 
-    public void InitializeLog() 
+    public void InitializeLog()
     {
-        var initialPositionLog = new List<(Vector3, bool, int)> { (transform.position, isVisible, turnCount ) };
+        var initialPositionLog = new List<(Vector3, bool, int)> { (transform.position, isVisible, turnCount) };
         positionIterator = new TurnLogIterator<(Vector3, bool, int)>(initialPositionLog);
     }
     public void ResetToStart()
@@ -50,9 +50,9 @@ public class MovingObstacle : MonoBehaviour
         }
     }
 
-    private void Move() 
-    { 
-        Vector3 targetPosition = isVisible ? hiddenPosition : visiblePosition; 
+    private void Move()
+    {
+        Vector3 targetPosition = isVisible ? hiddenPosition : visiblePosition;
         CheckOverlapWithCharacters(targetPosition);
         StartCoroutine(MoveObstacle(targetPosition));
     }

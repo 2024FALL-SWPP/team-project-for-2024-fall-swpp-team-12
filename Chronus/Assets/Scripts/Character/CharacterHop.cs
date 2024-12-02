@@ -77,7 +77,7 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
             }
         }
 
-        
+
     }
     public void DoneAction(CharacterBase sender)
     {
@@ -103,7 +103,7 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
                 (_CharacterBase.targetTranslation.z - _CharacterBase.playerCurPos.z) * (_CharacterBase.targetTranslation.z - _CharacterBase.playerCurPos.z));
             gapVer = maxGapVer = 0;
         }
-        if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) < 0.1f || gap >= maxGap && gapVer>= maxGapVer)
+        if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) < 0.1f || gap >= maxGap && gapVer >= maxGapVer)
         {
             _CharacterBase.transform.position = _CharacterBase.targetTranslation;
             _CharacterBase.playerCurPos = _CharacterBase.transform.position;

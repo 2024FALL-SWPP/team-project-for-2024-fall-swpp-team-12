@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Laser : MonoBehaviour
 {
-    public float laserSpeed = 20f; 
+    public float laserSpeed = 20f;
     public float laserLength = 100f; // arbitrary maximum length
     private LineRenderer lineRenderer;
     private int layerMask;
@@ -19,8 +19,8 @@ public class Laser : MonoBehaviour
     public void ToggleLaser()
     {
         // turn off if on, turn on if off
-        if (gameObject.activeSelf) {gameObject.SetActive(false);}
-        else {gameObject.SetActive(true);}
+        if (gameObject.activeSelf) { gameObject.SetActive(false); }
+        else { gameObject.SetActive(true); }
     }
 
     void Update()

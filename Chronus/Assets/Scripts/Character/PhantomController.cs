@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 public class PhantomController : CharacterBase
 {
-    public static PhantomController phantomController; 
+    public static PhantomController phantomController;
 
     public TurnLogIterator<string> commandIterator;
     public TurnLogIterator<(Vector3, Quaternion, bool)> positionIterator;
@@ -15,7 +15,7 @@ public class PhantomController : CharacterBase
 
     public bool willBoxKillPhantom = false;
 
-    protected override void Awake() 
+    protected override void Awake()
     {
         base.Awake();
         if (phantomController == null) { phantomController = this; }
@@ -68,7 +68,7 @@ public class PhantomController : CharacterBase
         }
     }
 
-    protected override void Update() 
+    protected override void Update()
     {
         if (!isPhantomExisting) return;
         //intercept by timerewinding: at TurnManager - EnterTimeRewind

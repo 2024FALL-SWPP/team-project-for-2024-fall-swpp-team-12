@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    public static InputManager inputManager; 
+    public static InputManager inputManager;
     public bool isPaused = false;
     public Action<string> OnMovementControl; // to PlayerController.HandleMovementInput()
     public Action<string> OnTimeRewindControl; // to PlayerController.HandleTimeRewindInput()

@@ -75,9 +75,9 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         float currentYRotation = _CharacterBase.transform.eulerAngles.y;
         float gap = Mathf.DeltaAngle(_CharacterBase.playerCurRot.eulerAngles.y, currentYRotation);
         float angle = Mathf.Abs(Mathf.DeltaAngle(currentYRotation, targetYRotation));
-        if (angle < 1.0f || 
-            (_CharacterBase.curTurnAngle > 0 && (gap >= _CharacterBase.curTurnAngle || gap < 0)) || 
-            (_CharacterBase.curTurnAngle < 0 && (gap <= _CharacterBase.curTurnAngle || gap > 0))) 
+        if (angle < 1.0f ||
+            (_CharacterBase.curTurnAngle > 0 && (gap >= _CharacterBase.curTurnAngle || gap < 0)) ||
+            (_CharacterBase.curTurnAngle < 0 && (gap <= _CharacterBase.curTurnAngle || gap > 0)))
         {
             CompleteRotation(targetYRotation);
             CompleteTranslation();
@@ -90,7 +90,7 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         _CharacterBase.transform.rotation = Quaternion.Euler(0.0f, targetYRotation, 0.0f);
         _CharacterBase.playerCurRot = _CharacterBase.transform.rotation; //update current rotation information
     }
-    private void CompleteTranslation() 
+    private void CompleteTranslation()
     {
         _CharacterBase.transform.position = _CharacterBase.playerCurPos; //initial position is the target position.
     }
