@@ -289,7 +289,7 @@ public abstract class CharacterBase : MonoBehaviour
                             RotateInPlace();
                             break;
                         }
-                        if (box.TryMove(targetDirection))
+                        if (box.TryMove(targetDirection, 0))
                         {
                             ChooseAndStartAction(listMoveForward, listMoveSideRear);
                         }
