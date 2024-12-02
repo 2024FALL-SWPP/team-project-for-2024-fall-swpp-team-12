@@ -6,7 +6,7 @@ public class Box : MonoBehaviour
 {
     public Vector3 targetTranslation;
     public float moveDistance = 2.0f;
-    private float checkDistance;
+    public float checkDistance;
     private Rigidbody rb;
     
     public TurnLogIterator<(Vector3, bool)> positionIterator;
@@ -21,6 +21,7 @@ public class Box : MonoBehaviour
     private float maxFallHeight = 10.0f;
     private int layerMask = (1 << 0) | (1 << 3) | (1 << 6) | (1 << 8); //detect default(0), player(3), lever(6) and box(8) layer.
     private int layerMaskFall = (1 << 0) | (1 << 3) | (1 << 6); //don't detect other boxes.
+    public float boxLayer = 0.0f;
     private void Start()
     {
         targetTranslation = transform.position;
@@ -59,7 +60,7 @@ public class Box : MonoBehaviour
         //intercept by gameover: at PlayerController - KillCharacter
         if ((TurnManager.turnManager.CLOCK || willDropDeath) && !isFallComplete) //update fall also when willDropDeath, independantly
         {
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance, layerMask))
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance + boxLayer, layerMaskFall))
             {
                 if (hit.collider.CompareTag("Player") && !willDropDeath) //Stamp Kill
                 {
@@ -105,7 +106,6 @@ public class Box : MonoBehaviour
     {
         if (!isBeingPushed)
         {
-            //AdvanceFall();
             if (gameObject.activeSelf) isWaitingToCheckFall = true;  //wait.
             else isMoveComplete = true;  //just pass
         }
@@ -124,7 +124,6 @@ public class Box : MonoBehaviour
     public void AdvanceFall() //can refactor with characterbase.advancefall()
     {
         isWaitingToCheckFall = false;
-
         //Check overlapping target position - Phantom
         if (PhantomController.phantomController.isPhantomExisting && isBeingPushed)
         {
@@ -135,36 +134,90 @@ public class Box : MonoBehaviour
                 PhantomController.phantomController.willBoxKillPhantom = true;
             }
         }
-        isBeingPushed = false;
-
         if (!willDropDeath)
         {
-            // If no tile is detected, allow the box to fall
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit1, checkDistance, layerMask))
+            int layermask;
+            float fallHeightCheck;
+            if (isBeingPushed) //don't detect other boxes
             {
-                isMoveComplete = true; //bypass fall.
+                layermask = layerMaskFall;
+                fallHeightCheck = maxFallHeight + boxLayer;
+            }
+            else //normal raycast.
+            {
+                layermask = layerMask;
+                fallHeightCheck = maxFallHeight;
+            }
+            // If no tile is detected, allow the box to fall
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit1, checkDistance + (fallHeightCheck - maxFallHeight), layermask))
+            {
+                if (isBeingPushed)
+                {
+                    isMoveComplete = true; //bypass fall.
+                }
+                else
+                {
+                    if (hit1.collider.CompareTag("Box")) //on the box.
+                    {
+                        //wait for the box below to check this.
+                    }
+                    else //at floor. - no fall.
+                    {
+                        CheckChainFall(false, boxLayer + checkDistance * 2);
+                        isMoveComplete = true; //bypass fall.
+                    }
+                }
             }
             else
             {
-                //check if the character can Survive from this height
-                if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit2, checkDistance + rayJumpInterval * maxFallHeight, layerMask))
+                if (!isBeingPushed) //the lowest box of the group, and it is about to fall.
                 {
-                    willDropDeath = true;
-                    isMoveComplete = true; //just pass turn and fall itself alone.
+                    CheckChainFall(true, boxLayer + checkDistance * 2);
                 }
-                rb.constraints = RigidbodyConstraints.FreezeRotation;
-                isFallComplete = false; //fall start!
+                canSurviveFall(fallHeightCheck, layermask);
             }
         }
         else
         {
-            isMoveComplete = true;
+            isMoveComplete = true; //keep falling to death
+        }
+        isBeingPushed = false; //Unlock.
+    }
+
+    public void canSurviveFall(float fallHeightCheck, int layermask)
+    {
+        //check if the character can Survive from this height
+        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit2, checkDistance + fallHeightCheck, layermask))
+        {
+            willDropDeath = true;
+            isMoveComplete = true; //just pass turn and fall itself alone.
+        }
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        isFallComplete = false; //fall start!
+    }
+
+    public void CheckChainFall(bool doFall, float layer) //Recursion.
+    {
+        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, checkDistance + moveDistance / 4, 1<<8))
+        {
+            Box box = hitUp.collider.gameObject.GetComponent<Box>();
+            box.boxLayer = layer;
+            if (doFall)
+            {
+                box.canSurviveFall(maxFallHeight + box.boxLayer, layerMaskFall);
+            }
+            else
+            {
+                box.isMoveComplete = true; //no fall.
+            }
+            box.CheckChainFall(doFall, box.boxLayer + box.checkDistance * 2);
         }
     }
 
-    public bool TryMove(Vector3 direction)
+    public bool TryMove(Vector3 direction, float layer)
     {
-        if (isBeingPushed) return false; // preventing player & phantom simultaneous push 
+        if (isBeingPushed) return false; //if locked - no TryMove(). // to prevent player & phantom simultaneous push
+        boxLayer = layer;
 
         //Check Wall Forward
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance*0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
@@ -183,6 +236,7 @@ public class Box : MonoBehaviour
             targetTranslation = transform.position; //roll back
             return false;
         }
+
         //Check overlapping target position - Box
         if (PlayerController.playerController.checkOverlappingBox) //only check when 2nd trymove.
         {
@@ -201,14 +255,14 @@ public class Box : MonoBehaviour
         }
 
         //Check Rider
-        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, moveDistance/2, layerMask)) //look up.
+        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, checkDistance + moveDistance / 4, layerMask)) //look up.
         {
             switch (hitUp.collider.tag)
             {
                 case "Box": //box stack yeah
                     {
                         Box box = hitUp.collider.gameObject.GetComponent<Box>();
-                        box.TryMove(direction); //kind of recursion yeah
+                        box.TryMove(direction, boxLayer + checkDistance*2); //Recursion.
                         break;
                     }
                 case "Player": //player or phantom
@@ -243,7 +297,7 @@ public class Box : MonoBehaviour
             }
         }
 
-        isBeingPushed = true;
+        isBeingPushed = true; //Lock.
         StartCoroutine(SmoothMove(direction, PlayerController.playerController.moveSpeedHor));
         return true;
     }
