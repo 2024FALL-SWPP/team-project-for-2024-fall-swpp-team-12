@@ -19,7 +19,7 @@ public class TurnManager : MonoBehaviour
 
     private RewindSliderUI rewindUI;
 
-    private void Awake() 
+    private void Awake()
     {
         if (turnManager == null) { turnManager = this; }
     }
@@ -65,10 +65,10 @@ public class TurnManager : MonoBehaviour
         ResetMoveComplete();
 
         // Check if player has cleared the level -> if cleared, go to next level
-        LevelManager.levelManager?.CheckAndCompleteLevel();    
+        LevelManager.levelManager?.CheckAndCompleteLevel();
     }
 
-    private bool CheckAllMoveComplete() 
+    private bool CheckAllMoveComplete()
     // Check if all movements of the current turn on the scene are complete.
     {
         return (
@@ -134,7 +134,7 @@ public class TurnManager : MonoBehaviour
         {
             Box boxScript = boxObject.GetComponent<Box>();
             boxScript.InitializeLog();
-            boxList.Add(boxScript); 
+            boxList.Add(boxScript);
         }
 
         GameObject[] leverObjects = GameObject.FindGameObjectsWithTag("Lever");

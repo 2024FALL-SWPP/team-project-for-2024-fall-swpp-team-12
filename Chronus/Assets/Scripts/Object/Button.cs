@@ -33,12 +33,12 @@ public class Button : MonoBehaviour
 
     private void Update()
     {
-        
+
     }
 
     public void InitializeLog()
     {
-        targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); 
+        targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive));
 
         var initialState = new List<(Vector3, bool, int)> { (transform.GetChild(1).transform.position, isPressed, remainingTurns) };
 
@@ -95,7 +95,8 @@ public class Button : MonoBehaviour
     {
         remainingTurns = resetTurnCount; //reset count (when enter, stay)
 
-        if (!isPressed) {
+        if (!isPressed)
+        {
             targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
             transform.GetChild(1).transform.position = plateOnPosition;
 

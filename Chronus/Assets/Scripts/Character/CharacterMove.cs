@@ -89,7 +89,7 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
             : Vector3.Distance(_CharacterBase.targetTranslation, _CharacterBase.playerCurPos);
         if (Vector3.Distance(currentTranslation, _CharacterBase.targetTranslation) < 0.1f || gap >= maxGap)
         {
-            _CharacterBase.transform.position = _CharacterBase.targetTranslation; 
+            _CharacterBase.transform.position = _CharacterBase.targetTranslation;
             _CharacterBase.playerCurPos = _CharacterBase.transform.position;
             if (_CharacterBase.pushDirection != Vector3.zero)
             {

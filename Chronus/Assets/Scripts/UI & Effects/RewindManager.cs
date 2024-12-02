@@ -34,7 +34,7 @@ public class RewindManager : MonoBehaviour
 
     void ToggleRewindMode()
     {
-        if (!PlayerController.playerController.isTimeRewinding && 
+        if (!PlayerController.playerController.isTimeRewinding &&
             (PlayerController.playerController.isBlinking || TurnManager.turnManager.CLOCK || PlayerController.playerController.willDropDeath)) return;
         // assuring that every action should be ended (during the turn)
 
@@ -85,7 +85,7 @@ public class RewindManager : MonoBehaviour
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvasObj.AddComponent<CanvasScaler>();
         canvasObj.AddComponent<GraphicRaycaster>();
-        
+
         GameObject imageObj = new GameObject("OverlayImage");
         imageObj.transform.SetParent(canvasObj.transform, false);
         overlayImage = imageObj.AddComponent<Image>();
@@ -94,7 +94,7 @@ public class RewindManager : MonoBehaviour
         overlayImage.rectTransform.anchorMax = Vector2.one;
         overlayImage.rectTransform.sizeDelta = Vector2.zero;
     }
-    
+
     private void PlayRewindAudio()
     {
         if (rewindStartAudio != null && audioSource != null)

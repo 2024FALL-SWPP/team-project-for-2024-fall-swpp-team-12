@@ -107,7 +107,7 @@ public class TimeRewindEffect : MonoBehaviour
         if (activeNewPositionEffect != null)
         {
             activeNewPositionEffect.transform.position = transform.position;
-            
+
             activeNewPositionEffect.Play();
             yield return new WaitForSeconds(0.3f);
             activeNewPositionEffect.Stop();
@@ -118,7 +118,7 @@ public class TimeRewindEffect : MonoBehaviour
         {
             activeSurroundEffect.Play();
         }
-        
+
         isRewinding = false;
     }
 }
