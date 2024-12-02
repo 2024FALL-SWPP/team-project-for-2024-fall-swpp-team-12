@@ -19,6 +19,11 @@ jobs:
           # super-linter needs the full git history to get the
           # list of files that changed across commits
           fetch-depth: 0
+
+      - name: Clear GitHub Actions Cache
+        run: |
+          rm -rf /tmp/lint/.jscpd.json
+
       - name: Super-linter
         uses: super-linter/super-linter@v7.1.0 # x-release-please-version
         env:
