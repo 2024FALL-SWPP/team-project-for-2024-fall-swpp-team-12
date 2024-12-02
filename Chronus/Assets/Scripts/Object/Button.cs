@@ -67,15 +67,19 @@ public class Button : MonoBehaviour
     {
         BePressedByObjects(other);
     }
+    private void OnTriggerExit(Collider other)
+    {
+        remainingTurns--; //reason: (because of stay(->turncount reset), turncount don't decrease by itself, so when exit decrease.)
+    }
 
     public void AdvanceTurn()
     {
         if (isPressed)
         {
-            remainingTurns--;
             Debug.Log("remainingTurns:" + remainingTurns);
 
             if (remainingTurns <= 0) ResetButton();
+            remainingTurns--;
         }
         StartCoroutine(WaitForOthersMoveCompleteAndAdvance());
     }
@@ -90,7 +94,7 @@ public class Button : MonoBehaviour
 
     private void PressButton()
     {
-        remainingTurns = resetTurnCount-1; //reset count (when enter, stay)
+        remainingTurns = resetTurnCount; //reset count (when enter, stay)
 
         if (!isPressed) {
             targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
