@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2155180111105339445}
   - component: {fileID: 2155180111105339446}
   - component: {fileID: 2155180111105339447}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BoxAHalf
   m_TagString: Box
   m_Icon: {fileID: 0}
@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3817fa54d2d09b438c115d856401cce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetTranslation: {x: 0, y: 0, z: 0}
   moveDistance: 2
   isMoveComplete: 0
   isFallComplete: 1

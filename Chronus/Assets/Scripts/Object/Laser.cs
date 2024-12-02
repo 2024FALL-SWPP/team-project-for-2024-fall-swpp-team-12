@@ -13,7 +13,7 @@ public class Laser : MonoBehaviour
         lineRenderer.positionCount = 2; // start and end point
         lineRenderer.startWidth = 0.1f;
         lineRenderer.endWidth = 0.1f; // 0.05f;
-        layerMask = (1 << 0) | (1 << 3) | (1 << 7); //default and LeverStick
+        layerMask = (1 << 0) | (1 << 3) | (1 << 7) | (1 << 8); //default and LeverStick
     }
 
     public void ToggleLaser()
