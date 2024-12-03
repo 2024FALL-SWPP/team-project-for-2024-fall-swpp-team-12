@@ -8,7 +8,7 @@ public abstract class CharacterBase : MonoBehaviour
     public Vector3 targetDirection { get; set; }
 
     public Animator animator;
-    private Rigidbody rb;
+    public Rigidbody rb;
     public Vector3 playerCurPos;
     public Quaternion playerCurRot;
 
@@ -153,11 +153,16 @@ public abstract class CharacterBase : MonoBehaviour
         }
     }
 
-    public virtual void KillCharacter()  //gameover, initialize
+    public void StopFallCharacter()
     {
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
         willDropDeath = false; //already dead.
         isFallComplete = true; //ended fall.
+    }
+
+    public virtual void KillCharacter()  //gameover, initialize
+    {
+        StopFallCharacter();
     }
 
     public virtual void AdvanceFall()
