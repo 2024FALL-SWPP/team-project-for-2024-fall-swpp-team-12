@@ -13,6 +13,7 @@ public class RewindSliderUI : MonoBehaviour
     [SerializeField] private Sprite idleCircle;
     [SerializeField] private Sprite rewindPoint;
     [SerializeField] private RectTransform slidingSquare;
+    [SerializeField] private GameObject sliderPanel;
 
     private List<string> commandList;
     private int commandIndex = 0;
@@ -22,11 +23,12 @@ public class RewindSliderUI : MonoBehaviour
     private void Awake()
     {
         slidingSquare.gameObject.SetActive(false);
+        sliderPanel.SetActive(false);
     }
 
     public void EnterRewindMode(List<string> commands)
     {
-        gameObject.SetActive(true);
+        sliderPanel.SetActive(true);
         slidingSquare.gameObject.SetActive(true);
 
         commandList = commands;
@@ -41,7 +43,7 @@ public class RewindSliderUI : MonoBehaviour
 
     public void LeaveRewindMode()
     {
-        gameObject.SetActive(false);
+        sliderPanel.SetActive(false);
         slidingSquare.gameObject.SetActive(false);
     }
 

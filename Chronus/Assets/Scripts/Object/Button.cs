@@ -76,7 +76,6 @@ public class Button : MonoBehaviour
     {
         if (isPressed)
         {
-            Debug.Log("remainingTurns:" + remainingTurns);
 
             if (remainingTurns <= 0) ResetButton();
             remainingTurns--;
