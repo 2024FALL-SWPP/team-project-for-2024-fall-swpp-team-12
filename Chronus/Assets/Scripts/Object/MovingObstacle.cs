@@ -64,14 +64,14 @@ public class MovingObstacle : MonoBehaviour
         Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
         if (playerTargetPosition.x == targetPosition.x && playerTargetPosition.z == targetPosition.z &&
             (playerTargetPosition.y >= targetPosition.y - 1 && playerTargetPosition.y <= targetPosition.y + 1))
-        {   
+        {
             // If this is a block: going to push the player
             PlayerController.playerController.pushDirection = direction;
             PlayerController.playerController.pushSpeed = moveSpeed;
-            PlayerController.playerController.targetTranslation = 
+            PlayerController.playerController.targetTranslation =
                 new Vector3(
                 targetPosition.x + direction.x * 2,
-                PlayerController.playerController.targetTranslation.y, 
+                PlayerController.playerController.targetTranslation.y,
                 targetPosition.z + direction.z * 2);
             // Else, if this is a spear: just game over.
         }
