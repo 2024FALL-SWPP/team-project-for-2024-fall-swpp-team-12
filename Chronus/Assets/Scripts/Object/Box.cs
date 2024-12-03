@@ -199,7 +199,7 @@ public class Box : MonoBehaviour
     public void CheckChainFall(bool doFall, float layer) //Recursion.
     {
         if (isBeingPushed) return; //if locked - no CheckChainFall.(first box, calls this function only when !isBeingPushed, no problem ///but next boxes, can be Locked by isBeingPushed)
-        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, checkDistance + moveDistance / 4, 1<<8))
+        if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, checkDistance + moveDistance / 4, 1 << 8))
         {
             Box box = hitUp.collider.gameObject.GetComponent<Box>();
             box.boxLayer = layer;
@@ -263,7 +263,7 @@ public class Box : MonoBehaviour
                 case "Box": //box stack yeah
                     {
                         Box box = hitUp.collider.gameObject.GetComponent<Box>();
-                        box.TryMove(direction, boxLayer + checkDistance*2); //Recursion.
+                        box.TryMove(direction, boxLayer + checkDistance * 2); //Recursion.
                         break;
                     }
                 case "Player": //player or phantom
