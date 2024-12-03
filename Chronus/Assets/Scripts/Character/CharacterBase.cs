@@ -214,6 +214,8 @@ public abstract class CharacterBase : MonoBehaviour
                 if (!isRidingBox) targetTranslation = playerCurPos;
                 StartAction();
                 return;
+            default:
+                return;
         }
 
         TryToMoveToDirection();
