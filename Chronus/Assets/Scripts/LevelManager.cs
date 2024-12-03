@@ -154,6 +154,22 @@ public class LevelManager : MonoBehaviour
 
     private void ResetLevel()
     {
+        if (player.isBlinking || TurnManager.turnManager.CLOCK || player.isTimeRewinding) return; //block when: time rewind mode, clock on, running 'game over'.
+
+        if (player.willDropDeath)
+        {
+            player.StopFallCharacter();
+        }
+
+        //from PlayerController - GameOverAndReset().
+        if (!PhantomController.phantomController.isFallComplete) PhantomController.phantomController.KillCharacter();
+        else PhantomController.phantomController.KillPhantom(); //ActiveSelf false, isPhantomExisting false.
+        TurnManager.turnManager.boxList.ForEach(box => box.DropKillBox()); //setactive false
+
+        //the reason of 'partially copied' code above: consider pressing the reset button (ENTER) while playing.
+
+        TurnManager.turnManager.ResetObjects();
+
         // Place player at the start point
         player.transform.position = new Vector3(
             currentStart.position.x,
@@ -163,13 +179,11 @@ public class LevelManager : MonoBehaviour
         // Reset player log
         player.InitializeLog();
         player.isTimeRewinding = false;
-        // Get information from the level
+        // Get object information from the level
         TurnManager.turnManager.InitializeObjectLists();
-        // Kill the phantom
+        // Initialize the phantom
         PhantomController.phantomController.InitializeLog();
         Debug.Log("Prepare");
-        PhantomController.phantomController.isPhantomExisting = false;
-        PhantomController.phantomController.gameObject.SetActive(false);
     }
 
     private IEnumerator MoveCameraWithTransition()

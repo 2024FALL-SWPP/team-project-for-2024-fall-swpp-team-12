@@ -192,7 +192,6 @@ public class TurnManager : MonoBehaviour
         // kill already existing phantom, if not ended
         if (phantom.willDropDeath) phantom.KillCharacter(); //intercept during death fall
         else phantom.KillPhantom(); //just normal kill
-        rewindTurnCount = 0;
         rewindUI?.EnterRewindMode(player.listCommandLog);
     }
 
@@ -300,8 +299,18 @@ public class TurnManager : MonoBehaviour
     {
         // If player was time rewinding, just leave at the entered tile, with no phantom
         // ^^ need to implement this!!
-        if (!PlayerController.playerController.isBlinking && !PlayerController.playerController.willDropDeath && !CLOCK && !player.isTimeRewinding && player.positionIterator.HasPrevious())
+        if (!player.isBlinking && !CLOCK && !player.isTimeRewinding && player.positionIterator.HasPrevious())
         {
+            if (player.willDropDeath)
+            {
+                player.StopFallCharacter();
+            }
+            //freeze y pos and bool variables of fall condition reset
+            if (!PhantomController.phantomController.isFallComplete) PhantomController.phantomController.KillCharacter(); //intercept during fall
+            else PhantomController.phantomController.KillPhantom(); //just normal kill
+            boxList.ForEach(box => box.DropKillBox());
+
+
             GoToThePast();
             phantom.RestoreState(); //phantom restores state also.
 
