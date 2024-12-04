@@ -23,6 +23,17 @@ jobs:
       - name: Verify .jscpd.json
         run: ls -al .jscpd.json
 
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+   
+      - name: Install jscpd
+        run: npm install -g jscpd
+
+      - name: Run jscpd
+        run: jscpd --config .jscpd.json
+
       - name: Super-linter
         uses: super-linter/super-linter@v7.1.0 # x-release-please-version
         env:
