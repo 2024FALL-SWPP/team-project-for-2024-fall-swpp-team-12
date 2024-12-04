@@ -329,6 +329,7 @@ MonoBehaviour:
   idleCircle: {fileID: 21300000, guid: 9c5cdf4f966abb847a135beec8f408f0, type: 3}
   rewindPoint: {fileID: 21300000, guid: 28a4704923c5aa44db9904d0e251f318, type: 3}
   slidingSquare: {fileID: 428392151}
+  sliderPanel: {fileID: 0}
 --- !u!114 &44657298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2082,6 +2083,9 @@ MonoBehaviour:
   case1: 0
   case2: 0
   case3: 0
+  case4: 0
+  case5: 0
+  case6: 0
 --- !u!1 &428392150
 GameObject:
   m_ObjectHideFlags: 0
@@ -4275,7 +4279,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb29afde49a53f94faaeb575948a78dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yeah: HELLLLLO
 --- !u!4 &901719051
 Transform:
   m_ObjectHideFlags: 0
@@ -9775,7 +9778,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8294636706162919894, guid: e5276887a87ed054395fc1de9f0a50c2, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8294636706162919895, guid: e5276887a87ed054395fc1de9f0a50c2, type: 3}
       propertyPath: m_RootOrder
