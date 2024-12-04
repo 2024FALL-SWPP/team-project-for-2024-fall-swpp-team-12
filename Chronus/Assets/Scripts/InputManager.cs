@@ -36,7 +36,7 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (!isPaused)
+        if (!isPaused && (InputManagerTesting.instance == null || !InputManagerTesting.instance.isActiveAndEnabled))
         {
             foreach (var keyAction in inputActions)
             {

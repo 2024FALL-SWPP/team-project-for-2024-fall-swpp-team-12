@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class InputManagerTesting : MonoBehaviour
 {
+    public static InputManagerTesting instance; //singleton
     private InputManager inputManager;
 
     public bool case1 = false; // Pushing same box to different direction (-> + ^)
@@ -14,6 +15,15 @@ public class InputManagerTesting : MonoBehaviour
 
     private void Start()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy duplicate if it exists
+        }
+
         inputManager = InputManager.inputManager;
         if (inputManager == null)
         {
