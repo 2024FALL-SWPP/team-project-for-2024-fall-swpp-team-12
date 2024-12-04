@@ -19,14 +19,14 @@ jobs:
           # super-linter needs the full git history to get the
           # list of files that changed across commits
           fetch-depth: 0
-    
+
       - name: Verify .jscpd.json
         run: ls -al .jscpd.json
 
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Install jscpd
         run: npm install -g jscpd
