@@ -895,8 +895,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2043127087}
     - target: {fileID: 4364314393864779162, guid: 6b74d883afc9dfd4e98122a2d7db4f9b, type: 3}
-      propertyPath: targetStates.Array.data[1].isInitiallyActive
+      propertyPath: targetStates.Array.data[0].isInitiallyActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4364314393864779162, guid: 6b74d883afc9dfd4e98122a2d7db4f9b, type: 3}
+      propertyPath: targetStates.Array.data[1].isInitiallyActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b74d883afc9dfd4e98122a2d7db4f9b, type: 3}
