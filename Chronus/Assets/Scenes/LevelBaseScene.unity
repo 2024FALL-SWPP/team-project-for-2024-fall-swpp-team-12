@@ -1395,7 +1395,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!1 &1109571110
 GameObject:
@@ -2001,6 +2001,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4484388044528181326, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8394453472789530727, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8394453472789530727, guid: d9719df6c7d7c4250b221bbf3f8599e4, type: 3}
+      propertyPath: m_IsKinematic
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
