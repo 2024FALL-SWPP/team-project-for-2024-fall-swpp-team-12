@@ -1225,7 +1225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c4957304451ada49ab61f900576c4e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visiblePosition: {x: -11, y: 1, z: 39}
+  visiblePosition: {x: -11, y: 1, z: 5}
   turnCycle: 3
   moveSpeed: 4
   isMoveComplete: 0
