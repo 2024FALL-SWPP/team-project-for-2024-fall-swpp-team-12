@@ -60,7 +60,7 @@ public class Box : MonoBehaviour
         //intercept by gameover: at PlayerController - KillCharacter
         if ((TurnManager.turnManager.CLOCK || willDropDeath) && !isFallComplete) //update fall also when willDropDeath, independantly
         {
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, checkDistance + boxLayer, layerMaskFall))
+            if (Physics.Raycast(transform.position - new Vector3(0,checkDistance + boxLayer -0.1f,0), Vector3.down, out RaycastHit hit, 0.1f, layerMask))
             {
                 if (hit.collider.CompareTag("Player") && !willDropDeath) //Stamp Kill
                 {
@@ -136,20 +136,22 @@ public class Box : MonoBehaviour
         }
         if (!willDropDeath)
         {
+            /*
             int layermask;
             float fallHeightCheck;
             if (isBeingPushed) //don't detect other boxes
             {
-                layermask = layerMaskFall;
+                if (boxLayer == 0) layermask = layerMask;
+                else layermask = layerMaskFall;
                 fallHeightCheck = maxFallHeight + boxLayer;
             }
             else //normal raycast.
             {
                 layermask = layerMask;
                 fallHeightCheck = maxFallHeight;
-            }
+            }*/
             // If no tile is detected, allow the box to fall
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit1, checkDistance + (fallHeightCheck - maxFallHeight), layermask))
+            if (Physics.Raycast(transform.position - new Vector3(0,checkDistance + boxLayer -0.1f,0), Vector3.down, out RaycastHit hit1, 0.1f, layerMask))
             {
                 if (isBeingPushed)
                 {
@@ -170,11 +172,11 @@ public class Box : MonoBehaviour
             }
             else
             {
-                if (!isBeingPushed) //the lowest box of the group, and it is about to fall.
+                if (!isBeingPushed && boxLayer==0) //the lowest box of the group, and it is about to fall.
                 {
                     CheckChainFall(true, boxLayer + checkDistance * 2);
                 }
-                canSurviveFall(fallHeightCheck, layermask);
+                canSurviveFall(/*maxFallHeight+boxLayer fallHeightCheck, layermask*/);
             }
         }
         else
@@ -184,10 +186,10 @@ public class Box : MonoBehaviour
         isBeingPushed = false; //Unlock.
     }
 
-    public void canSurviveFall(float fallHeightCheck, int layermask)
+    public void canSurviveFall(/*float fallHeightCheck, int layermask*/)
     {
         //check if the character can Survive from this height
-        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit2, checkDistance + fallHeightCheck, layermask))
+        if (!Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit2, maxFallHeight + 0.1f, layerMask))
         {
             willDropDeath = true;
             isMoveComplete = true; //just pass turn and fall itself alone.
@@ -198,14 +200,14 @@ public class Box : MonoBehaviour
 
     public void CheckChainFall(bool doFall, float layer) //Recursion.
     {
-        if (isBeingPushed) return; //if locked - no CheckChainFall.(first box, calls this function only when !isBeingPushed, no problem ///but next boxes, can be Locked by isBeingPushed)
         if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hitUp, checkDistance + moveDistance / 4, 1 << 8))
         {
             Box box = hitUp.collider.gameObject.GetComponent<Box>();
+            if (box.isBeingPushed) return; //if locked - no CheckChainFall.(first box, calls this function only when !isBeingPushed, no problem ///but next boxes, can be Locked by isBeingPushed)
             box.boxLayer = layer;
             if (doFall)
             {
-                box.canSurviveFall(maxFallHeight + box.boxLayer, layerMaskFall);
+                box.canSurviveFall(/*maxFallHeight + box.boxLayer, layerMaskFall*/);
             }
             else
             {
@@ -218,7 +220,10 @@ public class Box : MonoBehaviour
     public bool TryMove(Vector3 direction, float layer)
     {
         if (isBeingPushed) return false; //if locked - no TryMove(). // to prevent player & phantom simultaneous push
+        Debug.Log(layer);
+        Debug.Log(boxLayer);
         boxLayer = layer;
+        Debug.Log(boxLayer);
 
         //Check Wall Forward
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance * 0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
