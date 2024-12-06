@@ -287,7 +287,7 @@ public class Box : MonoBehaviour
                         }
                         else if (hitUp.collider.name == "Phantom")
                         {
-                            if (PhantomController.phantomController.commandIterator.GetNext() == "r") //phantom would ride the box when it has nothing to do.
+                            if (PhantomController.phantomController.commandIterator.HasNext() && PhantomController.phantomController.commandIterator.GetNext() == "r") //phantom would ride the box when it has nothing to do.
                             {
                                 if (!Physics.Raycast(PhantomController.phantomController.transform.position, direction, out RaycastHit hitWall1, moveDistance)) // and no obstacles forward.
                                 {
