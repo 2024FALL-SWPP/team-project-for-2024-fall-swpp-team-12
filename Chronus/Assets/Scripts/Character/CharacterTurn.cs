@@ -27,6 +27,18 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         {
             targetYRotation += 360.0f;
         }
+        
+        if (_CharacterBase.animator != null)
+        {
+            if (Mathf.Abs(_CharacterBase.curTurnAngle) == 180.0f)
+            {
+                _CharacterBase.animator.SetBool("isTurning180", true);
+            }
+            else if (Mathf.Abs(_CharacterBase.curTurnAngle) == 90.0f)
+            {
+                _CharacterBase.animator.SetBool("isTurning90", true);
+            }
+        }
 
         //small hop motion (part of animation yeah)
         smallHopRate = 1.3f;
@@ -36,6 +48,17 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
 
     public void OperateExit(CharacterBase sender)
     {
+        if (_CharacterBase.animator != null)
+        {
+            if (Mathf.Abs(_CharacterBase.curTurnAngle) == 180.0f)
+            {
+                _CharacterBase.animator.SetBool("isTurning180", false);
+            }
+            else if (Mathf.Abs(_CharacterBase.curTurnAngle) == 90.0f)
+            {
+                _CharacterBase.animator.SetBool("isTurning90", false);
+            }
+        }
     }
 
     public void OperateUpdate(CharacterBase sender)
