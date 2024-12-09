@@ -234,6 +234,18 @@ public abstract class CharacterBase : MonoBehaviour
     {
         if (curTurnAngle != 0.0f)
         {
+            if (animator != null)
+            {
+                if (Mathf.Abs(curTurnAngle) == 180.0f)
+                {
+                    animator.SetBool("isTurning180", true);
+                }
+                else if (Mathf.Abs(curTurnAngle) == 90.0f)
+                {
+                    animator.SetBool("isTurning90", true);
+                }
+            }
+
             listCurTurn = listTurn;
             targetTranslation = playerCurPos; // staying at the previous grid // because stuck at the wall
             StartAction();
