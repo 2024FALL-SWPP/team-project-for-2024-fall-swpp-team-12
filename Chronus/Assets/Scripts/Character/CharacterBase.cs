@@ -262,7 +262,10 @@ public abstract class CharacterBase : MonoBehaviour
         targetTranslation = playerCurPos + rayOffset;
         float angleDifference = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
         curTurnAngle = Mathf.Round(angleDifference / 90) * 90;
-
+        if (animator != null)
+        {
+            animator.SetBool("isPushing", false);
+        }
         // First, check if there's an wall-like object to that target direction. 
         if (Physics.Raycast(transform.position - new Vector3(0, 0.1f, 0), targetDirection, out RaycastHit hit, BLOCK_SIZE, layerMask))
         {
@@ -293,6 +296,10 @@ public abstract class CharacterBase : MonoBehaviour
                         }
                         if (box.TryMove(targetDirection, 0))
                         {
+                            if (animator != null)
+                            {
+                                animator.SetBool("isPushing", true);
+                            }
                             ChooseAndStartAction(listMoveForward, listMoveSideRear);
                         }
                         else
