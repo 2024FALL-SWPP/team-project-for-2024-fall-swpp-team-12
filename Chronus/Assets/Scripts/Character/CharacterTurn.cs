@@ -27,7 +27,6 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         {
             targetYRotation += 360.0f;
         }
-        
 
         //small hop motion (part of animation yeah)
         smallHopRate = 1.3f;
@@ -49,7 +48,6 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
             }
         }
     }
-
     public void OperateUpdate(CharacterBase sender)
     {
         //small hop motion (log graph shape, non-linear it is.) (part of animation yeah)
