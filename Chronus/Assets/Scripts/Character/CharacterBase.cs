@@ -23,6 +23,7 @@ public abstract class CharacterBase : MonoBehaviour
     public Vector3 pushDirection = Vector3.zero; // to check if being pushed
     public float pushSpeed = 0;
     public bool isRidingBox = false;
+    public bool pushingBox = false;
     private const float BLOCK_SIZE = 2.0f;
 
     // State management
@@ -101,12 +102,12 @@ public abstract class CharacterBase : MonoBehaviour
                         listSeq++; // next index
                         if (listSeq < listCurTurn.Count)
                         {
-                            sm.SetState(listCurTurn[listSeq]);
+                            setState(listCurTurn[listSeq]);
                         }
                         else
                         {
                             listSeq = -1; // no list update.
-                            sm.SetState(idle);
+                            setState(idle);
                         }
                     }
                 }
@@ -224,7 +225,56 @@ public abstract class CharacterBase : MonoBehaviour
     protected virtual void StartAction()
     {
         listSeq = 0;
-        sm.SetState(listCurTurn[listSeq]);
+
+        setState(listCurTurn[listSeq]);
+    }
+
+    private void setState(IState<CharacterBase> state) {
+        if (state.GetType() == typeof(CharacterMove))
+        {
+            if (IsPushingBox())
+            {
+                Debug.Log("true");
+                if (animator != null)
+                {
+                    animator.SetBool("isMoving", false);
+                }
+            }
+            else
+            {
+                Debug.Log("false");
+                if (animator != null)
+                {
+                    animator.SetBool("isMoving", true);
+                }
+            }
+        }
+
+        sm.SetState(state);
+    }
+
+    private bool IsPushingBox()
+    {
+        RaycastHit hit;
+        Debug.Log(targetDirection);
+        Vector3 rayOffset = targetDirection * BLOCK_SIZE;
+        targetTranslation = playerCurPos + rayOffset;
+        
+        if (Physics.Raycast(transform.position, targetDirection, out hit, BLOCK_SIZE, layerMask))
+        {
+            if (hit.collider.CompareTag("Box"))
+            {
+                Box box = hit.collider.gameObject.GetComponent<Box>();
+                if (box != null && !box.willDropDeath)
+                {
+                    pushingBox = true;
+                    return true;
+                }
+            }
+        }
+        
+        pushingBox = false;
+        return false;
     }
 
 
