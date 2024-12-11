@@ -229,7 +229,8 @@ public abstract class CharacterBase : MonoBehaviour
         setState(listCurTurn[listSeq]);
     }
 
-    private void setState(IState<CharacterBase> state) {
+    private void setState(IState<CharacterBase> state)
+    {
         if (state.GetType() == typeof(CharacterMove))
         {
             if (IsPushingBox())
@@ -256,7 +257,7 @@ public abstract class CharacterBase : MonoBehaviour
         RaycastHit hit;
         Vector3 rayOffset = targetDirection * BLOCK_SIZE;
         targetTranslation = playerCurPos + rayOffset;
-        
+
         if (Physics.Raycast(transform.position, targetDirection, out hit, BLOCK_SIZE, layerMask))
         {
             if (hit.collider.CompareTag("Box"))
@@ -269,7 +270,7 @@ public abstract class CharacterBase : MonoBehaviour
                 }
             }
         }
-        
+
         pushingBox = false;
         return false;
     }
