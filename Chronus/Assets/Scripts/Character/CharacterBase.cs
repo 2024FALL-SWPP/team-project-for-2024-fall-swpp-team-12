@@ -234,7 +234,6 @@ public abstract class CharacterBase : MonoBehaviour
         {
             if (IsPushingBox())
             {
-                Debug.Log("true");
                 if (animator != null)
                 {
                     animator.SetBool("isMoving", false);
@@ -242,7 +241,6 @@ public abstract class CharacterBase : MonoBehaviour
             }
             else
             {
-                Debug.Log("false");
                 if (animator != null)
                 {
                     animator.SetBool("isMoving", true);
@@ -256,7 +254,6 @@ public abstract class CharacterBase : MonoBehaviour
     private bool IsPushingBox()
     {
         RaycastHit hit;
-        Debug.Log(targetDirection);
         Vector3 rayOffset = targetDirection * BLOCK_SIZE;
         targetTranslation = playerCurPos + rayOffset;
         
