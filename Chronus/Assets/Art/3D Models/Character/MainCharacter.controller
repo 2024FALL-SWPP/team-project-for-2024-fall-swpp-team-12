@@ -58,7 +58,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: metarig|RabbitPush
-  m_Speed: 1
+  m_Speed: 3
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 1851922497589270326}
@@ -300,7 +300,7 @@ AnimatorStateMachine:
     m_Position: {x: 560, y: 270, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6118273613731342362}
-    m_Position: {x: 454.0292, y: 279.2396, z: 0}
+    m_Position: {x: 450, y: 280, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
