@@ -8,12 +8,14 @@ public class TutorialManager : MonoBehaviour
     public GameObject gameInstructionCanvas;
     public GameObject leverInstructionCanvas;
     public GameObject timeRewindInstructionCanvas;
+    public GameObject boxInstructionCanvas;
 
     public void ShowTutorialForLevel(string levelName)
     {
         gameInstructionCanvas.SetActive(false);
         leverInstructionCanvas.SetActive(false);
         timeRewindInstructionCanvas.SetActive(false);
+        boxInstructionCanvas.SetActive(false);
 
         switch (levelName)
         {
@@ -25,6 +27,9 @@ public class TutorialManager : MonoBehaviour
                 break;
             case "L-001-3":
                 timeRewindInstructionCanvas.SetActive(true);
+                break;
+            case "L-001-5":
+                boxInstructionCanvas.SetActive(true);
                 break;
             default:
                 break;
@@ -50,5 +55,6 @@ public class TutorialManager : MonoBehaviour
         gameInstructionCanvas.SetActive(false);
         leverInstructionCanvas.SetActive(false);
         timeRewindInstructionCanvas.SetActive(false);
+        boxInstructionCanvas.SetActive(false);
     }
 }
