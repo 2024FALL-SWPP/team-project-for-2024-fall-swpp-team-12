@@ -60,7 +60,7 @@ public class Box : MonoBehaviour
         //intercept by gameover: at PlayerController - KillCharacter
         if ((TurnManager.turnManager.CLOCK || willDropDeath) && !isFallComplete) //update fall also when willDropDeath, independantly
         {
-            if (Physics.Raycast(transform.position - new Vector3(0,checkDistance + boxLayer -0.1f,0), Vector3.down, out RaycastHit hit, 0.1f, layerMask))
+            if (Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit, 0.1f, layerMask))
             {
                 if (hit.collider.CompareTag("Player") && !willDropDeath) //Stamp Kill
                 {
@@ -151,7 +151,7 @@ public class Box : MonoBehaviour
                 fallHeightCheck = maxFallHeight;
             }*/
             // If no tile is detected, allow the box to fall
-            if (Physics.Raycast(transform.position - new Vector3(0,checkDistance + boxLayer -0.1f,0), Vector3.down, out RaycastHit hit1, 0.1f, layerMask))
+            if (Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit1, 0.1f, layerMask))
             {
                 if (isBeingPushed)
                 {
@@ -172,7 +172,7 @@ public class Box : MonoBehaviour
             }
             else
             {
-                if (!isBeingPushed && boxLayer==0) //the lowest box of the group, and it is about to fall.
+                if (!isBeingPushed && boxLayer == 0) //the lowest box of the group, and it is about to fall.
                 {
                     CheckChainFall(true, boxLayer + checkDistance * 2);
                 }
