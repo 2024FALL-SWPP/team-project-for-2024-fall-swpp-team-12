@@ -50,10 +50,10 @@ public class LevelManager : MonoBehaviour
         mainCamera = Camera.main;
         if (levelBarrierPrefab != null) levelBarrier = Instantiate(levelBarrierPrefab);
 
-        /*
+        
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
-        //currentLevelIndex = 0;
+        
 
         // I don't know how it's going to work in real application
         // but in test environment: this will work for now.
