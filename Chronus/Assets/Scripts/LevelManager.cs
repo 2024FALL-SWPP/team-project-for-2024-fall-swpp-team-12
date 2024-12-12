@@ -50,6 +50,7 @@ public class LevelManager : MonoBehaviour
         mainCamera = Camera.main;
         if (levelBarrierPrefab != null) levelBarrier = Instantiate(levelBarrierPrefab);
 
+        /*
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
         //currentLevelIndex = 0;
@@ -149,6 +150,12 @@ public class LevelManager : MonoBehaviour
                 StartCoroutine(MoveCameraWithTransition());
             }
 
+            TutorialManager tutorialManager = FindObjectOfType<TutorialManager>();
+            if (tutorialManager != null)
+            {
+                tutorialManager.ShowTutorialForLevel(levelScenes[currentLevelIndex]);
+            }
+            
             ResetLevel();
             GetNewLevelInformations();
         }
