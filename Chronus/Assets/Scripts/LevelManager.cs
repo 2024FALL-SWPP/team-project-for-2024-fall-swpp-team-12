@@ -49,12 +49,9 @@ public class LevelManager : MonoBehaviour
         player = FindObjectOfType<PlayerController>();
         mainCamera = Camera.main;
         if (levelBarrierPrefab != null) levelBarrier = Instantiate(levelBarrierPrefab);
-        /*
+
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
-        */
-
-        currentLevelIndex = 4;
         
         // I don't know how it's going to work in real application
         // but in test environment: this will work for now.
