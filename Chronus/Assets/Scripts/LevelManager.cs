@@ -52,8 +52,7 @@ public class LevelManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
-        //currentLevelIndex = 0;
-
+        
         // I don't know how it's going to work in real application
         // but in test environment: this will work for now.
         Scene activeScene = SceneManager.GetActiveScene();
