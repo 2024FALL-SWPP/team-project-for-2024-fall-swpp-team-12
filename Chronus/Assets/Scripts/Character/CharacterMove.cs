@@ -18,6 +18,14 @@ public class CharacterMove : MonoBehaviour, IState<CharacterBase>
 
         tempTargetTranslation = _CharacterBase.targetTranslation;
 
+        if (_CharacterBase.animator != null)
+        {
+            if (!_CharacterBase.pushingBox)
+            {
+                _CharacterBase.animator.SetBool("isMoving", true);
+            }
+        }
+
         //small hop motion (part of animation yeah)
         smallHopRate = 1.7f;
         speedVer = _CharacterBase.moveSpeedVer * smallHopRate;

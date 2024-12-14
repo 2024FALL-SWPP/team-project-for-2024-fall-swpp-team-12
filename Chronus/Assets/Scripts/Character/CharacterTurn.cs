@@ -29,7 +29,7 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
         }
 
         //small hop motion (part of animation yeah)
-        smallHopRate = 1.3f;
+        smallHopRate = 1.5f;
         speedVer = _CharacterBase.moveSpeedVer * smallHopRate;
         meetLocalMax = false;
     }
@@ -72,7 +72,7 @@ public class CharacterTurn : MonoBehaviour, IState<CharacterBase>
             {
                 float currentYRotation = _CharacterBase.transform.eulerAngles.y;
                 float angle = Mathf.Abs(Mathf.DeltaAngle(currentYRotation, targetYRotation));
-                if (angle < 0.5f * Mathf.Abs(_CharacterBase.curTurnAngle))
+                if (angle < 0.55f * Mathf.Abs(_CharacterBase.curTurnAngle))
                 {//less than half angle
                     meetLocalMax = true;
                     speedVer = -3.0f * smallHopRate;
