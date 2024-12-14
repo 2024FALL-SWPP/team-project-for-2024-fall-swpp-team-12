@@ -49,7 +49,7 @@ public class Box : MonoBehaviour
     {
         if (isWaitingToCheckFall)
         {
-            if (TurnManager.turnManager.CheckMovingObstaclesMoveComplete()) AdvanceFall(); //wait for movingobstacles to move completely
+            if (TurnManager.turnManager.CheckTileChangeBeforeFallComplete()) AdvanceFall(); //wait for movingobstacles to move completely
         }
 
         if (willDropDeath && PlayerController.playerController.isTimeRewinding) //intercept by timerewinding

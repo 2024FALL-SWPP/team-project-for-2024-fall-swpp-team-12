@@ -39,8 +39,6 @@ public class CharacterIdle : MonoBehaviour, IState<CharacterBase>
             Vector3 direction = (_CharacterBase.targetTranslation - currentTranslation).normalized;
             _CharacterBase.transform.Translate(direction * moveStep, Space.World);
         }
-        //need "fall" condition (maybe don't need that)
-        //game over by fell condition also.
     }
     public void DoneAction(CharacterBase sender)
     {

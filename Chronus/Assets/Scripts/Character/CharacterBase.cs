@@ -44,6 +44,7 @@ public abstract class CharacterBase : MonoBehaviour
     // can be changed from state's DoneAction func, through sender
     public bool doneAction = false; // for state machine
 
+    public bool isActionComplete = false;
     public bool isMoveComplete = false; // for turn mechanism
     public bool isFallComplete = true;
     public bool willDropDeath = false;
@@ -108,6 +109,7 @@ public abstract class CharacterBase : MonoBehaviour
                         {
                             listSeq = -1; // no list update.
                             sm.SetState(idle);
+                            isActionComplete = true;
                         }
                     }
                 }
@@ -167,6 +169,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     public virtual void AdvanceFall()
     {
+        isActionComplete = false;
         if (willLaserKillCharacter) //check before fall (after all obstacles move)
         {
             willLaserKillCharacter = false;
