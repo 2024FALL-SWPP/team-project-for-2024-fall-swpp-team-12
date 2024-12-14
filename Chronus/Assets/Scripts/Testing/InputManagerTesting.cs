@@ -788,7 +788,7 @@ public class InputManagerTesting : MonoBehaviour
         yield return new WaitForSeconds(1);
         
         inputManager.OnMovementControl?.Invoke("d");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         
         inputManager.OnMovementControl?.Invoke("d");
         yield return new WaitForSeconds(1);
