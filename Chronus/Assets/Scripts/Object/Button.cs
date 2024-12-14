@@ -13,15 +13,11 @@ public class TargetObjectState
 public class Button : MonoBehaviour
 {
     public List<TargetObjectState> targetStates; //pair platforms with their initial states
-    private Vector3 plateOffPosition;
-    private Vector3 plateOnPosition;
+    private Vector3 plateOffPosition, plateOnPosition;
     public bool isPressed = false;
-
     public int resetTurnCount = 1; //treated as constant (hyperparameter)
     private int remainingTurns = 0;
-
     public bool isMoveComplete = false;
-
     public TurnLogIterator<(Vector3, bool, int)> stateIterator;
     private void Start()
     {
@@ -31,13 +27,10 @@ public class Button : MonoBehaviour
         InitializeLog();
     }
 
-    private void Update()
-    {
-
-    }
-
     public void InitializeLog()
     {
+        ResetButton();
+
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive));
 
         var initialState = new List<(Vector3, bool, int)> { (transform.GetChild(1).transform.position, isPressed, remainingTurns) };
@@ -74,6 +67,7 @@ public class Button : MonoBehaviour
 
     public void AdvanceTurn()
     {
+        if (!gameObject.activeSelf) { isMoveComplete = true; return; }
         if (isPressed)
         {
             if (remainingTurns <= 0) ResetButton();
@@ -104,7 +98,6 @@ public class Button : MonoBehaviour
         {
             targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
             transform.GetChild(1).transform.position = plateOnPosition;
-
             isPressed = true;
         }
     }

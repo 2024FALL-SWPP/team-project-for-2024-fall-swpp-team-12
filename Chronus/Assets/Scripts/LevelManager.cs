@@ -52,15 +52,13 @@ public class LevelManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
+        currentLevelIndex = 1;
 
-        // I don't know how it's going to work in real application
-        // but in test environment: this will work for now.
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
 
         LoadLevel(currentLevelIndex);
         SceneManager.sceneLoaded += OnSceneLoaded; // sceneLoaded = a event called when a scene is loaded
-
         InputManager.inputManager.OnReset += ResetLevel;
     }
 
@@ -88,7 +86,6 @@ public class LevelManager : MonoBehaviour
     {
         if (player != null && currentGoal != null && IsPlayerAtGoal())
         {
-            Debug.Log("Level Clear!");
             StartCoroutine(FinishLevel());
         }
     }
@@ -97,10 +94,7 @@ public class LevelManager : MonoBehaviour
     {
         Destroy(GameObject.Find("CameraOffsetAnchor"));
 
-        // Keep track of the previous level to unload later
         if (currentLevelIndex > 0) previousLevelIndex = currentLevelIndex - 1;
-
-        // Load the next level and move the camera
         currentLevelIndex++;
         LoadLevel(currentLevelIndex);
 
@@ -127,7 +121,6 @@ public class LevelManager : MonoBehaviour
             GameObject nextStart = GameObject.FindWithTag("StartTile");
             if (nextGoal != null && nextStart != null)
             {
-                Vector3 previousLevelOffset = levelOffset;
                 if (currentGoal != null) // passing the first level
                 {
                     Vector3 nextStartPosition = nextStart.transform.position;
@@ -214,10 +207,15 @@ public class LevelManager : MonoBehaviour
             currentStart.position.y + playerTileDiff,
             currentStart.position.z
         );
+        player.transform.rotation = Quaternion.LookRotation(Vector3.forward);
         // Reset player log
         player.InitializeLog();
         // Get object information from the level
         TurnManager.turnManager.InitializeObjectLists();
+        // Kill the phantom
+        PhantomController.phantomController.InitializeLog();
+        PhantomController.phantomController.isPhantomExisting = false;
+        PhantomController.phantomController.gameObject.SetActive(false);
     }
 
     private IEnumerator MoveCameraWithTransition()

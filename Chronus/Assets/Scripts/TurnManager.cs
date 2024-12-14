@@ -149,41 +149,37 @@ public class TurnManager : MonoBehaviour
     {
         rewindTurnCount = 0;
 
-        GameObject[] boxObjects = GameObject.FindGameObjectsWithTag("Box");
-        boxList.Clear();
-        foreach (GameObject boxObject in boxObjects)
-        {
-            Box boxScript = boxObject.GetComponent<Box>();
-            boxScript.InitializeLog();
-            boxList.Add(boxScript);
-        }
+        boxList?.ForEach(boxScript => boxScript.enabled = false);
+        boxList = GameObject
+            .FindGameObjectsWithTag("Box") 
+            .Select(boxObject => boxObject.GetComponent<Box>()) 
+            .Where(boxScript => boxScript.enabled) 
+            .ToList(); 
+        boxList.ForEach(boxScript => boxScript.InitializeLog()); 
 
-        GameObject[] leverObjects = GameObject.FindGameObjectsWithTag("Lever");
-        leverList.Clear();
-        foreach (GameObject leverObject in leverObjects)
-        {
-            Lever leverScript = leverObject.GetComponent<Lever>();
-            leverScript.InitializeLog();
-            leverList.Add(leverScript);
-        }
+        leverList?.ForEach(leverScript => leverScript.enabled = false);
+        leverList = GameObject
+            .FindGameObjectsWithTag("Lever") 
+            .Select(leverObject => leverObject.GetComponent<Lever>()) 
+            .Where(leverScript => leverScript.enabled) 
+            .ToList(); 
+        leverList.ForEach(leverScript => leverScript.InitializeLog()); 
 
-        GameObject[] buttonObjects = GameObject.FindGameObjectsWithTag("Button");
-        buttonList.Clear();
-        foreach (GameObject buttonObject in buttonObjects)
-        {
-            Button buttonScript = buttonObject.GetComponent<Button>();
-            buttonScript.InitializeLog();
-            buttonList.Add(buttonScript);
-        }
+        buttonList?.ForEach(buttonScript => buttonScript.enabled = false);
+        buttonList = GameObject
+            .FindGameObjectsWithTag("Button")
+            .Select(buttonObject => buttonObject.GetComponent<Button>())
+            .Where(buttonScript => buttonScript.enabled)
+            .ToList();
+        buttonList.ForEach(buttonScript => buttonScript.InitializeLog());
 
-        GameObject[] obstacleObjects = GameObject.FindGameObjectsWithTag("MovingObstacle");
-        obstacleList.Clear();
-        foreach (GameObject obstacleObject in obstacleObjects)
-        {
-            MovingObstacle obstacleScript = obstacleObject.GetComponent<MovingObstacle>();
-            obstacleScript.InitializeLog();
-            obstacleList.Add(obstacleScript);
-        }
+        obstacleList?.ForEach(obstacleScript => obstacleScript.enabled = false);
+        obstacleList = GameObject
+            .FindGameObjectsWithTag("MovingObstacle")
+            .Select(obstacleObject => obstacleObject.GetComponent<MovingObstacle>())
+            .Where(obstacleScript => obstacleScript.enabled) 
+            .ToList();
+        obstacleList.ForEach(obstacleScript => obstacleScript.InitializeLog());
     }
 
     public void ResetObjects()
