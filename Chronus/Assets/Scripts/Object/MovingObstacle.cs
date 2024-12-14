@@ -1,11 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MovingObstacle : MonoBehaviour
 {
-    // Don't forget to add tag "MovingObstacle" at the gameObject!
     private Vector3 hiddenPosition;
+    private Vector3 originalHiddenPosition; // to cope with offset changes by scene loading
     public Vector3 visiblePosition;
     private Vector3 direction; // moving direction
     public int turnCycle = 3; // turn interval
@@ -15,13 +16,19 @@ public class MovingObstacle : MonoBehaviour
     private bool isVisible = false;
     public bool isMoveComplete = false;
     public TurnLogIterator<(Vector3, bool, int)> positionIterator;
-
-    public bool isDependantOnSwitch = false;
+    private void Awake()
+    {
+        originalHiddenPosition = transform.position;
+    }
 
     private void Start()
     {
         hiddenPosition = transform.position;
         InitializeLog();
+        if (hiddenPosition != originalHiddenPosition) 
+        {
+            visiblePosition += hiddenPosition - originalHiddenPosition; // adding offset
+        }
     }
 
     public void InitializeLog()
@@ -37,7 +44,7 @@ public class MovingObstacle : MonoBehaviour
 
     public void AdvanceTurn()
     {
-        if (!isDependantOnSwitch) turnCount++; //count cycle by itself
+        if (!gameObject.activeSelf) turnCount++; 
         if (turnCount == turnCycle)
         {
             Invoke("Move", 0.15f);
@@ -60,37 +67,24 @@ public class MovingObstacle : MonoBehaviour
     private void CheckOverlapWithCharacters(Vector3 targetPosition)
     {
         direction = (targetPosition - transform.position).normalized;
-        // first, check if the target position overlaps with player's target position.
-        Vector3 playerTargetPosition = PlayerController.playerController.targetTranslation;
-        if (playerTargetPosition.x == targetPosition.x && playerTargetPosition.z == targetPosition.z &&
-            (playerTargetPosition.y >= targetPosition.y - 1 && playerTargetPosition.y <= targetPosition.y + 1))
+        HandlePush(PlayerController.playerController, targetPosition);
+        if (PhantomController.phantomController.isPhantomExisting) HandlePush(PhantomController.phantomController, targetPosition);
+    }
+    
+    // refactoring:
+    private void HandlePush(CharacterBase character, Vector3 targetPosition)
+    // check if the target position overlaps with a character's target position. if so, push it.
+    {
+        Vector3 targetTranslation = character.targetTranslation;
+        if (targetTranslation.x == targetPosition.x && targetTranslation.z == targetPosition.z &&
+            targetTranslation.y >= targetPosition.y - 1 && targetTranslation.y <= targetPosition.y + 1)
         {
-            // If this is a block: going to push the player
-            PlayerController.playerController.pushDirection = direction;
-            PlayerController.playerController.pushSpeed = moveSpeed;
-            PlayerController.playerController.targetTranslation =
-                new Vector3(
+            character.pushDirection = direction;
+            character.pushSpeed = moveSpeed;
+            character.targetTranslation = new Vector3(
                 targetPosition.x + direction.x * 2,
-                PlayerController.playerController.targetTranslation.y,
+                targetTranslation.y,
                 targetPosition.z + direction.z * 2);
-            // Else, if this is a spear: just game over.
-        }
-        if (PhantomController.phantomController.isPhantomExisting)
-        {
-            Vector3 phantomTargetPosition = PhantomController.phantomController.targetTranslation;
-            if (phantomTargetPosition.x == targetPosition.x && phantomTargetPosition.z == targetPosition.z &&
-                (phantomTargetPosition.y >= targetPosition.y - 1 && phantomTargetPosition.y <= targetPosition.y + 1))
-            {
-                // If this is a block: going to push the phantom
-                PhantomController.phantomController.pushDirection = direction;
-                PhantomController.phantomController.pushSpeed = moveSpeed;
-                PhantomController.phantomController.targetTranslation =
-                    new Vector3(
-                    targetPosition.x + direction.x * 2,
-                    PhantomController.phantomController.targetTranslation.y,
-                    targetPosition.z + direction.z * 2);
-                // Else, if this is a spear: kill it.
-            }
         }
     }
 

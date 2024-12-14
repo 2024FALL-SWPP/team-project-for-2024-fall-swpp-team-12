@@ -17,22 +17,22 @@ public class Lever : MonoBehaviour
 
     private void Start()
     {
-        // Initial lever rotation
-        transform.GetChild(1).transform.localRotation = backwardRotation;
-        canToggleDirection = transform.localRotation * Vector3.forward;
-
         InitializeLog();
     }
 
     public void InitializeLog()
     {
-        targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive));
+        // Reset state
+        transform.GetChild(1).transform.localRotation = backwardRotation;
+        canToggleDirection = transform.localRotation * Vector3.forward;
+        doPushLever = false;
+        isActivated = false;
 
+        targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive));
         var initialState = new List<(Quaternion, bool, Vector3)>
         {
             (transform.GetChild(1).transform.rotation, isActivated, canToggleDirection)
         };
-
         stateIterator = new TurnLogIterator<(Quaternion, bool, Vector3)>(initialState);
     }
     public void ResetToStart()
