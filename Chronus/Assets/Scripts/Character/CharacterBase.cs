@@ -102,12 +102,12 @@ public abstract class CharacterBase : MonoBehaviour
                         listSeq++; // next index
                         if (listSeq < listCurTurn.Count)
                         {
-                            setState(listCurTurn[listSeq]);
+                            sm.SetState(listCurTurn[listSeq]);
                         }
                         else
                         {
                             listSeq = -1; // no list update.
-                            setState(idle);
+                            sm.SetState(idle);
                         }
                     }
                 }
@@ -226,9 +226,9 @@ public abstract class CharacterBase : MonoBehaviour
     {
         listSeq = 0;
 
-        setState(listCurTurn[listSeq]);
+        sm.SetState(listCurTurn[listSeq]);
     }
-
+    /*
     private void setState(IState<CharacterBase> state)
     {
         if (state.GetType() == typeof(CharacterMove))
@@ -250,14 +250,13 @@ public abstract class CharacterBase : MonoBehaviour
         }
         sm.SetState(state);
     }
-
     private bool IsPushingBox()
     {
         RaycastHit hit;
         Vector3 rayOffset = targetDirection * BLOCK_SIZE;
         targetTranslation = playerCurPos + rayOffset;
 
-        if (Physics.Raycast(transform.position, targetDirection, out hit, BLOCK_SIZE, layerMask))
+        if (Physics.Raycast(transform.position - new Vector3(0, 0.1f, 0), targetDirection, out hit, BLOCK_SIZE, layerMask))
         {
             if (hit.collider.CompareTag("Box"))
             {
@@ -272,11 +271,9 @@ public abstract class CharacterBase : MonoBehaviour
 
         pushingBox = false;
         return false;
-    }
-
+    }*/
 
     // below this, functions for spatial check //
-
     protected void RotateInPlace()
     {
         if (curTurnAngle != 0.0f)
@@ -323,6 +320,7 @@ public abstract class CharacterBase : MonoBehaviour
         curTurnAngle = Mathf.Round(angleDifference / 90) * 90;
         if (animator != null)
         {
+            pushingBox = false;
             animator.SetBool("isPushing", false);
         }
         // First, check if there's an wall-like object to that target direction. 
@@ -357,6 +355,7 @@ public abstract class CharacterBase : MonoBehaviour
                         {
                             if (animator != null)
                             {
+                                pushingBox = true;
                                 animator.SetBool("isPushing", true);
                             }
                             ChooseAndStartAction(listMoveForward, listMoveSideRear);

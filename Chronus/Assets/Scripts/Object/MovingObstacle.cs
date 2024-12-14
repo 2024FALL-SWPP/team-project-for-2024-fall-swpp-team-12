@@ -40,7 +40,7 @@ public class MovingObstacle : MonoBehaviour
         if (!isDependantOnSwitch) turnCount++; //count cycle by itself
         if (turnCount == turnCycle)
         {
-            Invoke("Move", 0.3f);
+            Invoke("Move", 0.15f);
             isVisible = !isVisible;
             turnCount = 0;
         }
