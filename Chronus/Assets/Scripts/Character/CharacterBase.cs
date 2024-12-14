@@ -248,7 +248,6 @@ public abstract class CharacterBase : MonoBehaviour
                 }
             }
         }
-
         sm.SetState(state);
     }
 
