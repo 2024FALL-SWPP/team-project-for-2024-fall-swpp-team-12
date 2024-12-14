@@ -110,6 +110,14 @@ public class TurnLogIterator<T>
         }
     }
 
+    public void SetPreviousRange(T item)
+    {
+        for (int i = currentIndex-1; i >= 0; i--)
+        {
+            log[i] = item;
+        }
+    }
+
     public void Clear()
     {
         log.Clear();
