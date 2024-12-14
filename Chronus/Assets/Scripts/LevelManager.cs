@@ -49,7 +49,7 @@ public class LevelManager : MonoBehaviour
         player = FindObjectOfType<PlayerController>();
         mainCamera = Camera.main;
         if (levelBarrierPrefab != null) levelBarrier = Instantiate(levelBarrierPrefab);
-        
+
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
 
@@ -148,10 +148,24 @@ public class LevelManager : MonoBehaviour
                 StartCoroutine(MoveCameraWithTransition());
             }
 
+            // Dynamic tile detection for lever and box
+            GameObject lever = GameObject.FindWithTag("Lever");
+            GameObject box = GameObject.FindWithTag("Box");
+
             TutorialManager tutorialManager = FindObjectOfType<TutorialManager>();
             if (tutorialManager != null)
             {
                 tutorialManager.ShowTutorialForLevel(levelScenes[currentLevelIndex]);
+                
+                if (lever != null)
+                    tutorialManager.SetLever(lever.transform);
+                else
+                    tutorialManager.ClearLever();
+
+                if (box != null)
+                    tutorialManager.SetBox(box.transform);
+                else
+                    tutorialManager.ClearBox();
             }
             
             ResetLevel();
