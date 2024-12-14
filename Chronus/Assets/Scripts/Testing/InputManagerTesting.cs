@@ -12,6 +12,8 @@ public class InputManagerTesting : MonoBehaviour
     public bool case4 = false; // Invalid + Valid inputs
     public bool case5 = false; // Simultaneous Actions
     public bool case6 = false; // Time rewind without Space Toggle
+    public bool case7 = false; // F-043 Pushing Stacked Boxes + F-026-2 Stacked Boxes Fall
+    
 
     private void Start()
     {
@@ -66,6 +68,11 @@ public class InputManagerTesting : MonoBehaviour
         if (case6)
         {
             yield return Case6();
+        }
+
+        if (case7)
+        {
+            yield return Case7();
         }
 
         inputManager.OnMovementControl -= LogAction;
@@ -256,6 +263,43 @@ public class InputManagerTesting : MonoBehaviour
         yield return new WaitForSeconds(1);
 
         Debug.Log("Case 6 completed: Rewind Without Toggle");
+    }
+    
+    private IEnumerator Case7()
+    {
+        yield return new WaitForSeconds(2);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1f);
+
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+
+        Debug.Log("Case 4 completed: Invalid Inputs.");
     }
 
     private void LogAction(string input)
