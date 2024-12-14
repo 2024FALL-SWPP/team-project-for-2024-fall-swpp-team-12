@@ -211,6 +211,7 @@ public class TurnManager : MonoBehaviour
             phantom.isPhantomExisting = true;
 
             phantom.positionIterator.SetCurrent((phantom.playerCurPos, phantom.playerCurRot, true));
+            phantom.positionIterator.SetPreviousRange((Vector3.zero, Quaternion.identity, false));
 
             //Command Order List Initialize!!!
             phantom.commandIterator.Clear();
