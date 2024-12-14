@@ -12,9 +12,15 @@ public class InputManagerTesting : MonoBehaviour
     public bool case4 = false; // Invalid + Valid inputs
     public bool case5 = false; // Simultaneous Actions
     public bool case6 = false; // Time rewind without Space Toggle
-    public bool case7 = false; // F-043 Pushing Stacked Boxes + F-026-2 Stacked Boxes Fall
+    public bool case7 = false; // F-043 Pushing Stacked Boxes + F-026-2 Stacked Boxes Fall when pushed to empty ground
+    public bool case8 = false; // Splitting Two boxes + F-035 Stacked boxes pushed in different directions
+    public bool case9 = false; // Stacked Box target is the same as player target
+    public bool case10 = false; // Stacked Box target is the same as clone target
+    public bool case11 = false; // Stacked Boxes drop when tile disappears at the same time (when tile initially active)
+    public bool case12 = false; // Stacked Boxes drop when tile disappears at the same time (when tile intially inactive)
+    public bool case13 = false; // Stack 1 more box on top of 2 boxes and see if 3 boxes move together
+    public bool case14 = false; // Stacked Box: Top box moved by main character and bottom by phantom
     
-
     private void Start()
     {
         if (instance == null)
@@ -73,6 +79,41 @@ public class InputManagerTesting : MonoBehaviour
         if (case7)
         {
             yield return Case7();
+        }
+        
+        if (case8)
+        {
+            yield return Case8();
+        }
+        
+        if (case9)
+        {
+            yield return Case9();
+        }
+        
+        if (case10)
+        {
+            yield return Case10();
+        }
+        
+        if (case11)
+        {
+            yield return Case11();
+        }
+        
+        if (case12)
+        {
+            yield return Case12();
+        }
+        
+        if (case13)
+        {
+            yield return Case13();
+        }
+        
+        if (case14)
+        {
+            yield return Case14();
         }
 
         inputManager.OnMovementControl -= LogAction;
@@ -275,13 +316,7 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("a");
         yield return new WaitForSeconds(1);
 
-        inputManager.OnMovementControl?.Invoke("a");
-        yield return new WaitForSeconds(1f);
-
         inputManager.OnMovementControl?.Invoke("w");
-        yield return new WaitForSeconds(1);
-        
-        inputManager.OnMovementControl?.Invoke("d");
         yield return new WaitForSeconds(1);
         
         inputManager.OnMovementControl?.Invoke("d");
@@ -299,9 +334,468 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("s");
         yield return new WaitForSeconds(1);
 
-        Debug.Log("Case 4 completed: Invalid Inputs.");
+        Debug.Log("Case 7 completed: Invalid Inputs.");
     }
+    private IEnumerator Case8()
+    {
+        yield return new WaitForSeconds(2);
 
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+
+        Debug.Log("Case 8 completed: Invalid Inputs.");
+    }
+    
+    private IEnumerator Case9()
+    {
+        yield return new WaitForSeconds(2);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+        
+        Debug.Log("Case 9 completed: Invalid Inputs.");
+    }
+    
+    private IEnumerator Case10()
+    {
+        yield return new WaitForSeconds(2);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        Debug.Log("Case 10 completed: Invalid Inputs.");
+    }
+    
+    private IEnumerator Case11()
+    {
+        yield return new WaitForSeconds(2);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        Debug.Log("Case 11 completed: Invalid Inputs.");
+    }
+    
+    private IEnumerator Case12()
+    {
+        yield return new WaitForSeconds(2);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        Debug.Log("Case 12 completed: Invalid Inputs.");
+    }
+    
+    private IEnumerator Case13()
+    {
+        yield return new WaitForSeconds(2);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        Debug.Log("Case 13 completed: Invalid Inputs.");
+    }
+    
+    private IEnumerator Case14()
+    {
+        yield return new WaitForSeconds(2);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("s");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindControl?.Invoke("q");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnTimeRewindModeToggle?.Invoke();
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("a");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("w");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        inputManager.OnMovementControl?.Invoke("d");
+        yield return new WaitForSeconds(1);
+        
+        Debug.Log("Case 14 completed: Invalid Inputs.");
+    }
+    
     private void LogAction(string input)
     {
         Debug.Log($"Action Invoked: {input}");
