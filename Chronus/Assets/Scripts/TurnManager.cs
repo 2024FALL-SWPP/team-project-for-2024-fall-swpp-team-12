@@ -72,12 +72,14 @@ public class TurnManager : MonoBehaviour
     // Check if all movements of the current turn on the scene are complete.
     {
         return (
-            buttonList.All(button => button.isMoveComplete) &&
-            CheckMoveCompleteExceptButton()
+            player.isMoveComplete &&
+            (!phantom.isPhantomExisting || phantom.isMoveComplete) &&
+            boxList.All(box => box.isMoveComplete) && //fall complete!!!
+            leverList.All(lever => lever.isMoveComplete) &&
+            CheckTileChangeBeforeFallComplete()
         );
     }
-
-    public bool CheckMoveCompleteExceptButton()
+    /*public bool CheckMoveCompleteExceptButton()
     {
         return (
             player.isMoveComplete &&
@@ -86,7 +88,7 @@ public class TurnManager : MonoBehaviour
             leverList.All(lever => lever.isMoveComplete) &&
             obstacleList.All(obstacle => obstacle.isMoveComplete)
         );
-    }
+    }*/
 
     public bool CheckMovingObjectsMoveComplete()
     // Check if moving obstacles and boxes of the current turn on the scene are complete.
@@ -94,7 +96,24 @@ public class TurnManager : MonoBehaviour
     {
         return (
             boxList.All(box => box.isMoveComplete || !box.isFallComplete) &&
+            CheckTileChangeBeforeFallComplete()
+        );
+    }
+
+    public bool CheckTileChangeBeforeFallComplete()
+    {
+        return (
+            buttonList.All(button => button.isMoveComplete) &&
             CheckMovingObstaclesMoveComplete()
+        );
+    }
+
+    public bool CheckCharactersActionComplete()
+    {
+
+        return (
+            player.isActionComplete &&
+            (!phantom.isPhantomExisting || phantom.isActionComplete)
         );
     }
 
@@ -102,7 +121,9 @@ public class TurnManager : MonoBehaviour
     // Check if moving obstacles of the current turn on the scene are complete.
     //need for preventing boxes from not falling, staying on the air.
     {
-        return obstacleList.All(obstacle => obstacle.isMoveComplete);
+        return (
+            obstacleList.All(obstacle => obstacle.isMoveComplete)
+        );
     }
 
     public void ResetMoveComplete()

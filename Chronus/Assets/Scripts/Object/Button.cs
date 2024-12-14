@@ -76,32 +76,36 @@ public class Button : MonoBehaviour
     {
         if (isPressed)
         {
-
             if (remainingTurns <= 0) ResetButton();
             remainingTurns--;
+            isMoveComplete = true;
         }
-        StartCoroutine(WaitForOthersMoveCompleteAndAdvance());
+        else
+        {
+            StartCoroutine(WaitForOthersMoveCompleteAndAdvance());
+        }
     }
 
     private IEnumerator WaitForOthersMoveCompleteAndAdvance()
     {
         // Wait until Others' isMoveComplete becomes true (including fall)
-        yield return new WaitUntil(() => TurnManager.turnManager.CheckMoveCompleteExceptButton());
-
+        yield return new WaitUntil(
+            () => 
+            isPressed || 
+            TurnManager.turnManager.CheckCharactersActionComplete()
+        );
         isMoveComplete = true;
     }
 
     private void PressButton()
     {
         remainingTurns = resetTurnCount; //reset count (when enter, stay)
-
         if (!isPressed)
         {
             targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
             transform.GetChild(1).transform.position = plateOnPosition;
 
             isPressed = true;
-            Debug.Log("pressed");
         }
     }
 
