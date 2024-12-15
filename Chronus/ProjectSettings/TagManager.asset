@@ -14,6 +14,7 @@ TagManager:
   - GoalTile
   - StartTile
   - Wall
+  - TutorialTile
   layers:
   - Default
   - TransparentFX
