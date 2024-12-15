@@ -44,7 +44,7 @@ public class MovingObstacle : MonoBehaviour
 
     public void AdvanceTurn()
     {
-        if (!gameObject.activeSelf) turnCount++; 
+        if (gameObject.activeSelf) turnCount++;
         if (turnCount == turnCycle)
         {
             Invoke("Move", 0.15f);

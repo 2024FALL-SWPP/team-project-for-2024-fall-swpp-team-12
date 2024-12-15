@@ -52,7 +52,6 @@ public class LevelManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
-        currentLevelIndex = 1;
 
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
@@ -210,7 +209,9 @@ public class LevelManager : MonoBehaviour
         player.transform.rotation = Quaternion.LookRotation(Vector3.forward);
         // Reset player log
         player.InitializeLog();
-        // Get object information from the level
+        player.isTimeRewinding = false;
+        // Get information from the level
+        TurnManager.turnManager.ResetObjects();
         TurnManager.turnManager.InitializeObjectLists();
         // Kill the phantom
         PhantomController.phantomController.InitializeLog();
