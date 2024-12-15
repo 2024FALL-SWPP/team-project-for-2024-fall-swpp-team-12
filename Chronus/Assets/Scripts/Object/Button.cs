@@ -90,8 +90,8 @@ public class Button : MonoBehaviour
     {
         // Wait until Others' isMoveComplete becomes true (including fall)
         yield return new WaitUntil(
-            () => 
-            isPressed || 
+            () =>
+            isPressed ||
             TurnManager.turnManager.CheckCharactersActionComplete()
         );
         isMoveComplete = true;
