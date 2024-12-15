@@ -29,8 +29,6 @@ public class Button : MonoBehaviour
 
     public void InitializeLog()
     {
-        ResetButton();
-
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive));
 
         var initialState = new List<(Vector3, bool, int)> { (transform.GetChild(1).transform.position, isPressed, remainingTurns) };
