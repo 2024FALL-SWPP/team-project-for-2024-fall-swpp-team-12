@@ -149,6 +149,7 @@ public class LevelManager : MonoBehaviour
             }
 
             ResetLevel();
+            GetNewLevelInformations();
         }
     }
 
@@ -168,8 +169,16 @@ public class LevelManager : MonoBehaviour
 
         //the reason of 'partially copied' code above: consider pressing the reset button (ENTER) while playing.
 
+        //reset logs (restore first positions,states  and  initialize iterator)
         TurnManager.turnManager.ResetObjects();
+        //player.isTimeRewinding = false;
 
+        //// Initialize the phantom
+        //PhantomController.phantomController.InitializeLog();
+        Debug.Log("Prepare");
+    }
+    private void GetNewLevelInformations()
+    {
         // Place player at the start point
         player.transform.position = new Vector3(
             currentStart.position.x,
@@ -178,12 +187,8 @@ public class LevelManager : MonoBehaviour
         );
         // Reset player log
         player.InitializeLog();
-        player.isTimeRewinding = false;
         // Get object information from the level
         TurnManager.turnManager.InitializeObjectLists();
-        // Initialize the phantom
-        PhantomController.phantomController.InitializeLog();
-        Debug.Log("Prepare");
     }
 
     private IEnumerator MoveCameraWithTransition()

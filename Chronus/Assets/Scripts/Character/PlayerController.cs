@@ -209,6 +209,8 @@ public class PlayerController : CharacterBase
         //TurnManager.turnManager.ResetFallComplete();
 
         //reset position or state & reset iterator
+        //ResetToStart();
+        //InitializeLog();
         TurnManager.turnManager.ResetObjects();
 
     }
