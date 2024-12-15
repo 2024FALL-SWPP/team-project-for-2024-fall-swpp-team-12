@@ -113,6 +113,8 @@ public class Box : MonoBehaviour
 
     public void DropKillBox()
     {
+        if (!gameObject.activeSelf) return; //if setactive false: don't need to kill box.
+
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
         willDropDeath = false;
         isFallComplete = true;
