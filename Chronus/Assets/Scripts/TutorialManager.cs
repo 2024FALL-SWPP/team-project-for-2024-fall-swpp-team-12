@@ -11,28 +11,22 @@ public class TutorialManager : MonoBehaviour
     public GameObject boxInstructionCanvas;
 
     public Transform player;
-    public Transform lever;
-    public Transform box;
+    public Transform targetObject;
     public float radius = 4.0f;
-    public int maxInputCount = 3;
     
     private GameObject currentCanvas;
-    private int inputCount = 0;
 
     public void ShowTutorialForLevel(string levelName)
     {
         HideActiveTutorialCanvas();
-        inputCount = 0;
 
         switch (levelName)
         {
             case "L-001-1":
                 currentCanvas = gameInstructionCanvas;
-                currentCanvas.SetActive(true);
                 break;
             case "L-001-3":
                 currentCanvas = timeRewindInstructionCanvas;
-                currentCanvas.SetActive(true);
                 break;
             case "L-001-2":
                 currentCanvas = leverInstructionCanvas;
@@ -47,34 +41,12 @@ public class TutorialManager : MonoBehaviour
     }
     
     private void Update()
-    {
-        // Handle canvases that disappear after 3 inputs
-        if (currentCanvas == gameInstructionCanvas || currentCanvas == timeRewindInstructionCanvas)
-        {
-            HandleInputForCanvas();
-        }
-
+    {   
         // Handle canvases that reappear near specific tiles
-        if (currentCanvas == leverInstructionCanvas && lever != null)
+        if (currentCanvas == gameInstructionCanvas || currentCanvas == timeRewindInstructionCanvas ||
+            currentCanvas == leverInstructionCanvas || currentCanvas == boxInstructionCanvas)
         {
             HandleTileProximityForCanvas();
-        }
-
-        if (currentCanvas == boxInstructionCanvas && box != null)
-        {
-            HandleTileProximityForCanvas();
-        }
-    }
-
-    private void HandleInputForCanvas()
-    {
-        if (currentCanvas != null && currentCanvas.activeSelf && Input.anyKeyDown)
-        {
-            inputCount++;
-            if (inputCount >= maxInputCount)
-            {
-                currentCanvas.SetActive(false);
-            }
         }
     }
     
@@ -82,11 +54,10 @@ public class TutorialManager : MonoBehaviour
     {
         if (currentCanvas != null)
         {
-            Transform targetTile = (currentCanvas == leverInstructionCanvas) ? lever : box;
+            GameObject targetTile = FindTargetTile();
 
-            // Check if the player is within the 3x3 area
-            if (IsPlayerWithinRadius(targetTile))
-            {   
+            if (targetTile != null && IsPlayerWithinRadius(targetTile.transform))
+            {
                 currentCanvas.SetActive(true);
             }
             else
@@ -96,6 +67,23 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
+    private GameObject FindTargetTile()
+    {
+        if (currentCanvas == gameInstructionCanvas || currentCanvas == timeRewindInstructionCanvas)
+        {
+            return GameObject.FindWithTag("TutorialTile");
+        }
+        else if (currentCanvas == leverInstructionCanvas)
+        {
+            return GameObject.FindWithTag("Lever");
+        }
+        else if (currentCanvas == boxInstructionCanvas)
+        {
+            return GameObject.FindWithTag("Box");
+        }
+        return null;
+    }
+    
     private bool IsPlayerWithinRadius(Transform tileCenter)
     {
         if (tileCenter == null) return false;
@@ -105,24 +93,14 @@ public class TutorialManager : MonoBehaviour
         return distance <= radius;
     }
 
-    public void SetLever(Transform lever)
+    public void SetTargetObject(Transform target)
     {
-        this.lever = lever;
+        targetObject = target;
     }
 
-    public void SetBox(Transform box)
+    public void ClearTargetObject()
     {
-        this.box = box;
-    }
-
-    public void ClearLever()
-    {
-        lever = null;
-    }
-
-    public void ClearBox()
-    {
-        box = null;
+        targetObject = null;
     }
 
     

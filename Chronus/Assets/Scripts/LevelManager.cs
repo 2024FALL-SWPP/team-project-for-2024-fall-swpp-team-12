@@ -148,24 +148,33 @@ public class LevelManager : MonoBehaviour
                 StartCoroutine(MoveCameraWithTransition());
             }
 
-            // Dynamic tile detection for lever and box
+            // Dynamic tile detection for tutorialTile, lever and box
+            GameObject tutorialTile = GameObject.FindWithTag("TutorialTile");
             GameObject lever = GameObject.FindWithTag("Lever");
             GameObject box = GameObject.FindWithTag("Box");
+
 
             TutorialManager tutorialManager = FindObjectOfType<TutorialManager>();
             if (tutorialManager != null)
             {
                 tutorialManager.ShowTutorialForLevel(levelScenes[currentLevelIndex]);
                 
-                if (lever != null)
-                    tutorialManager.SetLever(lever.transform);
+                if (tutorialTile != null)
+                {
+                    tutorialManager.SetTargetObject(tutorialTile.transform);
+                }
+                else if (lever != null)
+                {
+                    tutorialManager.SetTargetObject(lever.transform);
+                }
+                else if (box != null)
+                {
+                    tutorialManager.SetTargetObject(box.transform);
+                }
                 else
-                    tutorialManager.ClearLever();
-
-                if (box != null)
-                    tutorialManager.SetBox(box.transform);
-                else
-                    tutorialManager.ClearBox();
+                {
+                    tutorialManager.ClearTargetObject();
+                }
             }
             
             ResetLevel();
