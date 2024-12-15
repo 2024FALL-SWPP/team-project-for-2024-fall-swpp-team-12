@@ -40,6 +40,7 @@ public class PhantomController : CharacterBase
     public void ResetToStart()
     {
         positionIterator.ResetToStart();
+        positionIterator.SetCurrent((Vector3.zero, Quaternion.identity, false));
         RestoreState();
     }
 

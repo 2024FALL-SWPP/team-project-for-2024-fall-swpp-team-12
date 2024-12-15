@@ -20,7 +20,7 @@ public class Box : MonoBehaviour
     private float rayJumpInterval = 1.0f;
     private float maxFallHeight = 10.0f;
     private int layerMask = (1 << 0) | (1 << 3) | (1 << 6) | (1 << 8); //detect default(0), player(3), lever(6) and box(8) layer.
-    private int layerMaskFall = (1 << 0) | (1 << 3) | (1 << 6); //don't detect other boxes.
+    private int layerMaskFall = (1 << 0) | (1 << 6) | (1 << 8); //don't detect player and phantom.
     public float boxLayer = 0.0f;
     private void Start()
     {
@@ -151,7 +151,7 @@ public class Box : MonoBehaviour
                 fallHeightCheck = maxFallHeight;
             }*/
             // If no tile is detected, allow the box to fall
-            if (Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit1, 0.1f, layerMask))
+            if (Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit1, 0.1f, layerMaskFall))
             {
                 if (isBeingPushed)
                 {
@@ -189,7 +189,7 @@ public class Box : MonoBehaviour
     public void canSurviveFall(/*float fallHeightCheck, int layermask*/)
     {
         //check if the character can Survive from this height
-        if (!Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit2, maxFallHeight + 0.1f, layerMask))
+        if (!Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit2, maxFallHeight + 0.1f, layerMaskFall))
         {
             willDropDeath = true;
             isMoveComplete = true; //just pass turn and fall itself alone.
