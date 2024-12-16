@@ -287,7 +287,6 @@ MonoBehaviour:
   turnCycle: 4
   moveSpeed: 10
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &35796652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -345,7 +344,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -388,7 +387,6 @@ MonoBehaviour:
   turnCycle: 3
   moveSpeed: 5
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1 &54363661 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
@@ -461,7 +459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -605,7 +603,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -727,7 +725,6 @@ MonoBehaviour:
   turnCycle: 4
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &125363121
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1037,7 +1034,6 @@ MonoBehaviour:
   turnCycle: 2
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &135922692
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1195,7 +1191,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -1579,7 +1575,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.size
@@ -1941,7 +1937,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -2195,7 +2191,6 @@ MonoBehaviour:
   turnCycle: 2
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!4 &230317189 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
@@ -4071,7 +4066,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -4175,7 +4170,6 @@ MonoBehaviour:
   turnCycle: 2
   moveSpeed: 4
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &456867173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4645,7 +4639,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -5041,7 +5035,6 @@ MonoBehaviour:
   turnCycle: 3
   moveSpeed: 10
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &595795434
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5244,7 +5237,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.size
@@ -5796,7 +5789,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -6277,7 +6270,6 @@ MonoBehaviour:
   turnCycle: 3
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1 &731009876 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
@@ -7391,7 +7383,6 @@ MonoBehaviour:
   turnCycle: 2
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &877741740
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7589,7 +7580,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -8666,7 +8657,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -9696,7 +9687,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -10189,7 +10180,6 @@ MonoBehaviour:
   turnCycle: 2
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!4 &1195345083 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
@@ -11017,7 +11007,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -11456,9 +11446,9 @@ Transform:
   - {fileID: 834568843}
   - {fileID: 334919468}
   - {fileID: 811518271}
-  - {fileID: 1733469532}
   - {fileID: 135922695}
   - {fileID: 153410438}
+  - {fileID: 1733469532}
   m_Father: {fileID: 1583243765}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12494,7 +12484,6 @@ MonoBehaviour:
   turnCycle: 3
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &1489495062
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12856,7 +12845,6 @@ MonoBehaviour:
   turnCycle: 2
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!4 &1516746774 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
@@ -13465,7 +13453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -13825,7 +13813,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.size
@@ -14039,7 +14027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -14376,6 +14364,10 @@ PrefabInstance:
     - target: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
       propertyPath: m_Name
       value: GoalTile
+      objectReference: {fileID: 0}
+    - target: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
       propertyPath: m_TagString
@@ -15336,7 +15328,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -16499,7 +16491,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -16669,7 +16661,6 @@ MonoBehaviour:
   turnCycle: 2
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &2048116613
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16765,7 +16756,6 @@ MonoBehaviour:
   turnCycle: 2
   moveSpeed: 7
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1001 &2048872413
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17012,7 +17002,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
