@@ -206,10 +206,12 @@ public class LevelManager : MonoBehaviour
         );
         player.transform.rotation = Quaternion.LookRotation(Vector3.forward);
         // Reset player log
+        player.InitializeLog();
         TurnManager.turnManager.LeaveTimeRewind();
         // Reset level
         TurnManager.turnManager.ResetObjects(); // <- Phantom, Player too
         // Kill the phantom
+        PhantomController.phantomController.InitializeLog();
         PhantomController.phantomController.isPhantomExisting = false;
         PhantomController.phantomController.gameObject.SetActive(false);
     }
