@@ -204,7 +204,6 @@ public class LevelManager : MonoBehaviour
 
         //// Initialize the phantom
         //PhantomController.phantomController.InitializeLog();
-        Debug.Log("Prepare");
     }
     private void GetNewLevelInformations()
     {

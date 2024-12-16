@@ -7,18 +7,14 @@ public class TimeRewindEffect : MonoBehaviour
     public ParticleSystem newPositionEffect;
     public ParticleSystem surroundEffect;
 
-    private Renderer playerRenderer;
     private bool isRewinding = false;
     private bool isRewindModeActive = false;
-    private float lastAbilityTime = 0f;
 
     private ParticleSystem activeSurroundEffect;
     private ParticleSystem activeNewPositionEffect;
 
     void Start()
     {
-        playerRenderer = GetComponentInChildren<Renderer>();
-
         if (surroundEffect != null)
         {
             activeSurroundEffect = Instantiate(surroundEffect, transform.position, Quaternion.identity);

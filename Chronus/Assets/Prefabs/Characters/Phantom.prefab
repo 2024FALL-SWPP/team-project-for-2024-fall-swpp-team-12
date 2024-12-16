@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e445509463a197c43a5b32cb653fb9af, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  rb: {fileID: 0}
   playerCurPos: {x: 0, y: 0, z: 0}
   playerCurRot: {x: 0, y: 0, z: 0, w: 0}
   moveSpeedHor: 0
@@ -118,15 +119,19 @@ MonoBehaviour:
   pushDirection: {x: 0, y: 0, z: 0}
   pushSpeed: 0
   isRidingBox: 0
+  pushingBox: 0
   cIdle: {fileID: 753261232140372117}
   cMove: {fileID: 2531181437950435812}
   cTurn: {fileID: 3632663121590721122}
   cHop: {fileID: 6585836720761546417}
   doneAction: 0
+  isActionComplete: 0
   isMoveComplete: 0
   isFallComplete: 1
   willDropDeath: 0
+  willLaserKillCharacter: 0
   isPhantomExisting: 0
+  willBoxKillPhantom: 0
 --- !u!114 &6585836720761546417
 MonoBehaviour:
   m_ObjectHideFlags: 0
