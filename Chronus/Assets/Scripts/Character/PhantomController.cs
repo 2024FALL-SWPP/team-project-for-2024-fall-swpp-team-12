@@ -90,13 +90,13 @@ public class PhantomController : CharacterBase
 
     public void KillPhantom()
     {
-        if (animator != null)
+        if (animator != null && isPhantomExisting)
         {
             animator.Rebind(); // Reset Animator to default pose
             animator.Update(0); // Apply the reset immediately
+            gameObject.SetActive(false);
+            isPhantomExisting = false; //deactivate. -> can update turn instead of isMoveComplete.
         }
-        gameObject.SetActive(false);
-        isPhantomExisting = false; //deactivate. -> can update turn instead of isMoveComplete.
     }
 
     public override void KillCharacter()

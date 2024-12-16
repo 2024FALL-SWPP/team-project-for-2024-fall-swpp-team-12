@@ -195,7 +195,7 @@ public class LevelManager : MonoBehaviour
         if (!PhantomController.phantomController.isFallComplete) PhantomController.phantomController.KillCharacter();
         else PhantomController.phantomController.KillPhantom(); //ActiveSelf false, isPhantomExisting false.
         TurnManager.turnManager.boxList.ForEach(box => box.DropKillBox()); //setactive false
-
+        TurnManager.turnManager.ResetPushingMotion();
         //the reason of 'partially copied' code above: consider pressing the reset button (ENTER) while playing.
 
         //reset logs (restore first positions,states  and  initialize iterator)
