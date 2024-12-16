@@ -31,10 +31,10 @@ public class Box : MonoBehaviour
 
         InitializeLog();
     }
-    
+
     public void InitializeLog()
     {
-        positionIterator = new(new List<(Vector3, bool)> {});
+        positionIterator = new(new List<(Vector3, bool)> { });
         positionIterator.Add((transform.position, true));
     }
 

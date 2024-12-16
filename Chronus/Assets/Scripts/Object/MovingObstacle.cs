@@ -25,7 +25,7 @@ public class MovingObstacle : MonoBehaviour
     {
         hiddenPosition = transform.position;
         InitializeLog();
-        if (hiddenPosition != originalHiddenPosition) 
+        if (hiddenPosition != originalHiddenPosition)
         {
             visiblePosition += hiddenPosition - originalHiddenPosition; // adding offset
         }
@@ -70,7 +70,7 @@ public class MovingObstacle : MonoBehaviour
         HandlePush(PlayerController.playerController, targetPosition);
         if (PhantomController.phantomController.isPhantomExisting) HandlePush(PhantomController.phantomController, targetPosition);
     }
-    
+
     // refactoring:
     private void HandlePush(CharacterBase character, Vector3 targetPosition)
     // check if the target position overlaps with a character's target position. if so, push it.
