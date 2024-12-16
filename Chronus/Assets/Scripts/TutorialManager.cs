@@ -13,7 +13,7 @@ public class TutorialManager : MonoBehaviour
     public Transform player;
     public Transform targetObject;
     public float radius = 4.0f;
-    
+
     private GameObject currentCanvas;
 
     public void ShowTutorialForLevel(string levelName)
@@ -39,9 +39,9 @@ public class TutorialManager : MonoBehaviour
                 break;
         }
     }
-    
+
     private void Update()
-    {   
+    {
         // Handle canvases that reappear near specific tiles
         if (currentCanvas == gameInstructionCanvas || currentCanvas == timeRewindInstructionCanvas ||
             currentCanvas == leverInstructionCanvas || currentCanvas == boxInstructionCanvas)
@@ -49,7 +49,7 @@ public class TutorialManager : MonoBehaviour
             HandleTileProximityForCanvas();
         }
     }
-    
+
     private void HandleTileProximityForCanvas()
     {
         if (currentCanvas != null)
@@ -83,7 +83,7 @@ public class TutorialManager : MonoBehaviour
         }
         return null;
     }
-    
+
     private bool IsPlayerWithinRadius(Transform tileCenter)
     {
         if (tileCenter == null) return false;
@@ -103,7 +103,6 @@ public class TutorialManager : MonoBehaviour
         targetObject = null;
     }
 
-    
     private void HideActiveTutorialCanvas()
     {
         gameInstructionCanvas.SetActive(false);

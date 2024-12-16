@@ -158,7 +158,7 @@ public class LevelManager : MonoBehaviour
             if (tutorialManager != null)
             {
                 tutorialManager.ShowTutorialForLevel(levelScenes[currentLevelIndex]);
-                
+
                 if (tutorialTile != null)
                 {
                     tutorialManager.SetTargetObject(tutorialTile.transform);
@@ -176,7 +176,7 @@ public class LevelManager : MonoBehaviour
                     tutorialManager.ClearTargetObject();
                 }
             }
-            
+
             ResetLevel();
             GetNewLevelInformations();
         }
