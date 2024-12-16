@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputManagerTesting : MonoBehaviour
 {
-    public static InputManagerTesting instance; 
+    public static InputManagerTesting instance;
     private InputManager inputManager;
     private TurnManager turnManager;
     public PlayerController player;
@@ -23,7 +23,7 @@ public class InputManagerTesting : MonoBehaviour
     public bool case12 = false; // Stacked Boxes drop when tile disappears at the same time (when tile intially inactive)
     public bool case13 = false; // Stack 1 more box on top of 2 boxes and see if 3 boxes move together
     public bool case14 = false; // Stacked Box: Top box moved by main character and bottom by phantom
-    
+
     private Dictionary<int, Dictionary<string, Vector3>> expectedPositions = new Dictionary<int, Dictionary<string, Vector3>>();
 
     private List<int> failedCases = new List<int>();
@@ -50,11 +50,11 @@ public class InputManagerTesting : MonoBehaviour
             Debug.LogError("TurnManager is not found in the scene. Ensure TurnManager is present.");
             return;
         }
-        
+
         InitializeExpectedPositions();
         StartCoroutine(RunTests());
     }
-    
+
     private void InitializeExpectedPositions()
     {
         expectedPositions[1] = new Dictionary<string, Vector3>
@@ -73,7 +73,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[3] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 1) },
@@ -81,7 +81,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[4] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(3, 1, -1) },
@@ -89,7 +89,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[5] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(3, 1, 1) },
@@ -97,7 +97,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[6] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, -1) },
@@ -105,7 +105,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[7] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, -1) },
@@ -113,25 +113,25 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (1)", new Vector3(-1, -10.03161f, -3) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[8] = new Dictionary<string, Vector3>
         {
-            { "Player", new Vector3(1, 1, 1) }, 
+            { "Player", new Vector3(1, 1, 1) },
             { "Phantom", new Vector3(1,1,1)},
             { "boxA", new Vector3(1, 1, 3) },
             { "boxA (1)", new Vector3(1, 3, 3) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[9] = new Dictionary<string, Vector3>
         {
-            { "Player", new Vector3(1, 1, 3) }, 
+            { "Player", new Vector3(1, 1, 3) },
             { "Phantom", new Vector3(1,1,-1)},
             { "boxA", new Vector3(1, 1, 1) },
             { "boxA (1)", new Vector3(1, 3, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[10] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 1) },
@@ -139,40 +139,40 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (1)", new Vector3(1, 3, 3) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[11] = new Dictionary<string, Vector3>
         {
-            { "Player", new Vector3(1, 1, 3) }, 
+            { "Player", new Vector3(1, 1, 3) },
             { "Phantom", new Vector3(5,1,1)},
             { "boxA", new Vector3(1, -10.1834f, 5) },
             { "boxA (1)", new Vector3(1, -10.03161f, 5) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[12] = new Dictionary<string, Vector3>
         {
-            { "Player", new Vector3(1, 1, 5) }, 
+            { "Player", new Vector3(1, 1, 5) },
             { "boxA", new Vector3(1, -10.1834f, 7) },
             { "boxA (1)", new Vector3(1, -10.03161f, 7) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
         expectedPositions[13] = new Dictionary<string, Vector3>
         {
-            { "Player", new Vector3(1, 1, 3) }, 
+            { "Player", new Vector3(1, 1, 3) },
             { "boxA", new Vector3(1, 1, 1) },
             { "boxA (1)", new Vector3(1, 3,1) },
             { "boxA (3)", new Vector3(1, 5, 1) }
         };
-        
+
         expectedPositions[14] = new Dictionary<string, Vector3>
         {
-            { "Player", new Vector3(3, 1, 1) }, 
+            { "Player", new Vector3(3, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
             { "boxA (1)", new Vector3(5, 1,1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
-        
+
 
     }
 
@@ -231,7 +231,7 @@ public class InputManagerTesting : MonoBehaviour
     }*/
 
 
-    
+
     private IEnumerator GetTestCase(int caseNumber)
     {
         switch (caseNumber)
@@ -256,8 +256,8 @@ public class InputManagerTesting : MonoBehaviour
     }
     private IEnumerator RunTestCase(int caseNumber, IEnumerator testCase)
     {
-        
-        
+
+
         Debug.Log($"Running Test Case {caseNumber}...");
 
         yield return testCase;
@@ -291,8 +291,8 @@ public class InputManagerTesting : MonoBehaviour
         //reset logs (restore first positions,states  and  initialize iterator)
         TurnManager.turnManager.ResetObjects();*/
         inputManager.OnReset?.Invoke();
-        
-        
+
+
         Debug.Log($"Test Case {caseNumber} Completed. Positions Reset.");
         yield return new WaitForSeconds(1);
     }
