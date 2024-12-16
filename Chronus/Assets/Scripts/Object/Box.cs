@@ -222,10 +222,7 @@ public class Box : MonoBehaviour
     public bool TryMove(Vector3 direction, float layer)
     {
         if (isBeingPushed) return false; //if locked - no TryMove(). // to prevent player & phantom simultaneous push
-        Debug.Log(layer);
-        Debug.Log(boxLayer);
         boxLayer = layer;
-        Debug.Log(boxLayer);
 
         //Check Wall Forward
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance, layerMask) || Physics.Raycast(transform.position + new Vector3(0, checkDistance * 0.8f, 0), direction, out RaycastHit hit1, moveDistance, layerMask))
