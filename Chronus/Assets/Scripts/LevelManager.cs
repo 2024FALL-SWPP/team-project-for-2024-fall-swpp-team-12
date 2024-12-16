@@ -25,7 +25,7 @@ public class LevelManager : MonoBehaviour
     private void Awake()
     {
         if (levelManager == null) { levelManager = this; }
-        
+
         baseSceneName = includeTestField ? "TestBaseScene" : "LevelBaseScene";
 
         if (includeTestField)
