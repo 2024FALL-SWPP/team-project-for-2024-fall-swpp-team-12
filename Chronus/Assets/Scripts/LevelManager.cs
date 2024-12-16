@@ -39,6 +39,17 @@ public class LevelManager : MonoBehaviour
         {
             levelScenes = new string[]
             {
+                "L-001-1",
+                "L-001-2",
+                "L-001-3",
+                "L-001-4",
+                "L-001-5",
+                "L-002-1",
+                "L-002-2",
+                "L-002-3",
+                "L-002-4",
+                "L-003-1",
+                "L-003-2",
                 "L-003-3",
                 "L-003-4",
                 "L-004-1",
