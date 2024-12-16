@@ -46,7 +46,7 @@ public class InputManager : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Return) && !TurnManager.turnManager.CLOCK)
+        if (Input.GetKeyDown(KeyCode.Return) && !TurnManager.turnManager.CLOCK && !PlayerController.playerController.isBlinking)
         {
             OnReset?.Invoke();
         }
