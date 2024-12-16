@@ -249,7 +249,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.size
@@ -826,7 +826,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.size
@@ -1427,6 +1427,11 @@ PrefabInstance:
 --- !u!4 &208110150 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
+  m_PrefabInstance: {fileID: 208110149}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &208110151 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6969041165458848855, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
   m_PrefabInstance: {fileID: 208110149}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &214240186
@@ -2346,7 +2351,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -2705,7 +2710,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -5173,7 +5178,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -5243,7 +5248,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -5613,7 +5618,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -7971,7 +7976,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
@@ -8263,12 +8268,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.data[0].target
       value: 
-      objectReference: {fileID: 82012750}
+      objectReference: {fileID: 208110151}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
 --- !u!4 &1645462935 stripped
@@ -10467,7 +10472,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: resetTurnCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136223791558601865, guid: d9f7df32cd2f15b4a8b9dd6723f35589, type: 3}
       propertyPath: targetStates.Array.size
