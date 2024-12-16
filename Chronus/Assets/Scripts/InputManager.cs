@@ -33,17 +33,33 @@ public class InputManager : MonoBehaviour
         };
     }
 
-    void Update()
+    private void InvokeAction()
     {
-        if (!isPaused && (InputManagerTesting.instance == null || !InputManagerTesting.instance.isActiveAndEnabled))
+        foreach (var keyAction in inputActions)
         {
-            foreach (var keyAction in inputActions)
+            if (Input.GetKeyDown(keyAction.Key))
             {
-                if (Input.GetKeyDown(keyAction.Key))
+                if (ScenarioManager.scenarioManager.isReadingMonologue)
+                {
+                    if (!ScenarioManager.scenarioManager.isLockedToRead)
+                    {
+                        ScenarioManager.scenarioManager.isReadingMonologue = false; //skip
+                        keyAction.Value.Invoke();
+                    }
+                }
+                else
                 {
                     keyAction.Value.Invoke();
                 }
             }
+        }
+    }
+
+    void Update()
+    {
+        if (!isPaused && (InputManagerTesting.instance == null || !InputManagerTesting.instance.isActiveAndEnabled))
+        {
+            InvokeAction();
         }
 
         if (Input.GetKeyDown(KeyCode.Return) && !TurnManager.turnManager.CLOCK && !PlayerController.playerController.isBlinking)
