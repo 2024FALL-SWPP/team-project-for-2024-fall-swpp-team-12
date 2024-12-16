@@ -17,7 +17,6 @@ public class Box : MonoBehaviour
     public bool willDropDeath = false;
     private bool isWaitingToCheckFall = false;
 
-    private float rayJumpInterval = 1.0f;
     private float maxFallHeight = 10.0f;
     private int layerMask = (1 << 0) | (1 << 3) | (1 << 6) | (1 << 8); //detect default(0), player(3), lever(6) and box(8) layer.
     private int layerMaskFall = (1 << 0) | (1 << 6) | (1 << 8); //don't detect player and phantom.
@@ -25,18 +24,18 @@ public class Box : MonoBehaviour
     private void Start()
     {
         targetTranslation = transform.position;
-
         checkDistance = transform.localScale.z / 100;
         rb = gameObject.GetComponent<Rigidbody>();
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+
         InitializeLog();
     }
-
+    
     public void InitializeLog()
     {
-        var initialPositionLog = new List<(Vector3, bool)> { (transform.position, true) };
-        positionIterator = new TurnLogIterator<(Vector3, bool)>(initialPositionLog);
+        positionIterator = new(new List<(Vector3, bool)> {});
+        positionIterator.Add((transform.position, true));
     }
 
     public void ResetToStart()
@@ -307,11 +306,11 @@ public class Box : MonoBehaviour
         }
 
         isBeingPushed = true; //Lock.
-        StartCoroutine(SmoothMove(direction, PlayerController.playerController.moveSpeedHor));
+        StartCoroutine(SmoothMove(PlayerController.playerController.moveSpeedHor));
         return true;
     }
 
-    private IEnumerator SmoothMove(Vector3 direction, float moveSpeed)
+    private IEnumerator SmoothMove(float moveSpeed)
     {
         Vector3 startPosition = transform.position;
 

@@ -52,7 +52,6 @@ public class LevelManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
-        currentLevelIndex = 13;
         
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
@@ -170,6 +169,7 @@ public class LevelManager : MonoBehaviour
                 }
             }
 
+            TurnManager.turnManager.InitializeObjectLists();
             ResetLevel();
             GetNewLevelInformations();
         }
@@ -209,10 +209,9 @@ public class LevelManager : MonoBehaviour
         player.transform.rotation = Quaternion.LookRotation(Vector3.forward);
         // Reset player log
         player.InitializeLog();
-        player.isTimeRewinding = false;
-        // Get information from the level
+        TurnManager.turnManager.LeaveTimeRewind();
+        // Reset level
         TurnManager.turnManager.ResetObjects();
-        TurnManager.turnManager.InitializeObjectLists();
         // Kill the phantom
         PhantomController.phantomController.InitializeLog();
         PhantomController.phantomController.isPhantomExisting = false;
