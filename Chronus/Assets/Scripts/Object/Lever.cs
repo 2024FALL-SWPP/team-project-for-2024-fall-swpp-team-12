@@ -37,8 +37,11 @@ public class Lever : MonoBehaviour
     }
     public void ResetToStart()
     {
-        stateIterator.ResetToStart();
-        RestoreState();
+        if (stateIterator != null) 
+        {
+            stateIterator.ResetToStart();
+            RestoreState();
+        }
     }
 
     public void AdvanceTurn()

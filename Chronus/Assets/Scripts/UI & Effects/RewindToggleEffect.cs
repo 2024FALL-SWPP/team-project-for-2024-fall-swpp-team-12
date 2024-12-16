@@ -2,58 +2,26 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RewindManager : MonoBehaviour
+public class RewindToggleEffect : MonoBehaviour
 {
     public Color rewindOverlayColor = new Color(0, 0, 1, 0.1f);
-    public float transitionSpeed = 2f;
-
+    private float transitionSpeed = 2f;
     public AudioClip rewindStartAudio;
     private AudioSource audioSource;
-
     public Image overlayImage;
-    private bool isRewinding = false;
 
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-
-        InputManager.inputManager.OnTimeRewindModeToggle += ToggleRewindMode;
     }
 
-    void OnDestroy()
-    {
-        InputManager.inputManager.OnTimeRewindModeToggle -= ToggleRewindMode;
-    }
-
-    void ToggleRewindMode()
-    {
-        if (!PlayerController.playerController.isTimeRewinding &&
-            (PlayerController.playerController.isBlinking || TurnManager.turnManager.CLOCK || PlayerController.playerController.willDropDeath)) return;
-        // assuring that every action should be ended (during the turn)
-
-        isRewinding = !isRewinding;
-
-        if (isRewinding)
-        {
-            EnterRewindMode();
-        }
-        else
-        {
-            ExitRewindMode();
-        }
-    }
-
-    private void EnterRewindMode()
+    public void EnterRewindMode()
     {
         StartOverlayTransition(Color.clear, rewindOverlayColor);
         PlayRewindAudio();
     }
 
-    private void ExitRewindMode()
+    public void LeaveRewindMode()
     {
         StartOverlayTransition(rewindOverlayColor, Color.clear);
         StopRewindAudio();

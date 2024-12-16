@@ -18,6 +18,8 @@ public class TurnManager : MonoBehaviour
     public List<MovingObstacle> obstacleList = new();
 
     private RewindSliderUI rewindUI;
+    private RewindToggleEffect rewindToggleEffect;
+    private TimeRewindEffect timeRewindEffect;
 
     private void Awake()
     {
@@ -28,6 +30,8 @@ public class TurnManager : MonoBehaviour
     {
         InputManager.inputManager.OnUndo += HandleUndo;
         rewindUI = FindObjectOfType<RewindSliderUI>();
+        rewindToggleEffect = FindObjectOfType<RewindToggleEffect>();
+        timeRewindEffect = FindObjectOfType<TimeRewindEffect>();
     }
 
     void Update()
@@ -78,16 +82,6 @@ public class TurnManager : MonoBehaviour
             CheckTileChangeBeforeFallComplete()
         );
     }
-    /*public bool CheckMoveCompleteExceptButton()
-    {
-        return (
-            player.isMoveComplete &&
-            (!phantom.isPhantomExisting || phantom.isMoveComplete) &&
-            boxList.All(box => box.isMoveComplete) &&
-            leverList.All(lever => lever.isMoveComplete) &&
-            obstacleList.All(obstacle => obstacle.isMoveComplete)
-        );
-    }*/
 
     public bool CheckMovingObjectsMoveComplete()
     // Check if moving obstacles and boxes of the current turn on the scene are complete.
@@ -199,6 +193,8 @@ public class TurnManager : MonoBehaviour
         if (phantom.willDropDeath) phantom.KillCharacter(); //intercept during death fall
         else phantom.KillPhantom(); //just normal kill
         rewindUI?.EnterRewindMode(player.listCommandLog);
+        rewindToggleEffect?.EnterRewindMode();
+        timeRewindEffect?.EnterRewindMode();
     }
 
     public void LeaveTimeRewind()
@@ -218,7 +214,7 @@ public class TurnManager : MonoBehaviour
             phantom.positionIterator.SetCurrent((phantom.playerCurPos, phantom.playerCurRot, true));
             phantom.positionIterator.SetPreviousRange((Vector3.zero, Quaternion.identity, false));
 
-            //Command Order List Initialize!!!
+            // command order list
             phantom.commandIterator.Clear();
             phantom.commandIterator.Add("");
             while (player.commandIterator.HasNext())
@@ -238,6 +234,8 @@ public class TurnManager : MonoBehaviour
 
         ResetPushingMotion();
         rewindUI?.LeaveRewindMode();
+        rewindToggleEffect?.LeaveRewindMode();
+        timeRewindEffect?.LeaveRewindMode();
     }
 
     public void GoToThePast() //previous - restore
@@ -301,7 +299,9 @@ public class TurnManager : MonoBehaviour
         buttonList.ForEach(button => button.RestoreState());
         obstacleList.ForEach(obstacle => obstacle.RestoreState());
 
+        // UI & Effects
         rewindUI?.MoveSlider(turnDelta);
+        timeRewindEffect?.InvokeTimeRewindEffect();
     }
 
     private void HandleUndo() //previous(1) - restore - removelog

@@ -38,8 +38,11 @@ public class MovingObstacle : MonoBehaviour
     }
     public void ResetToStart()
     {
-        positionIterator.ResetToStart();
-        RestoreState();
+        if (positionIterator != null) 
+        {
+            positionIterator.ResetToStart();
+            RestoreState();
+        }
     }
 
     public void AdvanceTurn()
