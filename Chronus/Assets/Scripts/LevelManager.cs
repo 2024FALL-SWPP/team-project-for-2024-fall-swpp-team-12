@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager levelManager;
     public GameObject levelBarrierPrefab;
     public string[] levelScenes;
+    public bool includeTestField = false;
     private int currentLevelIndex;
     private int previousLevelIndex = -1;
     private PlayerController player;
@@ -18,37 +20,58 @@ public class LevelManager : MonoBehaviour
     private readonly float playerTileDiff = 1.2f;
     // 1.2f: because right now, if the player is at (1, 1, 1),
     // then the tile the player is standing on is (1, -0.2, 1)
-    private readonly string baseSceneName = "LevelBaseScene";
+    private string baseSceneName;
 
     private void Awake()
     {
         if (levelManager == null) { levelManager = this; }
-        levelScenes = new string[]
+        
+        baseSceneName = includeTestField ? "TestBaseScene" : "LevelBaseScene";
+
+        if (includeTestField)
         {
-            "L-001-1",
-            "L-001-2",
-            "L-001-3",
-            "L-001-4",
-            "L-001-5",
-            "L-002-1",
-            "L-002-2",
-            "L-002-3",
-            "L-002-4",
-            "L-003-1",
-            "L-003-2",
-            "L-003-3",
-            "L-003-4",
-            "L-004-1",
-            "L-004-2",
-            "L-004-3"
-        };
+            levelScenes = new string[]
+            {
+                "TestField"
+            };
+        }
+        else
+        {
+            levelScenes = new string[]
+            {
+                "L-001-1",
+                "L-001-2",
+                "L-001-3",
+                "L-001-4",
+                "L-001-5",
+                "L-002-1",
+                "L-002-2",
+                "L-002-3",
+                "L-002-4",
+                "L-003-1",
+                "L-003-2",
+                "L-003-3",
+                "L-003-4",
+                "L-004-1",
+                "L-004-2",
+                "L-004-3"
+            };
+        }
     }
 
     private void Start()
     {
         player = FindObjectOfType<PlayerController>();
         mainCamera = Camera.main;
-        if (levelBarrierPrefab != null) levelBarrier = Instantiate(levelBarrierPrefab);
+        if (levelBarrierPrefab != null)
+        {
+            levelBarrier = Instantiate(levelBarrierPrefab);
+            if (includeTestField && levelBarrier != null)
+            {
+                Destroy(levelBarrier);
+                Debug.Log("Level barrier removed because TestField is included.");
+            }
+        }
 
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
