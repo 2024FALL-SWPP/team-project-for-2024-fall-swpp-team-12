@@ -11,13 +11,11 @@ public class RewindManager : MonoBehaviour
     public AudioClip rewindStartAudio;
     private AudioSource audioSource;
 
-    private Image overlayImage;
+    public Image overlayImage;
     private bool isRewinding = false;
 
     void Start()
     {
-        CreateOverlay();
-
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
@@ -76,23 +74,6 @@ public class RewindManager : MonoBehaviour
             overlayImage.color = Color.Lerp(startColor, endColor, t);
             yield return null;
         }
-    }
-
-    private void CreateOverlay()
-    {
-        GameObject canvasObj = new GameObject("RewindCanvas");
-        Canvas canvas = canvasObj.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvasObj.AddComponent<CanvasScaler>();
-        canvasObj.AddComponent<GraphicRaycaster>();
-
-        GameObject imageObj = new GameObject("OverlayImage");
-        imageObj.transform.SetParent(canvasObj.transform, false);
-        overlayImage = imageObj.AddComponent<Image>();
-        overlayImage.color = Color.clear;
-        overlayImage.rectTransform.anchorMin = Vector2.zero;
-        overlayImage.rectTransform.anchorMax = Vector2.one;
-        overlayImage.rectTransform.sizeDelta = Vector2.zero;
     }
 
     private void PlayRewindAudio()

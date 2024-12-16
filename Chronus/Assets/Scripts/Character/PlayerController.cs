@@ -164,7 +164,6 @@ public class PlayerController : CharacterBase
         InputManager.inputManager.OnTimeRewindModeToggle += ToggleTimeRewindMode;
         InputManager.inputManager.OnTimeRewindControl += HandleTimeRewindInput;
 
-
         // Initialize Renderers
         var meshRenderers = GetComponentsInChildren<MeshRenderer>();
         var skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -265,8 +264,6 @@ public class PlayerController : CharacterBase
         yield return PlayBlinkEffect(blinkCount - 1);
     }
 
-    // Update() is redundant, because doing same thing from CharacterBase
-
     protected override void StartAction() // when this is called, the global cycle(the turn) starts
     {
         base.StartAction();
@@ -286,14 +283,8 @@ public class PlayerController : CharacterBase
     {
         if (!isTimeRewinding && (isBlinking || TurnManager.turnManager.CLOCK || willDropDeath)) return; // assuring that every action should be ended (during the turn)
 
-        if (!isTimeRewinding)
-        {
-            TurnManager.turnManager.EnterTimeRewind();
-        }
-        else
-        {
-            TurnManager.turnManager.LeaveTimeRewind();
-        }
+        if (!isTimeRewinding) TurnManager.turnManager.EnterTimeRewind();
+        else TurnManager.turnManager.LeaveTimeRewind();
     }
 
     private void HandleTimeRewindInput(string command)
@@ -302,25 +293,11 @@ public class PlayerController : CharacterBase
         switch (command)
         {
             case "q": // go to the 1 turn past
-                if (positionIterator.HasPrevious())
-                {
-                    TurnManager.turnManager.GoToThePast();
-                }
-                else
-                {
-                    print("Cannot go further to the Past!!!");
-                }
+                if (positionIterator.HasPrevious()) TurnManager.turnManager.GoToThePast();
                 break;
 
             case "e": // go to the 1 turn future
-                if (positionIterator.HasNext())
-                {
-                    TurnManager.turnManager.GoToTheFuture();
-                }
-                else
-                {
-                    print("Cannot go further to the Future!!!");
-                }
+                if (positionIterator.HasNext()) TurnManager.turnManager.GoToTheFuture();
                 break;
         }
     }
@@ -331,10 +308,7 @@ public class PlayerController : CharacterBase
 
     public void RemoveLog(int k)
     {
-        if (k < 0)
-        {
-            throw new ArgumentException("k must be non-negative.", nameof(k));
-        }
+        if (k < 0) throw new ArgumentException("k must be non-negative.", nameof(k));
 
         commandIterator.RemoveLastK(k);
         positionIterator.RemoveLastK(k);

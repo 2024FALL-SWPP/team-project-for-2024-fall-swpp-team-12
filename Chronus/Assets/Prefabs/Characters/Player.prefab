@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 965985751615319944}
   - component: {fileID: 8337172169193159353}
   - component: {fileID: 6567613761597493224}
+  - component: {fileID: -6972542959968205629}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -60,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 976bc00724d9bb5459a4fd7ebaf3ed79, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -124,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
+  rb: {fileID: 0}
   playerCurPos: {x: 0, y: 0, z: 0}
   playerCurRot: {x: 0, y: 0, z: 0, w: 0}
   moveSpeedHor: 0
@@ -134,11 +136,13 @@ MonoBehaviour:
   pushDirection: {x: 0, y: 0, z: 0}
   pushSpeed: 0
   isRidingBox: 0
+  pushingBox: 0
   cIdle: {fileID: 965985751615319944}
   cMove: {fileID: 8337172169193159353}
   cTurn: {fileID: 6567613761597493224}
   cHop: {fileID: 2144903796421854843}
   doneAction: 0
+  isActionComplete: 0
   isMoveComplete: 0
   isFallComplete: 1
   willDropDeath: 0
@@ -199,6 +203,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abe693de95a814942a04ea235b0b704b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-6972542959968205629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4243777499992674637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45ff54646cd434d4db48933275cdf5e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  newPositionEffect: {fileID: 5473588508934549075, guid: 035ce8c9cfc34104991ce416daf8aebe, type: 3}
+  surroundEffect: {fileID: 1920325297268671249, guid: 889dd67908ff48640a817f0b0074814e, type: 3}
 --- !u!1001 &1077527291269329607
 PrefabInstance:
   m_ObjectHideFlags: 0
