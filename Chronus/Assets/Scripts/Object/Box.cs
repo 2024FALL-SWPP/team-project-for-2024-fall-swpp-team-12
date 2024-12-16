@@ -106,7 +106,11 @@ public class Box : MonoBehaviour
     {
         if (!isBeingPushed)
         {
-            if (gameObject.activeSelf) isWaitingToCheckFall = true;  //wait.
+            if (gameObject.activeSelf)
+            {
+                isWaitingToCheckFall = true;
+                boxLayer = 0.0f;
+            }  //wait.
             else isMoveComplete = true;  //just pass
         }
     }
