@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputManagerTesting : MonoBehaviour
 {
-    public static InputManagerTesting instance; //singleton
+    public static InputManagerTesting instance; 
     private InputManager inputManager;
     private TurnManager turnManager;
     public PlayerController player;
@@ -76,7 +76,7 @@ public class InputManagerTesting : MonoBehaviour
         
         expectedPositions[3] = new Dictionary<string, Vector3>
         {
-            { "Player", new Vector3(1, 1, -1) },
+            { "Player", new Vector3(1, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
@@ -501,7 +501,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("g");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 4 completed: Invalid Inputs.");
     }
 
     private IEnumerator Case5()
@@ -520,7 +519,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("s");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 5 completed: Simultaneous Actions");
     }
 
     private IEnumerator Case6()
@@ -533,7 +531,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnTimeRewindControl?.Invoke("q");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 6 completed: Rewind Without Toggle");
     }
 
     private IEnumerator Case7()
@@ -564,7 +561,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("s");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 7 completed: Invalid Inputs.");
     }
     private IEnumerator Case8()
     {
@@ -621,7 +617,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("w");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 8 completed: Invalid Inputs.");
     }
 
     private IEnumerator Case9()
@@ -688,7 +683,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("a");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 9 completed: Invalid Inputs.");
     }
 
     private IEnumerator Case10()
@@ -755,7 +749,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("w");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 10 completed: Invalid Inputs.");
     }
 
     private IEnumerator Case11()
@@ -807,7 +800,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("w");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 11 completed: Invalid Inputs.");
     }
 
     private IEnumerator Case12()
@@ -877,7 +869,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("r");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 12 completed: Invalid Inputs.");
     }
 
     private IEnumerator Case13()
@@ -944,7 +935,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("s");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 13 completed: Invalid Inputs.");
     }
 
     private IEnumerator Case14()
@@ -1023,7 +1013,6 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnMovementControl?.Invoke("d");
         yield return new WaitForSeconds(1);
 
-        //Debug.Log("Case 14 completed: Invalid Inputs.");
     }
 
     private void LogAction(string input)
