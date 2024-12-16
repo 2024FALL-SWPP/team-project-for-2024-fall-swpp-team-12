@@ -40,8 +40,11 @@ public class Box : MonoBehaviour
 
     public void ResetToStart()
     {
-        positionIterator.ResetToStart();
-        RestoreState();
+        if (positionIterator != null) 
+        {
+            positionIterator.ResetToStart();
+            RestoreState();
+        }
     }
 
     private void Update()
