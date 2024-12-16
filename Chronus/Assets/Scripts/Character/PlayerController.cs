@@ -202,6 +202,7 @@ public class PlayerController : CharacterBase
         if (!PhantomController.phantomController.isFallComplete) PhantomController.phantomController.KillCharacter(); //intercept during fall
         else PhantomController.phantomController.KillPhantom(); //just normal kill
         TurnManager.turnManager.boxList.ForEach(box => box.DropKillBox());
+        TurnManager.turnManager.ResetPushingMotion();
 
         TurnManager.turnManager.CLOCK = false; //CLOCK off
         //isMoveComplete reset

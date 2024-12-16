@@ -251,11 +251,13 @@ public class TurnManager : MonoBehaviour
         }
         player.isTimeRewinding = false;
 
+        ResetPushingMotion();
         rewindUI?.LeaveRewindMode();
     }
 
     public void GoToThePast() //previous - restore
     {
+        ResetPushingMotion();
         GoToThePastOrFuture(-1);
     }
 
@@ -301,6 +303,7 @@ public class TurnManager : MonoBehaviour
         else
         {
             Debug.Log("Cannot go further in the specified direction!");
+            //need sound
             return;
         }
 
@@ -335,6 +338,8 @@ public class TurnManager : MonoBehaviour
             GoToThePast();
             phantom.RestoreState(); //phantom restores state also.
 
+            ResetPushingMotion();
+
             int deltaTurn = 1;
             player.RemoveLog(deltaTurn);
             phantom.RemoveLog(deltaTurn);
@@ -344,6 +349,18 @@ public class TurnManager : MonoBehaviour
             obstacleList.ForEach(obstacle => obstacle.RemoveLog(deltaTurn));
 
             if (phantom.commandIterator.GetCurrentIndex() >= 0) phantom.commandIterator.SetIndexPrevious(); // no remove, just checkout previous
+        }
+    }
+
+    public void ResetPushingMotion()
+    {
+        if (player.animator != null)
+        {
+            player.animator.SetBool("isPushing", false);
+        }
+        if (phantom.animator != null && phantom.isPhantomExisting)
+        {
+            phantom.animator.SetBool("isPushing", false);
         }
     }
 }
