@@ -48,6 +48,7 @@ public class TutorialManager : MonoBehaviour
         {
             HandleTileProximityForCanvas();
         }
+        if (currentCanvas.activeSelf && (ScenarioManager.scenarioManager.isReadingMonologue || PlayerController.playerController.isTimeRewinding)) currentCanvas.SetActive(false);
     }
 
     private void HandleTileProximityForCanvas()
@@ -58,7 +59,7 @@ public class TutorialManager : MonoBehaviour
 
             if (targetTile != null && IsPlayerWithinRadius(targetTile.transform))
             {
-                currentCanvas.SetActive(true);
+                if (!ScenarioManager.scenarioManager.isReadingMonologue && !PlayerController.playerController.isTimeRewinding) currentCanvas.SetActive(true);
             }
             else
             {
