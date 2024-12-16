@@ -29,8 +29,7 @@ public class InputManager : MonoBehaviour
             { KeyCode.Q, () => OnTimeRewindControl?.Invoke("q") },
             { KeyCode.E, () => OnTimeRewindControl?.Invoke("e") },
             { KeyCode.Space, () => OnTimeRewindModeToggle?.Invoke() },
-            { KeyCode.Backspace, () => OnUndo?.Invoke() },
-            { KeyCode.Return, () => OnReset?.Invoke() }
+            { KeyCode.Backspace, () => OnUndo?.Invoke() }
         };
     }
 
@@ -45,6 +44,11 @@ public class InputManager : MonoBehaviour
                     keyAction.Value.Invoke();
                 }
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return) && !TurnManager.turnManager.CLOCK)
+        {
+            OnReset?.Invoke();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))

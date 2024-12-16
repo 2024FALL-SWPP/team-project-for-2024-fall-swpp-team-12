@@ -12,11 +12,10 @@ public class TurnLogIterator<T>
     public TurnLogIterator(List<T> log)
     {
         this.log = log ?? throw new ArgumentNullException(nameof(log));
-        this.currentIndex = log.Count - 1; // Start at the latest log
+        currentIndex = log.Count - 1; // Start at the latest log
     }
 
     public bool HasNext() => currentIndex < log.Count - 1;
-
     public bool HasPrevious() => currentIndex > 0;
 
     public T Next()
@@ -52,13 +51,9 @@ public class TurnLogIterator<T>
 
     public void SetIndexNext() => currentIndex++;
     public void SetIndexPrevious() => currentIndex--;
-
     public void ResetToStart() => currentIndex = 0;
-
     public void ResetToEnd() => currentIndex = log.Count - 1;
-
     public int GetCurrentIndex() => currentIndex;
-
     public T GetNext() => log[currentIndex + 1];
 
     public void SetCurrent(T item)
@@ -303,25 +298,11 @@ public class PlayerController : CharacterBase
         switch (command)
         {
             case "q": // go to the 1 turn past
-                if (positionIterator.HasPrevious())
-                {
-                    TurnManager.turnManager.GoToThePast();
-                }
-                else
-                {
-                    print("Cannot go further to the Past!!!");
-                }
+                if (positionIterator.HasPrevious()) TurnManager.turnManager.GoToThePast();
                 break;
 
             case "e": // go to the 1 turn future
-                if (positionIterator.HasNext())
-                {
-                    TurnManager.turnManager.GoToTheFuture();
-                }
-                else
-                {
-                    print("Cannot go further to the Future!!!");
-                }
+                if (positionIterator.HasNext()) TurnManager.turnManager.GoToTheFuture();
                 break;
         }
     }

@@ -26,7 +26,6 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
-        InitializeObjectLists();
         InputManager.inputManager.OnUndo += HandleUndo;
         rewindUI = FindObjectOfType<RewindSliderUI>();
     }
@@ -134,15 +133,8 @@ public class TurnManager : MonoBehaviour
         leverList.ForEach(lever => lever.isMoveComplete = false);
         buttonList.ForEach(button => button.isMoveComplete = false);
         obstacleList.ForEach(obstacle => obstacle.isMoveComplete = false);
-
         CLOCK = false;
     }
-    /*
-    public void ResetFallComplete()
-    {
-        phantom.isFallComplete = true;
-        boxList.ForEach(box => box.isFallComplete = true);
-    }*/
 
     // maybe we need a separate ObjectManager to control all these lists & time rewind?
     public void InitializeObjectLists()
@@ -150,36 +142,33 @@ public class TurnManager : MonoBehaviour
         rewindTurnCount = 0;
 
         boxList?.ForEach(boxScript => boxScript.enabled = false);
-        boxList = GameObject
-            .FindGameObjectsWithTag("Box") 
-            .Select(boxObject => boxObject.GetComponent<Box>()) 
-            .Where(boxScript => boxScript.enabled) 
-            .ToList(); 
-        boxList.ForEach(boxScript => boxScript.InitializeLog()); 
-
         leverList?.ForEach(leverScript => leverScript.enabled = false);
-        leverList = GameObject
-            .FindGameObjectsWithTag("Lever") 
-            .Select(leverObject => leverObject.GetComponent<Lever>()) 
-            .Where(leverScript => leverScript.enabled) 
-            .ToList(); 
-        leverList.ForEach(leverScript => leverScript.InitializeLog()); 
-
         buttonList?.ForEach(buttonScript => buttonScript.enabled = false);
+        obstacleList?.ForEach(obstacleScript => obstacleScript.enabled = false);
+
+        boxList = GameObject
+            .FindGameObjectsWithTag("Box")
+            .Select(boxObject => boxObject.GetComponent<Box>())
+            .Where(boxScript => boxScript.enabled)
+            .ToList();
+
+        leverList = GameObject
+            .FindGameObjectsWithTag("Lever")
+            .Select(leverObject => leverObject.GetComponent<Lever>())
+            .Where(leverScript => leverScript.enabled)
+            .ToList();
+
         buttonList = GameObject
             .FindGameObjectsWithTag("Button")
             .Select(buttonObject => buttonObject.GetComponent<Button>())
             .Where(buttonScript => buttonScript.enabled)
             .ToList();
-        buttonList.ForEach(buttonScript => buttonScript.InitializeLog());
 
-        obstacleList?.ForEach(obstacleScript => obstacleScript.enabled = false);
         obstacleList = GameObject
             .FindGameObjectsWithTag("MovingObstacle")
             .Select(obstacleObject => obstacleObject.GetComponent<MovingObstacle>())
-            .Where(obstacleScript => obstacleScript.enabled) 
+            .Where(obstacleScript => obstacleScript.enabled)
             .ToList();
-        obstacleList.ForEach(obstacleScript => obstacleScript.InitializeLog());
     }
 
     public void ResetObjects()
