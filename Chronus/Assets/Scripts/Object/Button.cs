@@ -65,7 +65,7 @@ public class Button : MonoBehaviour
 
     public void AdvanceTurn()
     {
-        //if (!gameObject.activeSelf) { isMoveComplete = true; return; }
+        if (!gameObject.activeSelf) { isMoveComplete = true; return; }
         if (isPressed)
         {
             if (remainingTurns <= 0) ResetButton();
