@@ -72,8 +72,8 @@ public class ScenarioManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown("m") && 
-            !TurnManager.turnManager.CLOCK && 
+        if (Input.GetKeyDown("m") &&
+            !TurnManager.turnManager.CLOCK &&
             !PlayerController.playerController.isTimeRewinding &&
             !PlayerController.playerController.isBlinking) TestTyping();
     }
@@ -118,9 +118,9 @@ public class ScenarioManager : MonoBehaviour
         yield return new WaitForSeconds(typeSpeedStartOffset / 3);
         monologuePaper.text = baseText;
         yield return new WaitForSeconds(typeSpeedStartOffset * 2 / 3);
-        for (int i=0; i< monologue.Length; i++)
+        for (int i = 0; i < monologue.Length; i++)
         {
-            monologuePaper.text = baseText + monologue.Substring(0, i+1);
+            monologuePaper.text = baseText + monologue.Substring(0, i + 1);
             if (i == monologue.Length - 1) yield return null;
             else
             {
@@ -164,7 +164,7 @@ public class ScenarioManager : MonoBehaviour
     IEnumerator MakeSceneDark()
     {
         float progress = 0.0f;
-        while (progress < typeSpeedStartOffset/6)
+        while (progress < typeSpeedStartOffset / 6)
         {
             progress += Time.deltaTime;
             light.intensity -= defaultLightIntensity / typeSpeedStartOffset * 6 * Time.deltaTime;
