@@ -37,11 +37,12 @@ public class Button : MonoBehaviour
     }
     public void ResetToStart()
     {
-        if (stateIterator != null)
+        if (stateIterator == null)
         {
-            stateIterator.ResetToStart();
-            RestoreState();
+            InitializeLog();
         }
+        stateIterator.ResetToStart();
+        RestoreState();
     }
 
     private void BePressedByObjects(Collider other)

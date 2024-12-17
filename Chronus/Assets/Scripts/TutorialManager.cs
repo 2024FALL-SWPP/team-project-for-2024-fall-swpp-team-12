@@ -42,13 +42,16 @@ public class TutorialManager : MonoBehaviour
 
     private void Update()
     {
-        // Handle canvases that reappear near specific tiles
-        if (currentCanvas == gameInstructionCanvas || currentCanvas == timeRewindInstructionCanvas ||
-            currentCanvas == leverInstructionCanvas || currentCanvas == boxInstructionCanvas)
+        if (currentCanvas != null)
         {
-            HandleTileProximityForCanvas();
+            // Handle canvases that reappear near specific tiles
+            if (currentCanvas == gameInstructionCanvas || currentCanvas == timeRewindInstructionCanvas ||
+                currentCanvas == leverInstructionCanvas || currentCanvas == boxInstructionCanvas)
+            {
+                HandleTileProximityForCanvas();
+            }
+            if (currentCanvas.activeSelf && (ScenarioManager.scenarioManager.isReadingMonologue || PlayerController.playerController.isTimeRewinding)) currentCanvas.SetActive(false);
         }
-        if (currentCanvas.activeSelf && (ScenarioManager.scenarioManager.isReadingMonologue || PlayerController.playerController.isTimeRewinding)) currentCanvas.SetActive(false);
     }
 
     private void HandleTileProximityForCanvas()
