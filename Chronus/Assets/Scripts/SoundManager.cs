@@ -18,8 +18,8 @@ public class SoundManager: MonoBehaviour
     [SerializeField] private AudioMixer mAudioMixer;
 
     //Volume
-    private float mCurrentBGMVolume;
-    private float mCurrentSFXVolume;
+    private float mCurrentBGMVolume = 16.0f;
+    private float mCurrentSFXVolume = 20.0f;
 
     //Sound Clips
     private Dictionary<string, AudioClip> mClipsDictionary;
