@@ -48,6 +48,7 @@ public class PhantomController : CharacterBase
     {
         if (isPhantomExisting && !commandIterator.HasNext()) //finished lifetime
         {
+            SoundManager.soundManager.PlaySound3D("phantom_terminate", this.transform, 0.07f);
             KillPhantom();
         }
 
@@ -82,6 +83,7 @@ public class PhantomController : CharacterBase
         if (willBoxKillPhantom) //check before fall (after all obstacles move)
         {
             willBoxKillPhantom = false;
+            SoundManager.soundManager.PlaySound3D("phantom_terminate", this.transform, 0.1f);
             this.KillCharacter();
             return;
         }

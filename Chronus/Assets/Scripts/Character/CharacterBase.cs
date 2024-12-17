@@ -121,6 +121,8 @@ public abstract class CharacterBase : MonoBehaviour
             if (willLaserKillCharacter) //check after fall
             {
                 willLaserKillCharacter = false;
+                if (this.gameObject.name == "Player") SoundManager.soundManager.PlaySound3D("rabbit_gameover_laser", this.gameObject.transform, 0.5f);
+                else if (this.gameObject.name == "Phantom") SoundManager.soundManager.PlaySound3D("phantom_terminate", this.gameObject.transform, 0.07f);
                 this.KillCharacter();
                 return;
             }
@@ -131,8 +133,12 @@ public abstract class CharacterBase : MonoBehaviour
                 rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
                 transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y), transform.position.z);
 
+                SoundManager.soundManager.PlaySound3D("rabbit_fallLand", this.transform, 0.12f);
+
                 if (willDropDeath) //hit the ground hard -> Drop Death
                 {
+                    if (this.gameObject.name == "Player") SoundManager.soundManager.PlaySound3D("rabbit_gameover_normal", this.gameObject.transform, 0.3f);
+                    else if (this.gameObject.name == "Phantom") SoundManager.soundManager.PlaySound3D("phantom_terminate", this.gameObject.transform, 0.07f);
                     KillCharacter();
                 }
                 else
@@ -148,6 +154,8 @@ public abstract class CharacterBase : MonoBehaviour
                 {
                     if (transform.position.y < -maxFallHeight) //fall to the void -> Drop Death
                     {
+                        if (this.gameObject.name == "Player") SoundManager.soundManager.PlaySound3D("rabbit_gameover_normal", this.gameObject.transform, 0.3f);
+                        else if (this.gameObject.name == "Phantom") SoundManager.soundManager.PlaySound3D("phantom_terminate", this.gameObject.transform, 0.07f);
                         KillCharacter();
                     }
                 }
@@ -173,6 +181,8 @@ public abstract class CharacterBase : MonoBehaviour
         if (willLaserKillCharacter) //check before fall (after all obstacles move)
         {
             willLaserKillCharacter = false;
+            if (this.gameObject.name == "Player") SoundManager.soundManager.PlaySound3D("rabbit_gameover_laser", this.gameObject.transform, 0.5f);
+            else if (this.gameObject.name == "Phantom") SoundManager.soundManager.PlaySound3D("phantom_terminate", this.gameObject.transform, 0.07f);
             this.KillCharacter();
             return;
         }
@@ -221,6 +231,10 @@ public abstract class CharacterBase : MonoBehaviour
             case "r":
                 listCurTurn = listStay;
                 if (!isRidingBox) targetTranslation = playerCurPos;
+                float volume;
+                if (this.gameObject.name == "Player") volume = 0.4f;
+                else volume = 0.05f;
+                SoundManager.soundManager.PlaySound3D("rabbit_standStill", this.transform, volume);
                 StartAction();
                 return;
             default:

@@ -70,7 +70,7 @@ public class Lever : MonoBehaviour
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive ^ isActivated));
         targetStates.ForEach(state => PlaySummonSound(state.target));
 
-        SoundManager.soundManager.PlaySound3D("lever_push", this.transform, 0.2f);
+        SoundManager.soundManager.PlaySound3D("lever_push", this.transform, 0.18f);
         isMoveComplete = true;
     }
 

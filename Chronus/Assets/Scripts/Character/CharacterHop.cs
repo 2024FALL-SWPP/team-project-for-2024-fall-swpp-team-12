@@ -28,6 +28,8 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
         smallHopRate = 3.0f;
         speedVer = _CharacterBase.moveSpeedVer * smallHopRate;
         meetLocalMax = false;
+
+        SoundManager.soundManager.PlaySound3D("rabbit_hop", _CharacterBase.transform, 0.05f);
     }
 
     public void OperateExit(CharacterBase sender)
@@ -35,6 +37,11 @@ public class CharacterHop : MonoBehaviour, IState<CharacterBase>
         if (_CharacterBase.animator != null)
         {
             _CharacterBase.animator.SetBool("isMoving", false);
+        }
+
+        if (Physics.Raycast(_CharacterBase.transform.position, Vector3.down, out RaycastHit hit, 1.0f, (1 << 0) | (1 << 6) | (1 << 8)))
+        {
+            SoundManager.soundManager.PlaySound3D("rabbit_land", this.transform, 0.025f);
         }
     }
 

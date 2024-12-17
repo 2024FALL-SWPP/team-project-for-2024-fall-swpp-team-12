@@ -69,11 +69,13 @@ public class Box : MonoBehaviour
                 {
                     if (hit.collider.name == "Player")
                     {
+                        SoundManager.soundManager.PlaySound3D("rabbit_gameover_normal", hit.collider.transform, 0.3f);
                         PlayerController.playerController.KillCharacter();
                         return;
                     }
                     if (hit.collider.name == "Phantom")
                     {
+                        SoundManager.soundManager.PlaySound3D("phantom_terminate", hit.collider.transform, 0.1f);
                         PhantomController.phantomController.KillCharacter();
                         return;
                     }
@@ -82,6 +84,9 @@ public class Box : MonoBehaviour
                 // Tile detected, keep Y position constraint to keep the box stable
                 rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
                 transform.position = new Vector3(transform.position.x, Mathf.Ceil(transform.position.y) - 1.0f + checkDistance, transform.position.z);
+
+                if (hit.collider.CompareTag("Box")) SoundManager.soundManager.PlaySound3D("box_land_on_box", this.transform, 0.2f);
+                else SoundManager.soundManager.PlaySound3D("box_land_on_floor", this.transform, 0.2f);
 
                 if (willDropDeath) //hit the ground hard -> Drop Death
                 {
@@ -92,9 +97,6 @@ public class Box : MonoBehaviour
                     isFallComplete = true;
                     isMoveComplete = true; //all tasks done at this turn //toggle when Not willDropDeath.
                 }
-
-                if (hit.collider.CompareTag("Box")) SoundManager.soundManager.PlaySound3D("box_land_on_box", this.transform, 0.2f);
-                else SoundManager.soundManager.PlaySound3D("box_land_on_floor", this.transform, 0.2f);
             }
             else
             {
