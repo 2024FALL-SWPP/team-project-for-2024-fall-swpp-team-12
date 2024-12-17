@@ -119,11 +119,11 @@ public class Button : MonoBehaviour
 
     private void PlaySummonSound(GameObject target)
     {
-        if (target.CompareTag("Box")) SoundManager.soundManager.PlaySound3D("box_summon", this.transform, 0.09f);
-        else if (target.CompareTag("Laser"))
+        if (target.CompareTag("Box")) SoundManager.soundManager.PlaySound3D("box_summon", target.transform, 0.09f);
+        else if (target.CompareTag("Laser") || target.name == "StartPoint")
         {
-            if (target.activeSelf) SoundManager.soundManager.PlaySound3D("laser_on", this.transform, 0.09f);
-            else SoundManager.soundManager.PlaySound3D("laser_off", this.transform, 0.09f);
+            if (target.activeSelf) SoundManager.soundManager.PlaySound3D("laser_on", target.transform, 0.09f);
+            else SoundManager.soundManager.PlaySound3D("laser_off", target.transform, 0.09f);
         }
     }
 
