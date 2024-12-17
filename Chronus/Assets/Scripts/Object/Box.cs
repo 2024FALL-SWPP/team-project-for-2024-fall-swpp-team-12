@@ -92,6 +92,9 @@ public class Box : MonoBehaviour
                     isFallComplete = true;
                     isMoveComplete = true; //all tasks done at this turn //toggle when Not willDropDeath.
                 }
+
+                if (hit.collider.CompareTag("Box")) SoundManager.soundManager.PlaySound3D("box_land_on_box", this.transform, 0.2f);
+                else SoundManager.soundManager.PlaySound3D("box_land_on_floor", this.transform, 0.2f);
             }
             else
             {
@@ -160,7 +163,7 @@ public class Box : MonoBehaviour
                 fallHeightCheck = maxFallHeight;
             }*/
             // If no tile is detected, allow the box to fall
-            if (Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit1, 0.1f, layerMaskFall))
+            if (Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit1, 0.11f, layerMaskFall))
             {
                 if (isBeingPushed)
                 {
@@ -198,7 +201,7 @@ public class Box : MonoBehaviour
     public void canSurviveFall(/*float fallHeightCheck, int layermask*/)
     {
         //check if the character can Survive from this height
-        if (!Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit2, maxFallHeight + 0.1f, layerMaskFall))
+        if (!Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit2, maxFallHeight + 0.11f, layerMaskFall))
         {
             willDropDeath = true;
             isMoveComplete = true; //just pass turn and fall itself alone.
@@ -308,7 +311,7 @@ public class Box : MonoBehaviour
                     }
             }
         }
-
+        if (boxLayer == 0.0f) SoundManager.soundManager.PlaySound3D("box_push", this.transform, 0.08f);
         isBeingPushed = true; //Lock.
         StartCoroutine(SmoothMove(PlayerController.playerController.moveSpeedHor));
         return true;

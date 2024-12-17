@@ -68,8 +68,20 @@ public class Lever : MonoBehaviour
         canToggleDirection = -canToggleDirection;
 
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive ^ isActivated));
+        targetStates.ForEach(state => PlaySummonSound(state.target));
 
+        SoundManager.soundManager.PlaySound3D("lever_push", this.transform, 0.2f);
         isMoveComplete = true;
+    }
+
+    private void PlaySummonSound(GameObject target)
+    {
+        if (target.CompareTag("Box")) SoundManager.soundManager.PlaySound3D("box_summon", this.transform, 0.09f);
+        else if (target.CompareTag("Laser"))
+        {
+            if (target.activeSelf) SoundManager.soundManager.PlaySound3D("laser_on", this.transform, 0.09f);
+            else SoundManager.soundManager.PlaySound3D("laser_off", this.transform, 0.09f);
+        }
     }
 
     public void SaveCurrentState()

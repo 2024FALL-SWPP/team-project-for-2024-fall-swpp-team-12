@@ -50,7 +50,7 @@ public class MovingObstacle : MonoBehaviour
         if (gameObject.activeSelf) turnCount++;
         if (turnCount == turnCycle)
         {
-            Invoke("Move", 0.15f);
+            Invoke("Move", 0.15f); //late call, so isVisible is already flipped.
             isVisible = !isVisible;
             turnCount = 0;
         }
@@ -62,7 +62,7 @@ public class MovingObstacle : MonoBehaviour
 
     private void Move()
     {
-        Vector3 targetPosition = isVisible ? hiddenPosition : visiblePosition;
+        Vector3 targetPosition = !isVisible ? hiddenPosition : visiblePosition;
         CheckOverlapWithCharacters(targetPosition);
         StartCoroutine(MoveObstacle(targetPosition));
     }
@@ -95,6 +95,7 @@ public class MovingObstacle : MonoBehaviour
     {
         Vector3 startPosition = transform.position;
         float maxGap = Vector3.Distance(targetPosition, startPosition);
+        SoundManager.soundManager.PlaySound3D("movingObstacle_move", this.transform, 0.07f);
         while (Vector3.Distance(transform.position, targetPosition) > 0.01f && Vector3.Distance(transform.position, startPosition) < maxGap)
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);

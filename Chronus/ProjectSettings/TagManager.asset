@@ -15,6 +15,7 @@ TagManager:
   - StartTile
   - Wall
   - TutorialTile
+  - Laser
   layers:
   - Default
   - TransparentFX

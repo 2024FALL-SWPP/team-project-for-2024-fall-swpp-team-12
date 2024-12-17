@@ -99,7 +99,10 @@ public class Button : MonoBehaviour
         if (!isPressed)
         {
             targetStates.ForEach(state => state.target.SetActive(!state.isInitiallyActive)); // Toggle state
+            targetStates.ForEach(state => PlaySummonSound(state.target));
             transform.GetChild(1).transform.position = plateOnPosition;
+            SoundManager.soundManager.PlaySound3D("button_press", this.transform, 0.15f);
+
             isPressed = true;
         }
     }
@@ -107,11 +110,21 @@ public class Button : MonoBehaviour
     private void ResetButton()
     {
         targetStates.ForEach(state => state.target.SetActive(state.isInitiallyActive)); // Revert to initial state
+        targetStates.ForEach(state => PlaySummonSound(state.target));
         transform.GetChild(1).transform.position = plateOffPosition;
-
-        //need particle
+        SoundManager.soundManager.PlaySound3D("button_pop", this.transform, 0.13f);
 
         isPressed = false;
+    }
+
+    private void PlaySummonSound(GameObject target)
+    {
+        if (target.CompareTag("Box")) SoundManager.soundManager.PlaySound3D("box_summon", this.transform, 0.09f);
+        else if (target.CompareTag("Laser"))
+        {
+            if (target.activeSelf) SoundManager.soundManager.PlaySound3D("laser_on", this.transform, 0.09f);
+            else SoundManager.soundManager.PlaySound3D("laser_off", this.transform, 0.09f);
+        }
     }
 
     public void SaveCurrentState()
