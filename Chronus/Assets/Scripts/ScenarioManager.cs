@@ -6,7 +6,7 @@ using TMPro;
 
 public class ScenarioManager : MonoBehaviour
 {
-    public static ScenarioManager scenarioManager;
+    public static ScenarioManager scenarioManager; //singleton
     public GameObject monologueText;
     private TextMeshProUGUI monologuePaper;
     private string[] monologues;
@@ -15,6 +15,7 @@ public class ScenarioManager : MonoBehaviour
     private string baseText1;
     private string baseText2;
     private string testMonologue;
+    //wait time variables (hyperparameter)
     private float typeSpeedStartOffset = 2.4f;
     private float typeSpeedEndOffset = 2.3f;
     private float typeSpeedDefault = 0.1f;
