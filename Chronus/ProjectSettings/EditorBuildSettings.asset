@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/LevelBaseScene.unity
     guid: 388a43714c3fe54408772b8f9c869a53
   - enabled: 1
-    path: Assets/Scenes/TestField.unity
+    path: Assets/Scenes/Testing/TestField.unity
     guid: a60391e5f24f19c47938e58e09967625
   - enabled: 1
     path: Assets/Scenes/L-001/L-001-1.unity
