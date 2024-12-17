@@ -10,10 +10,10 @@ public enum SoundType
     SFX,
 }
 
-public class SoundManager: MonoBehaviour
+public class SoundManager : MonoBehaviour
 {
     public static SoundManager soundManager; //singleton
-    
+
     //Mixer
     [SerializeField] private AudioMixer mAudioMixer;
 
