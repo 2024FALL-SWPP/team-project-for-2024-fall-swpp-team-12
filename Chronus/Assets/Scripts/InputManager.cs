@@ -6,6 +6,7 @@ public class InputManager : MonoBehaviour
 {
     public static InputManager inputManager;
     public bool isPaused = false;
+    public bool isPlayingScript = false;
     public Action<string> OnMovementControl; // to PlayerController.HandleMovementInput()
     public Action<string> OnTimeRewindControl; // to PlayerController.HandleTimeRewindInput()
     public Action OnTimeRewindModeToggle; // to PlayerController.ToggleTimeRewind()
@@ -57,12 +58,12 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (!isPaused && (InputManagerTesting.instance == null || !InputManagerTesting.instance.isActiveAndEnabled))
+        if (!isPaused && (InputManagerTesting.instance == null || !InputManagerTesting.instance.isActiveAndEnabled) && !isPlayingScript)
         {
             InvokeAction();
         }
 
-        if (Input.GetKeyDown(KeyCode.Return) && !TurnManager.turnManager.CLOCK && !PlayerController.playerController.isBlinking)
+        if (Input.GetKeyDown(KeyCode.Return) && !TurnManager.turnManager.CLOCK && !PlayerController.playerController.isBlinking && !isPlayingScript)
         {
             SoundManager.soundManager.PlaySound2D("ui_reset", 0.2f);
             OnReset?.Invoke();

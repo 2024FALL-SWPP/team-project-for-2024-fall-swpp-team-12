@@ -59,4 +59,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/L-004/L-004-3.unity
     guid: 03479aac8f3cc4c9c88e9e1d0ec58f55
+  - enabled: 1
+    path: Assets/Scenes/ScriptScenes/Prologue.unity
+    guid: 2d573e422712de84495ddeb4a725f836
+  - enabled: 1
+    path: Assets/Scenes/ScriptScenes/Event.unity
+    guid: 3697b0552967f7648b488249707a011b
   m_configObjects: {}

@@ -14,6 +14,7 @@ public class ScenarioManager : MonoBehaviour
     private string baseText;
     private string baseText1;
     private string baseText2;
+    private string baseText3;
     private string testMonologue;
     //wait time variables (hyperparameter)
     private float typeSpeedStartOffset = 2.4f;
@@ -40,8 +41,9 @@ public class ScenarioManager : MonoBehaviour
         monologueText.SetActive(false);
         monologues = new string[]
         {
-            "땅이 꺼져가는 시대.\n앙상한 바닥을 \'밟고 올라가\', 빛을 쬐고자 한다.\n<press 'm', to read the monologue again>",
-            "이 모든 과오를 되돌리려 노력했다.\n그 \'손잡이\'를 밀어젖히던 기억이 희미해져 간다.",
+            "C h r o n o s\"",
+            "땅이 꺼져가는 시대.\n앙상한 바닥을 \'밟고 올라가\', 빛을 쬐고자 한다.\n< press 'm', to read the monologue Again >",
+            "이 모든 과오를 되돌리려 노력했다.\n그 \'손잡이\'를 밀어재끼던 기억이 희미해져간다.",
             "과거에서 찾아온 아지랑이는 또 미래를 향해,\n죽음을 향해, 뚜벅뚜벅 걸어간다.\n아무리 세게 밀치더라도,\n그 \'잔상\'은 남아 어김없이 돌아올 것이다.",
             "죽음에 붙잡혀 \'땅 아래\' 꺼진 자들을 바라본다.\n육체를 버리고 홀로 살아남은 자가.",
             "크로노스는 실패작이다.\n\'작은 나룻배에 그를 올려\' 태워서 보냈다.",
@@ -53,9 +55,11 @@ public class ScenarioManager : MonoBehaviour
             "\"도통 원리를 알 수가 없구려.\n땅은 대체 왜 꺼지며, 이따금씩 되살아나는 것이오?\"",
             "\"거 잠시 쉽시다. \'셋\'이서 이야기나 나눠보죠.\"\n\"마침 넓고 아늑하니,\n그런데 \'셋\'이라, 지금 둘 밖에 없지 않소?\"",
             "\'숨겨진 통로\'를 찾아보자.\n지금 내겐 시간이 촉박하다.\n크로노스...",
+            "바람...\"",
             "암막을 걷어내고 싶었기에, 이를 뚫어 열어젖혔다.\n그리고는 불어오는 바람에 휩쓸리고 말았다.",
             "과학은 \'미로\'와도 같다.\n과정은 의미심장하나, 끝은 허무할 것이다.",
-            "옛 시설을 그대로 발견할 줄이야.\n\'세 구간의 암호\'또한 그대로다.\n여기서 과연 의미 있는 것을 찾을 수 있을까."
+            "옛 시설을 그대로 발견할 줄이야.\n\'세 구간의 암호\'또한 그대로다.\n여기서 과연 의미 있는 것을 찾을 수 있을까.",
+            "서로에게 \'기대다가\' 결국 길이 달라짐은 필연이었나요, 스승님.\""
         };
         testMonologue = "수백년 전 시작된 땅 꺼짐에 온 세상이 무너졌다.\n" +
             "한 과학자는 시간 역행만이 방법이라 믿고선 연구에 몰두했으나,\n" +
@@ -66,6 +70,7 @@ public class ScenarioManager : MonoBehaviour
         baseText = "";
         baseText1 = "[ 기록 해독 ]" + "\n";
         baseText2 = "{ 대화 녹음 }" + "\n";
+        baseText3 = "\"";
 
         light = directionalLight.GetComponent<Light>();
         defaultLightIntensity = light.intensity;
@@ -77,7 +82,8 @@ public class ScenarioManager : MonoBehaviour
             !isReadingMonologue &&
             !TurnManager.turnManager.CLOCK &&
             !PlayerController.playerController.isTimeRewinding &&
-            !PlayerController.playerController.isBlinking) TestTyping();
+            !PlayerController.playerController.isBlinking &&
+            !InputManager.inputManager.isPlayingScript) TestTyping();
     }
 
     public void TestTyping()
@@ -106,8 +112,9 @@ public class ScenarioManager : MonoBehaviour
     private void GetMonologueText(int index)
     {
         monologue = monologues[index];
-        if (index == 10 || index == 11) baseText = baseText2;
-        else baseText = baseText1;
+        if (index == 12 || index == 13) baseText = baseText2; //dialogue
+        else if (index == 0 || index == 14 || index == 18) baseText = baseText3; //script playing scene
+        else baseText = baseText1; //document
     }
     private void GetTestMonologueText()
     {
