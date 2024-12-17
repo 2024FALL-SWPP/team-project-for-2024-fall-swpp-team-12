@@ -23,7 +23,7 @@ public class RewindToggleEffect : MonoBehaviour
 
     public void LeaveRewindMode()
     {
-        StartOverlayTransition(rewindOverlayColor, Color.clear);
+        if (overlayImage.color != Color.clear) StartOverlayTransition(rewindOverlayColor, Color.clear);
         StopRewindAudio();
     }
 
