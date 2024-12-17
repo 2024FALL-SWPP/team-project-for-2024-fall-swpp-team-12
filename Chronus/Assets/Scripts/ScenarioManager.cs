@@ -64,7 +64,7 @@ public class ScenarioManager : MonoBehaviour
         monologue = testMonologue;
         baseText = "";
         baseText1 = "[ 기록 해독 ]" + "\n";
-        baseText2 = "[ 대화 녹음 }" + "\n";
+        baseText2 = "{ 대화 녹음 }" + "\n";
 
         light = directionalLight.GetComponent<Light>();
         defaultLightIntensity = light.intensity;
@@ -73,6 +73,7 @@ public class ScenarioManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown("m") &&
+            !isReadingMonologue &&
             !TurnManager.turnManager.CLOCK &&
             !PlayerController.playerController.isTimeRewinding &&
             !PlayerController.playerController.isBlinking) TestTyping();
@@ -110,7 +111,7 @@ public class ScenarioManager : MonoBehaviour
     private void GetTestMonologueText()
     {
         monologue = testMonologue;
-        baseText = "[ ��� ���� ]" + "\n";
+        baseText = "[ 배경 설명 ]" + "\n";
     }
 
     IEnumerator Typing()
