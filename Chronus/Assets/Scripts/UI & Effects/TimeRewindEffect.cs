@@ -72,6 +72,6 @@ public class TimeRewindEffect : MonoBehaviour
             activeNewPositionEffect.Clear();
         }
 
-        activeSurroundEffect?.Play();
+        if (PlayerController.playerController.isTimeRewinding) activeSurroundEffect?.Play();
     }
 }
