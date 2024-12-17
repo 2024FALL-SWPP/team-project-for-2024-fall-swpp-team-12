@@ -24,14 +24,31 @@ public class InputManagerTesting : MonoBehaviour
     public bool case13 = false; // Stack 1 more box on top of 2 boxes and see if 3 boxes move together
     public bool case14 = false; // Stacked Box: Top box moved by main character and bottom by phantom
 
-    private Dictionary<int, Dictionary<string, Vector3>> expectedPositions = new Dictionary<int, Dictionary<string, Vector3>>();
-
-    private List<int> failedCases = new List<int>();
+    private Dictionary<int, Dictionary<string, Vector3>> expectedPositions = new();
+    private List<int> failedCases = new();
+    private List<List<string>> testCaseInputs = new()
+    {
+        new List<string>(), 
+        new List<string> { "d", "w", "a", " ", "q", "q", "q", " ", "r", "r", "w" }, // Case 1
+        new List<string> { "d", "w", "w", "a", "s", " ", "q", "q", "q", "q", " ", "r", "r", "r", "a" }, // Case 2
+        new List<string> { "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" }, // Case 3
+        new List<string> { "g", "h", "d", "g" }, // Case 4
+        new List<string> { "d", " ", "w", "q", " ", "s" }, // Case 5
+        new List<string> { "q", "q" }, // Case 6
+        new List<string> { "a", "a", "w", "d", "w", "d", "s", "s" }, // Case 7
+        new List<string> { "a", "a", "w", "d", "d", " ", "q", "q", "q", "q", "q", " ", "r", "r", "r", "r", "w" }, // Case 8
+        new List<string> { "a", "a", "w", "d", "s", "d", "r", "r", "r", "w", " ", "q", "q", "q", "q", " ", "d", "w", "w", "a" }, // Case 9
+        new List<string> { "a", "a", "w", "d", "s", "d", "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" }, // Case 10
+        new List<string> { "a", "a", "w", "d", "s", "d", "w", "d", "d", " ", "q", "q", " ", "r", "w" }, // Case 11
+        new List<string> { "a", "a", "w", "d", "s", "d", "w", "d", "w", "d", " ", "q", "q", "q", " ", "w", "r", "w", "r", "r" }, // Case 12
+        new List<string> { "a", "a", "w", "d", "s", "d", "w", "s", "a", "a", "w", "w", "d", "w", "w", "d", "s", "d", "a", "s" }, // Case 13
+        new List<string> { "a", "a", "w", "d", "s", "d", "r", "r", "r", "r", "w", " ", "q", "q", "q", "q", "q", " ", "a", "a", "w", "d", "d", "d" } // Case 14
+    };
 
     private void Start()
     {
-        if (instance == null)  instance = this;
-        else Destroy(gameObject); 
+        if (instance == null) instance = this;
+        else Destroy(gameObject);
 
         // assure that both InputManager and TurnManager are present
         inputManager = InputManager.inputManager;
@@ -169,8 +186,7 @@ public class InputManagerTesting : MonoBehaviour
         for (int i = 1; i <= 14; i++)
         {
             Debug.Log($"Starting Test Case {i}...");
-            IEnumerator testCase = GetTestCase(i);
-            yield return RunTestCase(i, testCase);
+            yield return RunTestCase(i);
             /*bool runCase = ShouldRunCase(i);
             if (runCase)
             {
@@ -213,32 +229,11 @@ public class InputManagerTesting : MonoBehaviour
         }
     }*/
 
-    private IEnumerator GetTestCase(int caseNumber)
-    {
-        switch (caseNumber)
-        {
-            case 1: return Case1();
-            case 2: return Case2();
-            case 3: return Case3();
-            case 4: return Case4();
-            case 5: return Case5();
-            case 6: return Case6();
-            case 7: return Case7();
-            case 8: return Case8();
-            case 9: return Case9();
-            case 10: return Case10();
-            case 11: return Case11();
-            case 12: return Case12();
-            case 13: return Case13();
-            case 14: return Case14();
-            default:
-                return null;
-        }
-    }
-    private IEnumerator RunTestCase(int caseNumber, IEnumerator testCase)
+    private IEnumerator RunTestCase(int caseNumber)
     {
         Debug.Log($"Running Test Case {caseNumber}...");
-        yield return testCase;
+        yield return new WaitForSeconds(2);
+        yield return ExecuteInputSequence(testCaseInputs[caseNumber]);
 
         bool result = false;
         yield return StartCoroutine(ValidatePositions(caseNumber, (passed) => result = passed));
@@ -331,109 +326,11 @@ public class InputManagerTesting : MonoBehaviour
     {
         foreach (var input in inputSequence)
         {
-            InvokeInput(input); 
-            yield return WaitForTurnEnd(); 
+            InvokeInput(input);
+            yield return WaitForTurnEnd();
         }
     }
-
-    private IEnumerator Case1()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "d", "w", "a", " ", "q", "q", "q", " ", "r", "r", "w" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case2()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "d", "w", "w", "a", "s", " ", "q", "q", "q", "q", " ", "r", "r", "r", "a" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case3()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case4()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "g", "h", "d", "g" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case5()
-    {
-        yield return new WaitForSeconds(1);
-        List<string> inputs = new() { "d", " ", "w", "q", " ", "s" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case6()
-    {
-        yield return new WaitForSeconds(1);
-        List<string> inputs = new() { "q", "q" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case7()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "a", "a", "w", "d", "w", "d", "s", "s" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case8()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "a", "a", "w", "d", "d", " ", "q", "q", "q", "q", "q", " ", "r", "r", "r", "r", "w" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case9()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "a", "a", "w", "d", "s", "d", "r", "r", "r", "w", " ", "q", "q", "q", "q", " ", "d", "w", "w", "a" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case10()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "a", "a", "w", "d", "s", "d", "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case11()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "a", "a", "w", "d", "s", "d", "w", "d", "d", " ", "q", "q", " ", "r", "w" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case12()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "a", "a", "w", "d", "s", "d", "w", "d", "w", "d", " ", "q", "q", "q", " ", "w", "r", "w", "r", "r" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case13()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "a", "a", "w", "d", "s", "d", "w", "s", "a", "a", "w", "w", "d", "w", "w", "d", "s", "d", "a", "s" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
-    private IEnumerator Case14()
-    {
-        yield return new WaitForSeconds(2);
-        List<string> inputs = new() { "a", "a", "w", "d", "s", "d", "r", "r", "r", "r", "w", " ", "q", "q", "q", "q", "q", " ", "a", "a", "w", "d", "d", "d" };
-        yield return ExecuteInputSequence(inputs);
-    }
-
+    
     private void LogAction(string input)
     {
         Debug.Log($"Action Invoked: {input}");
