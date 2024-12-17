@@ -191,7 +191,8 @@ public class LevelManager : MonoBehaviour
                 }
             }
 
-            if (ScenarioManager.scenarioManager != null) {
+            if (ScenarioManager.scenarioManager != null)
+            {
                 ScenarioManager.scenarioManager.StartMonologue(currentLevelIndex);
             }
 
