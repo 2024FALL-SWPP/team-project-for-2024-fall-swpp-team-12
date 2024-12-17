@@ -78,7 +78,7 @@ public class LevelManager : MonoBehaviour
 
         //if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         //else currentLevelIndex = 0;
-        currentLevelIndex = 14; //need for test.
+        currentLevelIndex = 15; //need for test.
 
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
@@ -282,8 +282,7 @@ public class LevelManager : MonoBehaviour
         }
         InputManager.inputManager.OnTimeRewindModeToggle?.Invoke();
         SoundManager.soundManager.PlaySound3D("bell", player.transform, 0.3f);
-        GameObject.Find("GoalTile").gameObject.transform.position = new Vector3(19, -0.2f, 17);
-        currentGoal.position = GameObject.Find("GoalTile").gameObject.transform.position; //move goaltile
+        currentGoal.position = new Vector3(19, -0.2f, 15) + levelOffset;
         GameObject.Find("shortcut0").gameObject.transform.GetChild(0).gameObject.SetActive(true); //new path
         SoundManager.soundManager.PlaySound3D("magic", player.transform, 0.9f);
         yield return new WaitForSeconds(0.4f);
