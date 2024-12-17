@@ -75,7 +75,7 @@ public class SoundManager: MonoBehaviour
 
         Debug.LogWarning(clipName + "cannot be found");
     }
-    public void PlaySound2D(string clipName, bool isLoop = false, SoundType type = SoundType.SFX)
+    public void PlaySound2D(string clipName, float volume = 1.0f, bool isLoop = false, SoundType type = SoundType.SFX)
     {
         GameObject obj = new GameObject("TemporarySoundPlayer 2D");
         TemporarySoundPlayer soundPlayer = obj.AddComponent<TemporarySoundPlayer>();
@@ -83,10 +83,10 @@ public class SoundManager: MonoBehaviour
         //if it is to be looped -> store in list.
         if (isLoop) { AddToList(soundPlayer); }
 
-        soundPlayer.InitSound2D(GetClip(clipName));
+        soundPlayer.InitSound2D(GetClip(clipName), volume);
         soundPlayer.Play(mAudioMixer.FindMatchingGroups(type.ToString())[0], isLoop);
     }
-    public void PlaySound3D(string clipName, Transform audioTarget, bool isLoop = false, SoundType type = SoundType.SFX, bool attachToTarget = true, float minDistance = 0.0f, float maxDistance = 64.0f)
+    public void PlaySound3D(string clipName, Transform audioTarget, float volume = 1.0f, bool isLoop = false, SoundType type = SoundType.SFX, bool attachToTarget = false, float minDistance = 0.0f, float maxDistance = 64.0f)
     {
         GameObject obj = new GameObject("TemporarySoundPlayer 3D");
         obj.transform.localPosition = audioTarget.transform.position; //sound Source!
@@ -97,7 +97,7 @@ public class SoundManager: MonoBehaviour
         //if it is to be looped -> store in list.
         if (isLoop) { AddToList(soundPlayer); }
 
-        soundPlayer.InitSound3D(GetClip(clipName), minDistance, maxDistance);
+        soundPlayer.InitSound3D(GetClip(clipName), volume, minDistance, maxDistance);
         soundPlayer.Play(mAudioMixer.FindMatchingGroups(type.ToString())[0], isLoop);
     }
 

@@ -29,14 +29,16 @@ public class TemporarySoundPlayer : MonoBehaviour
         if (!isLoop) { StartCoroutine(COR_DestroyWhenFinish(mAudioSource.clip.length)); }
     }
 
-    public void InitSound2D(AudioClip clip)
+    public void InitSound2D(AudioClip clip, float volume)
     {
         mAudioSource.clip = clip;
+        mAudioSource.volume = volume;
     }
 
-    public void InitSound3D(AudioClip clip, float minDistance, float maxDistance)
+    public void InitSound3D(AudioClip clip, float volume, float minDistance, float maxDistance)
     {
         mAudioSource.clip = clip;
+        mAudioSource.volume = volume;
         mAudioSource.spatialBlend = 1.0f;
         mAudioSource.rolloffMode = AudioRolloffMode.Linear;
         mAudioSource.minDistance = minDistance;
