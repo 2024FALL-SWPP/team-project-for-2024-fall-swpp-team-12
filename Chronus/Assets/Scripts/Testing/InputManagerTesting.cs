@@ -32,7 +32,7 @@ public class InputManagerTesting : MonoBehaviour
     private ListIterator<List<string>> testCaseIterator;
     private List<List<string>> testCaseInputs = new()
     {
-        new List<string>(), 
+        new List<string>(),
         new List<string> { "d", "w", "a", " ", "q", "q", "q", " ", "r", "r", "w" }, // Case1: Pushing same box to different direction (-> + ^)
         new List<string> { "d", "w", "w", "a", "s", " ", "q", "q", "q", "q", " ", "r", "r", "r", "a" }, // Case2: Box target is the same as player target
         new List<string> { "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" }, // Case3: Box target is the same as clone target
@@ -193,7 +193,7 @@ public class InputManagerTesting : MonoBehaviour
             yield return RunTestCase(testCaseNumber, testInputs, expectedPositions);
             testCaseNumber++;
         }
-        
+
         inputManager.OnMovementControl -= LogAction;
         inputManager.OnTimeRewindControl -= LogAction;
 
@@ -301,7 +301,7 @@ public class InputManagerTesting : MonoBehaviour
             yield return WaitForTurnEnd();
         }
     }
-    
+
     private void LogAction(string input)
     {
         Debug.Log($"Action Invoked: {input}");
