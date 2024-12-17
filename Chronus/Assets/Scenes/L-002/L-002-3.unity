@@ -1241,7 +1241,6 @@ MonoBehaviour:
   turnCycle: 3
   moveSpeed: 4
   isMoveComplete: 0
-  isDependantOnSwitch: 0
 --- !u!1 &1025417252
 GameObject:
   m_ObjectHideFlags: 0
@@ -1510,7 +1509,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -19.01
+      value: -19
       objectReference: {fileID: 0}
     - target: {fileID: 4049557813592324753, guid: 15d5ef41fa4ec0040a6ff31c1fac50c7, type: 3}
       propertyPath: m_LocalPosition.y
