@@ -7,7 +7,7 @@ using UnityEngine.Audio;
 public enum SoundType
 {
     BGM,
-    EFFECT,
+    SFX,
 }
 
 public class SoundManager: MonoBehaviour
@@ -19,7 +19,7 @@ public class SoundManager: MonoBehaviour
 
     //Volume
     private float mCurrentBGMVolume;
-    private float mCurrentEffectVolume;
+    private float mCurrentSFXVolume;
 
     //Sound Clips
     private Dictionary<string, AudioClip> mClipsDictionary;
@@ -42,6 +42,8 @@ public class SoundManager: MonoBehaviour
         }
 
         mInstantiatedSounds = new List<TemporarySoundPlayer>();
+
+        InitVolumes(mCurrentBGMVolume, mCurrentSFXVolume);
     }
 
     private AudioClip GetClip(string clipName)
@@ -52,12 +54,13 @@ public class SoundManager: MonoBehaviour
 
         return clip;
     }
-
     //if it is to be looped -> store in list. -> stop loop: delete from list
     private void AddToList(TemporarySoundPlayer soundPlayer)
     {
         mInstantiatedSounds.Add(soundPlayer);
     }
+
+    //START or STOP PLAYING
     public void StopLoopSound(string clipName)
     {
         foreach (TemporarySoundPlayer audioPlayer in mInstantiatedSounds)
@@ -72,8 +75,7 @@ public class SoundManager: MonoBehaviour
 
         Debug.LogWarning(clipName + "cannot be found");
     }
-
-    public void PlaySound2D(string clipName, float delay = 0f, bool isLoop = false, SoundType type = SoundType.EFFECT)
+    public void PlaySound2D(string clipName, bool isLoop = false, SoundType type = SoundType.SFX)
     {
         GameObject obj = new GameObject("TemporarySoundPlayer 2D");
         TemporarySoundPlayer soundPlayer = obj.AddComponent<TemporarySoundPlayer>();
@@ -82,12 +84,12 @@ public class SoundManager: MonoBehaviour
         if (isLoop) { AddToList(soundPlayer); }
 
         soundPlayer.InitSound2D(GetClip(clipName));
-        soundPlayer.Play(mAudioMixer.FindMatchingGroups(type.ToString())[0], delay, isLoop);
+        soundPlayer.Play(mAudioMixer.FindMatchingGroups(type.ToString())[0], isLoop);
     }
-    public void PlaySound3D(string clipName, Transform audioTarget, float delay = 0f, bool isLoop = false, SoundType type = SoundType.EFFECT, bool attachToTarget = true, float minDistance = 0.0f, float maxDistance = 50.0f)
+    public void PlaySound3D(string clipName, Transform audioTarget, bool isLoop = false, SoundType type = SoundType.SFX, bool attachToTarget = true, float minDistance = 0.0f, float maxDistance = 64.0f)
     {
         GameObject obj = new GameObject("TemporarySoundPlayer 3D");
-        obj.transform.localPosition = audioTarget.transform.position;
+        obj.transform.localPosition = audioTarget.transform.position; //sound Source!
         if (attachToTarget) { obj.transform.parent = audioTarget; }
 
         TemporarySoundPlayer soundPlayer = obj.AddComponent<TemporarySoundPlayer>();
@@ -96,22 +98,20 @@ public class SoundManager: MonoBehaviour
         if (isLoop) { AddToList(soundPlayer); }
 
         soundPlayer.InitSound3D(GetClip(clipName), minDistance, maxDistance);
-        soundPlayer.Play(mAudioMixer.FindMatchingGroups(type.ToString())[0], delay, isLoop);
+        soundPlayer.Play(mAudioMixer.FindMatchingGroups(type.ToString())[0], isLoop);
     }
 
-    //when scene load
+    //VOLUME SET when scene load
     public void InitVolumes(float bgm, float effect)
     {
         SetVolume(SoundType.BGM, bgm);
-        SetVolume(SoundType.EFFECT, effect);
+        SetVolume(SoundType.SFX, effect);
     }
-
-    //when changing options
     public void SetVolume(SoundType type, float value)
     {
         mAudioMixer.SetFloat(type.ToString(), value);
     }
-
+    /*
     //for playing random sounds
     public static string Range(int from, int includedTo, bool isStartZero = false)
     {
@@ -120,6 +120,6 @@ public class SoundManager: MonoBehaviour
         int value = UnityEngine.Random.Range(from, includedTo + 1);
 
         return value < 10 && isStartZero ? '0' + value.ToString() : value.ToString();
-    }
+    }*/
 }
 //Reference: https://bonnate.tistory.com/183
