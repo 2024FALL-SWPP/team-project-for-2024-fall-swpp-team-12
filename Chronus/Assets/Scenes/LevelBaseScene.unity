@@ -845,7 +845,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rewindOverlayColor: {r: 1, g: 1, b: 1, a: 0.12941177}
-  transitionSpeed: 3
   rewindStartAudio: {fileID: 8300000, guid: 55da9333239a57246a539976acf9e880, type: 3}
   overlayImage: {fileID: 978806321}
 --- !u!114 &358138595
@@ -3107,8 +3106,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4a6cb256b67a1c43bc128dee564b876, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mAudioMixer: {fileID: 0}
-  mPreloadClips: []
+  mAudioMixer: {fileID: 24100000, guid: e55953473a7953e4bb05f590378e33fe, type: 2}
+  mPreloadClips:
+  - {fileID: 8300000, guid: 1ecd8df43e123544cb5198d175023d6e, type: 3}
+  - {fileID: 8300000, guid: 3e70844448f78304ead9241b48a15a54, type: 3}
+  - {fileID: 8300000, guid: e60d632edf319b34fbbfb9bdf3b5c079, type: 3}
+  - {fileID: 8300000, guid: f7c2f72b00ee18f49b660809579f57f5, type: 3}
+  - {fileID: 8300000, guid: c7ff6c1508b6ff64eb53d388016061b2, type: 3}
+  - {fileID: 8300000, guid: 44ff9f5ddebedc044bd9ec4769f426ea, type: 3}
+  - {fileID: 8300000, guid: 8c6d6bb6f0dec0742a98d7d7a76ab2f9, type: 3}
+  - {fileID: 8300000, guid: a73c37d3c6203f341a9861c5f525239a, type: 3}
+  - {fileID: 8300000, guid: bd7400792d68bb34c842e20f93169ee1, type: 3}
+  - {fileID: 8300000, guid: 5d2144e63085d404089e6e3ad7470949, type: 3}
+  - {fileID: 8300000, guid: 744fc186eb2699845ad92839f4aeb24c, type: 3}
+  - {fileID: 8300000, guid: 328f3ff985de0ab45a06a0d36ff99c45, type: 3}
+  - {fileID: 8300000, guid: 54a5ba57fe7d2044fb8b41d081c25508, type: 3}
+  - {fileID: 8300000, guid: b513997c2f8119d42b952ccb00ef4f1f, type: 3}
+  - {fileID: 8300000, guid: 4ae4f5bdb51efb94889d92e55de823b9, type: 3}
+  - {fileID: 8300000, guid: 7a15b35cbf3094041937596bf41bf8b3, type: 3}
+  - {fileID: 8300000, guid: 706d855c3ccb6bc41beca5b5b3d9b61e, type: 3}
+  - {fileID: 8300000, guid: a8685c73ccce97242b8c99fe5dafedae, type: 3}
+  - {fileID: 8300000, guid: 26018aba92523444895290c7060dcc31, type: 3}
+  - {fileID: 8300000, guid: 314e5a3a5bc5249489cc37bfdec11742, type: 3}
+  - {fileID: 8300000, guid: 410831c263e20c641b8a49dea6745a90, type: 3}
+  - {fileID: 8300000, guid: 6ce46d836c18de042b9793334745a652, type: 3}
+  - {fileID: 8300000, guid: c72cf12208d2db9469cb6d827f99e4e7, type: 3}
+  - {fileID: 8300000, guid: a7a110d71b420a94998610c044dbffae, type: 3}
+  - {fileID: 8300000, guid: f958defbca6902f419e80cfef727adb2, type: 3}
+  - {fileID: 8300000, guid: fe1be7fb2d0df8d4ebbaef1467c3bd18, type: 3}
+  - {fileID: 8300000, guid: 0c9610cfe52244f4baa1387042f05857, type: 3}
 --- !u!1 &1344707601
 GameObject:
   m_ObjectHideFlags: 0
