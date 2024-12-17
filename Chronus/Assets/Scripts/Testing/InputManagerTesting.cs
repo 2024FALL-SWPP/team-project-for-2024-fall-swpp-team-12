@@ -2,14 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class ListIterator<T>
+{
+    private readonly List<T> collection;
+    private int currentIndex;
+
+    public ListIterator(List<T> collection)
+    {
+        this.collection = collection ?? throw new System.ArgumentNullException(nameof(collection));
+        currentIndex = 0;
+    }
+
+    public bool HasNext() => currentIndex < collection.Count;
+    public T Next() => collection[currentIndex++];
+    public void Reset() => currentIndex = 0;
+    public T Current => collection[currentIndex];
+}
+
 public class InputManagerTesting : MonoBehaviour
 {
     public static InputManagerTesting instance;
     private InputManager inputManager;
     private TurnManager turnManager;
     public PlayerController player;
-    private Dictionary<int, Dictionary<string, Vector3>> expectedPositions = new();
+    private List<Dictionary<string, Vector3>> expectedPositionsList = new();
+    private ListIterator<Dictionary<string, Vector3>> expectedPositionsIterator;
+
     private List<int> failedCases = new();
+    private ListIterator<List<string>> testCaseIterator;
     private List<List<string>> testCaseInputs = new()
     {
         new List<string>(), 
@@ -37,118 +57,121 @@ public class InputManagerTesting : MonoBehaviour
         inputManager = InputManager.inputManager;
         turnManager = TurnManager.turnManager;
 
+        testCaseIterator = new ListIterator<List<string>>(testCaseInputs);
         InitializeExpectedPositions();
+        expectedPositionsIterator = new ListIterator<Dictionary<string, Vector3>>(expectedPositionsList);
+
         StartCoroutine(RunTests());
     }
 
     private void InitializeExpectedPositions()
     {
-        expectedPositions[1] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[2] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, -1) },
             { "boxA", new Vector3(1, 1, 1) },
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[3] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[4] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(3, 1, -1) },
             { "boxA", new Vector3(1, 1, 1) },
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[5] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, -1) },
             { "boxA", new Vector3(1, 1, 1) },
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[6] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, -1) },
             { "boxA", new Vector3(1, -10.1834f, -3) },
             { "boxA (1)", new Vector3(-1, -10.03161f, -3) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[7] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 1) },
-            { "Phantom", new Vector3(1,1,1)},
+            { "Phantom", new Vector3(1, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
             { "boxA (1)", new Vector3(1, 3, 3) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[8] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 3) },
-            { "Phantom", new Vector3(1,1,-1)},
+            { "Phantom", new Vector3(1, 1, -1) },
             { "boxA", new Vector3(1, 1, 1) },
             { "boxA (1)", new Vector3(1, 3, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[9] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
             { "boxA (1)", new Vector3(1, 3, 3) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[10] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 3) },
-            { "Phantom", new Vector3(5,1,1)},
+            { "Phantom", new Vector3(5, 1, 1) },
             { "boxA", new Vector3(1, -10.1834f, 5) },
             { "boxA (1)", new Vector3(1, -10.03161f, 5) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[11] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 5) },
             { "boxA", new Vector3(1, -10.1834f, 7) },
             { "boxA (1)", new Vector3(1, -10.03161f, 7) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
 
-        expectedPositions[12] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 3) },
             { "boxA", new Vector3(1, 1, 1) },
-            { "boxA (1)", new Vector3(1, 3,1) },
+            { "boxA (1)", new Vector3(1, 3, 1) },
             { "boxA (3)", new Vector3(1, 5, 1) }
-        };
+        });
 
-        expectedPositions[13] = new Dictionary<string, Vector3>
+        expectedPositionsList.Add(new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(3, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
-            { "boxA (1)", new Vector3(5, 1,1) },
+            { "boxA (1)", new Vector3(5, 1, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
-        };
+        });
     }
 
     private IEnumerator RunTests()
@@ -157,13 +180,20 @@ public class InputManagerTesting : MonoBehaviour
         inputManager.OnTimeRewindControl += LogAction;
 
         Debug.Log("Starting all test cases...");
+        testCaseIterator.Reset();
+        expectedPositionsIterator.Reset();
 
-        for (int i = 1; i <= 13; i++)
+        int testCaseNumber = 1;
+        while (testCaseIterator.HasNext() && expectedPositionsIterator.HasNext())
         {
-            Debug.Log($"Starting Test Case {i}...");
-            yield return RunTestCase(i);
-        }
+            var testInputs = testCaseIterator.Next();
+            var expectedPositions = expectedPositionsIterator.Next();
 
+            Debug.Log($"Starting Test Case {testCaseNumber}...");
+            yield return RunTestCase(testCaseNumber, testInputs, expectedPositions);
+            testCaseNumber++;
+        }
+        
         inputManager.OnMovementControl -= LogAction;
         inputManager.OnTimeRewindControl -= LogAction;
 
@@ -177,14 +207,14 @@ public class InputManagerTesting : MonoBehaviour
         }
     }
 
-    private IEnumerator RunTestCase(int caseNumber)
+    private IEnumerator RunTestCase(int caseNumber, List<string> testInputs, Dictionary<string, Vector3> expectedPositions)
     {
         Debug.Log($"Running Test Case {caseNumber}...");
         yield return new WaitForSeconds(2);
         yield return ExecuteInputSequence(testCaseInputs[caseNumber]);
 
         bool result = false;
-        yield return StartCoroutine(ValidatePositions(caseNumber, (passed) => result = passed));
+        yield return StartCoroutine(ValidatePositions(caseNumber, expectedPositions, (passed) => result = passed));
         if (!result) failedCases.Add(caseNumber);
 
         inputManager.OnReset?.Invoke();
@@ -193,18 +223,11 @@ public class InputManagerTesting : MonoBehaviour
         yield return new WaitForSeconds(1);
     }
 
-    private IEnumerator ValidatePositions(int caseNumber, System.Action<bool> callback)
+    private IEnumerator ValidatePositions(int caseNumber, Dictionary<string, Vector3> expectedPositions, System.Action<bool> callback)
     {
-        if (!expectedPositions.ContainsKey(caseNumber))
-        {
-            Debug.LogError($"No expected positions defined for Case {caseNumber}");
-            callback(false);
-            yield break;
-        }
-
         bool passed = true;
 
-        foreach (var kvp in expectedPositions[caseNumber])
+        foreach (var kvp in expectedPositions)
         {
             string objectName = kvp.Key;
             Vector3 expectedPosition = kvp.Value;
