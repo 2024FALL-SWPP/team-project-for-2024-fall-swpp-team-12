@@ -39,8 +39,8 @@ public class ScenarioManager : MonoBehaviour
         monologueText.SetActive(false);
         monologues = new string[]
         {
-            "땅이 꺼져가는 시대.\n앙상한 바닥을 \'밟고 올라가\', 빛을 쬐고자 한다.\n< press 'm', to read the monologue Again >",
-            "이 모든 과오를 되돌리려 노력했다.\n그 \'손잡이\'를 밀어재끼던 기억이 희미해져간다.",
+            "땅이 꺼져가는 시대.\n앙상한 바닥을 \'밟고 올라가\', 빛을 쬐고자 한다.\n<press 'm', to read the monologue again>",
+            "이 모든 과오를 되돌리려 노력했다.\n그 \'손잡이\'를 밀어젖히던 기억이 희미해져 간다.",
             "과거에서 찾아온 아지랑이는 또 미래를 향해,\n죽음을 향해, 뚜벅뚜벅 걸어간다.\n아무리 세게 밀치더라도,\n그 \'잔상\'은 남아 어김없이 돌아올 것이다.",
             "죽음에 붙잡혀 \'땅 아래\' 꺼진 자들을 바라본다.\n육체를 버리고 홀로 살아남은 자가.",
             "크로노스는 실패작이다.\n\'작은 나룻배에 그를 올려\' 태워서 보냈다.",

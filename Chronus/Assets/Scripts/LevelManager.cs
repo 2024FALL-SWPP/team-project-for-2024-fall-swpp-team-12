@@ -84,13 +84,6 @@ public class LevelManager : MonoBehaviour
         InputManager.inputManager.OnReset += ResetLevel;
     }
 
-    private void OnApplicationQuit()
-    // Save is done automatically when quitting the game; Load is done at the Start()
-    {
-        PlayerPrefs.SetInt("SavedLevelIndex", currentLevelIndex);
-        PlayerPrefs.Save();
-    }
-
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -118,6 +111,8 @@ public class LevelManager : MonoBehaviour
 
         if (currentLevelIndex > 0) previousLevelIndex = currentLevelIndex - 1;
         currentLevelIndex++;
+        PlayerPrefs.SetInt("SavedLevelIndex", currentLevelIndex);
+        PlayerPrefs.Save();
         LoadLevel(currentLevelIndex);
 
         // Wait until the next level is fully loaded
