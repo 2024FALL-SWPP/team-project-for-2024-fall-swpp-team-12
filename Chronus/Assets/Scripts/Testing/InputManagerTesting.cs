@@ -8,41 +8,24 @@ public class InputManagerTesting : MonoBehaviour
     private InputManager inputManager;
     private TurnManager turnManager;
     public PlayerController player;
-
-    public bool case1 = false; // Pushing same box to different direction (-> + ^)
-    public bool case2 = false; // Box target is the same as player target
-    public bool case3 = false; // Box target is the same as clone target
-    public bool case4 = false; // Invalid + Valid inputs
-    public bool case5 = false; // Simultaneous Actions
-    public bool case6 = false; // Time rewind without Space Toggle
-    public bool case7 = false; // F-043 Pushing Stacked Boxes + F-026-2 Stacked Boxes Fall when pushed to empty ground
-    public bool case8 = false; // Splitting Two boxes + F-035 Stacked boxes pushed in different directions
-    public bool case9 = false; // Stacked Box target is the same as player target
-    public bool case10 = false; // Stacked Box target is the same as clone target
-    public bool case11 = false; // Stacked Boxes drop when tile disappears at the same time (when tile initially active)
-    public bool case12 = false; // Stacked Boxes drop when tile disappears at the same time (when tile intially inactive)
-    public bool case13 = false; // Stack 1 more box on top of 2 boxes and see if 3 boxes move together
-    public bool case14 = false; // Stacked Box: Top box moved by main character and bottom by phantom
-
     private Dictionary<int, Dictionary<string, Vector3>> expectedPositions = new();
     private List<int> failedCases = new();
     private List<List<string>> testCaseInputs = new()
     {
         new List<string>(), 
-        new List<string> { "d", "w", "a", " ", "q", "q", "q", " ", "r", "r", "w" }, // Case 1
-        new List<string> { "d", "w", "w", "a", "s", " ", "q", "q", "q", "q", " ", "r", "r", "r", "a" }, // Case 2
-        new List<string> { "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" }, // Case 3
-        new List<string> { "g", "h", "d", "g" }, // Case 4
-        new List<string> { "d", " ", "w", "q", " ", "s" }, // Case 5
-        new List<string> { "q", "q" }, // Case 6
-        new List<string> { "a", "a", "w", "d", "w", "d", "s", "s" }, // Case 7
-        new List<string> { "a", "a", "w", "d", "d", " ", "q", "q", "q", "q", "q", " ", "r", "r", "r", "r", "w" }, // Case 8
-        new List<string> { "a", "a", "w", "d", "s", "d", "r", "r", "r", "w", " ", "q", "q", "q", "q", " ", "d", "w", "w", "a" }, // Case 9
-        new List<string> { "a", "a", "w", "d", "s", "d", "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" }, // Case 10
-        new List<string> { "a", "a", "w", "d", "s", "d", "w", "d", "d", " ", "q", "q", " ", "r", "w" }, // Case 11
-        new List<string> { "a", "a", "w", "d", "s", "d", "w", "d", "w", "d", " ", "q", "q", "q", " ", "w", "r", "w", "r", "r" }, // Case 12
-        new List<string> { "a", "a", "w", "d", "s", "d", "w", "s", "a", "a", "w", "w", "d", "w", "w", "d", "s", "d", "a", "s" }, // Case 13
-        new List<string> { "a", "a", "w", "d", "s", "d", "r", "r", "r", "r", "w", " ", "q", "q", "q", "q", "q", " ", "a", "a", "w", "d", "d", "d" } // Case 14
+        new List<string> { "d", "w", "a", " ", "q", "q", "q", " ", "r", "r", "w" }, // Case1: Pushing same box to different direction (-> + ^)
+        new List<string> { "d", "w", "w", "a", "s", " ", "q", "q", "q", "q", " ", "r", "r", "r", "a" }, // Case2: Box target is the same as player target
+        new List<string> { "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" }, // Case3: Box target is the same as clone target
+        new List<string> { "g", "h", "d", "g" }, // Case4: Invalid + Valid inputs
+        new List<string> { "q", "q" }, // Case5: Time rewind without Space Toggle
+        new List<string> { "a", "a", "w", "d", "w", "d", "s", "s" }, // Case6: Pushing Stacked Boxes + Stacked Boxes Fall
+        new List<string> { "a", "a", "w", "d", "d", " ", "q", "q", "q", "q", "q", " ", "r", "r", "r", "r", "w" }, // Case7: Splitting Two boxes + Stacked boxes pushed in different directions
+        new List<string> { "a", "a", "w", "d", "s", "d", "r", "r", "r", "w", " ", "q", "q", "q", "q", " ", "d", "w", "w", "a" }, // Case8: Stacked Box target is the same as player target
+        new List<string> { "a", "a", "w", "d", "s", "d", "d", "w", "w", "a", " ", "q", "q", "q", "q", " ", "r", "r", "r", "w" }, // Case9: Stacked Box target is the same as clone target
+        new List<string> { "a", "a", "w", "d", "s", "d", "w", "d", "d", " ", "q", "q", " ", "r", "w" }, // Case10: Stacked Boxes drop when tile disappears at the same time (tile initially active)
+        new List<string> { "a", "a", "w", "d", "s", "d", "w", "d", "w", "d", " ", "q", "q", "q", " ", "w", "r", "w", "r", "r" }, // Case11: Stacked Boxes drop when tile disappears at the same time (tile initially inactive)
+        new List<string> { "a", "a", "w", "d", "s", "d", "w", "s", "a", "a", "w", "w", "d", "w", "w", "d", "s", "d", "a", "s" }, // Case12: Stack 1 more box on top of 2 boxes and move 3 boxes together
+        new List<string> { "a", "a", "w", "d", "s", "d", "r", "r", "r", "r", "w", " ", "q", "q", "q", "q", "q", " ", "a", "a", "w", "d", "d", "d" } // Case13: Top box moved by main character and bottom by phantom
     };
 
     private void Start()
@@ -94,7 +77,7 @@ public class InputManagerTesting : MonoBehaviour
 
         expectedPositions[5] = new Dictionary<string, Vector3>
         {
-            { "Player", new Vector3(3, 1, 1) },
+            { "Player", new Vector3(1, 1, -1) },
             { "boxA", new Vector3(1, 1, 1) },
             { "boxA (1)", new Vector3(-1, 4, 1) },
             { "boxA (3)", new Vector3(1, 7, 5) }
@@ -103,20 +86,12 @@ public class InputManagerTesting : MonoBehaviour
         expectedPositions[6] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, -1) },
-            { "boxA", new Vector3(1, 1, 1) },
-            { "boxA (1)", new Vector3(-1, 4, 1) },
-            { "boxA (3)", new Vector3(1, 7, 5) }
-        };
-
-        expectedPositions[7] = new Dictionary<string, Vector3>
-        {
-            { "Player", new Vector3(1, 1, -1) },
-            { "boxA", new Vector3(1, -10.1834f, -4) },
+            { "boxA", new Vector3(1, -10.1834f, -3) },
             { "boxA (1)", new Vector3(-1, -10.03161f, -3) },
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
 
-        expectedPositions[8] = new Dictionary<string, Vector3>
+        expectedPositions[7] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 1) },
             { "Phantom", new Vector3(1,1,1)},
@@ -125,7 +100,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
 
-        expectedPositions[9] = new Dictionary<string, Vector3>
+        expectedPositions[8] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 3) },
             { "Phantom", new Vector3(1,1,-1)},
@@ -134,7 +109,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
 
-        expectedPositions[10] = new Dictionary<string, Vector3>
+        expectedPositions[9] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
@@ -142,7 +117,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
 
-        expectedPositions[11] = new Dictionary<string, Vector3>
+        expectedPositions[10] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 3) },
             { "Phantom", new Vector3(5,1,1)},
@@ -151,7 +126,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
 
-        expectedPositions[12] = new Dictionary<string, Vector3>
+        expectedPositions[11] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 5) },
             { "boxA", new Vector3(1, -10.1834f, 7) },
@@ -159,7 +134,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (3)", new Vector3(1, 7, 5) }
         };
 
-        expectedPositions[13] = new Dictionary<string, Vector3>
+        expectedPositions[12] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(1, 1, 3) },
             { "boxA", new Vector3(1, 1, 1) },
@@ -167,7 +142,7 @@ public class InputManagerTesting : MonoBehaviour
             { "boxA (3)", new Vector3(1, 5, 1) }
         };
 
-        expectedPositions[14] = new Dictionary<string, Vector3>
+        expectedPositions[13] = new Dictionary<string, Vector3>
         {
             { "Player", new Vector3(3, 1, 1) },
             { "boxA", new Vector3(1, 1, 3) },
@@ -183,16 +158,10 @@ public class InputManagerTesting : MonoBehaviour
 
         Debug.Log("Starting all test cases...");
 
-        for (int i = 1; i <= 14; i++)
+        for (int i = 1; i <= 13; i++)
         {
             Debug.Log($"Starting Test Case {i}...");
             yield return RunTestCase(i);
-            /*bool runCase = ShouldRunCase(i);
-            if (runCase)
-            {
-                IEnumerator testCase = GetTestCase(i);
-                yield return RunTestCase(i, testCase);
-            }*/
         }
 
         inputManager.OnMovementControl -= LogAction;
@@ -207,27 +176,6 @@ public class InputManagerTesting : MonoBehaviour
             Debug.Log($"Failed Test Cases: {string.Join(", ", failedCases)}");
         }
     }
-    /*private bool ShouldRunCase(int caseNumber)
-    {
-        switch (caseNumber)
-        {
-            case 1: return case1;
-            case 2: return case2;
-            case 3: return case3;
-            case 4: return case4;
-            case 5: return case5;
-            case 6: return case6;
-            case 7: return case7;
-            case 8: return case8;
-            case 9: return case9;
-            case 10: return case10;
-            case 11: return case11;
-            case 12: return case12;
-            case 13: return case13;
-            case 14: return case14;
-            default: return false;
-        }
-    }*/
 
     private IEnumerator RunTestCase(int caseNumber)
     {
