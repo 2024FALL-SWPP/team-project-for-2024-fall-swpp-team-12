@@ -191,7 +191,9 @@ public class LevelManager : MonoBehaviour
                 }
             }
 
-            ScenarioManager.scenarioManager.StartMonologue(currentLevelIndex);
+            if (ScenarioManager.scenarioManager != null) {
+                ScenarioManager.scenarioManager.StartMonologue(currentLevelIndex);
+            }
 
             TurnManager.turnManager.InitializeObjectLists();
             ResetLevel();
