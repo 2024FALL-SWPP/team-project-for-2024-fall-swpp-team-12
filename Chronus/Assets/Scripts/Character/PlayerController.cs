@@ -279,8 +279,16 @@ public class PlayerController : CharacterBase
     {
         if (!isTimeRewinding && (isBlinking || TurnManager.turnManager.CLOCK || willDropDeath)) return; // assuring that every action should be ended (during the turn)
 
-        if (!isTimeRewinding) TurnManager.turnManager.EnterTimeRewind();
-        else TurnManager.turnManager.LeaveTimeRewind();
+        if (!isTimeRewinding)
+        {
+            SoundManager.soundManager.PlaySound2D("timeRewind_enter", 0.1f);
+            TurnManager.turnManager.EnterTimeRewind();
+        }
+        else
+        {
+            SoundManager.soundManager.PlaySound2D("timeRewind_exit", 0.1f);
+            TurnManager.turnManager.LeaveTimeRewind();
+        }
     }
 
     private void HandleTimeRewindInput(string command)
@@ -289,11 +297,19 @@ public class PlayerController : CharacterBase
         switch (command)
         {
             case "q": // go to the 1 turn past
-                if (positionIterator.HasPrevious()) TurnManager.turnManager.GoToThePast();
+                if (positionIterator.HasPrevious())
+                {
+                    SoundManager.soundManager.PlaySound2D("timeRewind_goPast", 0.1f);
+                    TurnManager.turnManager.GoToThePast();
+                }
                 break;
 
             case "e": // go to the 1 turn future
-                if (positionIterator.HasNext()) TurnManager.turnManager.GoToTheFuture();
+                if (positionIterator.HasNext())
+                {
+                    SoundManager.soundManager.PlaySound2D("timeRewind_goFuture", 0.1f);
+                    TurnManager.turnManager.GoToTheFuture();
+                }
                 break;
         }
     }

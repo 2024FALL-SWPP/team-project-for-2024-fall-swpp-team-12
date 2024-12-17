@@ -310,6 +310,7 @@ public class TurnManager : MonoBehaviour
         // ^^ need to implement this!!
         if (!player.isBlinking && !CLOCK && !player.isTimeRewinding && player.positionIterator.HasPrevious())
         {
+            SoundManager.soundManager.PlaySound2D("ui_undo", 0.1f);
             if (player.willDropDeath)
             {
                 player.StopFallCharacter();

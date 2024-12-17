@@ -18,12 +18,12 @@ public class ScenarioManager : MonoBehaviour
     //wait time variables (hyperparameter)
     private float typeSpeedStartOffset = 2.4f;
     private float typeSpeedEndOffset = 2.3f;
-    private float typeSpeedDefault = 0.1f;
+    private float typeSpeedDefault = 0.08f;
     private float typeSpeedSingleQuote = 0.03f;
     private float typeSpeedDoubleQuote = 0.4f;
-    private float typeSpeedRest = 0.8f;
-    private float typeSpeedComma = 1.0f;
-    private float typeSpeedNewLine = 0.2f;
+    private float typeSpeedRest = 0.7f;
+    private float typeSpeedComma = 0.6f;
+    private float typeSpeedNewLine = 0.16f;
 
     public GameObject directionalLight;
     private Light light;
@@ -117,8 +117,10 @@ public class ScenarioManager : MonoBehaviour
 
     IEnumerator Typing()
     {
+        SoundManager.soundManager.PlaySound2D("ui_monologue_startend", 0.3f);
         yield return new WaitForSeconds(typeSpeedStartOffset / 3);
         monologuePaper.text = baseText;
+        SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.2f);
         yield return new WaitForSeconds(typeSpeedStartOffset * 2 / 3);
         for (int i = 0; i < monologue.Length; i++)
         {
@@ -130,21 +132,26 @@ public class ScenarioManager : MonoBehaviour
                 switch (monologue[i])
                 {
                     case '\'':
+                        SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.03f);
                         typeSpeed = typeSpeedSingleQuote;
                         break;
                     case '\"':
+                        SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.15f);
                         typeSpeed = typeSpeedDoubleQuote;
                         break;
                     case ',':
+                        SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.1f);
                         typeSpeed = typeSpeedRest;
                         break;
                     case '.':
+                        SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.1f);
                         typeSpeed = typeSpeedComma;
                         break;
                     case '\n':
                         typeSpeed = typeSpeedNewLine;
                         break;
                     default:
+                        SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.1f);
                         typeSpeed = typeSpeedDefault;
                         break;
                 }
@@ -159,6 +166,7 @@ public class ScenarioManager : MonoBehaviour
             autoSkip += Time.deltaTime;
             yield return null;
         }
+        SoundManager.soundManager.PlaySound2D("ui_monologue_startend", 0.3f);
         monologueText.SetActive(false);
         if (isReadingMonologue) isReadingMonologue = false;
     }
