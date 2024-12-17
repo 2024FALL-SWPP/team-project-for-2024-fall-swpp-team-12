@@ -3134,6 +3134,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f958defbca6902f419e80cfef727adb2, type: 3}
   - {fileID: 8300000, guid: fe1be7fb2d0df8d4ebbaef1467c3bd18, type: 3}
   - {fileID: 8300000, guid: 0c9610cfe52244f4baa1387042f05857, type: 3}
+  - {fileID: 8300000, guid: 8ded12c4969b52b44ae5158775c97787, type: 3}
+  - {fileID: 8300000, guid: 789a79e21ae108749854759538aea505, type: 3}
 --- !u!1 &1344707601
 GameObject:
   m_ObjectHideFlags: 0
@@ -4366,6 +4368,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPaused: 0
+  isPlayingScript: 0
 --- !u!4 &1643156698
 Transform:
   m_ObjectHideFlags: 0

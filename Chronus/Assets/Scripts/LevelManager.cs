@@ -78,7 +78,7 @@ public class LevelManager : MonoBehaviour
 
         //if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         //else currentLevelIndex = 0;
-        currentLevelIndex = 0; //need for test.
+        currentLevelIndex = 14; //need for test.
 
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
@@ -160,7 +160,7 @@ public class LevelManager : MonoBehaviour
                 // Add a transparent barrier to prevent going to the previous level
                 if (levelBarrier != null) levelBarrier.transform.position = currentStart.position - new Vector3(0, 0, 1);
 
-                StartCoroutine(MoveCameraWithTransition());
+                if (currentLevelIndex != 14) StartCoroutine(MoveCameraWithTransition());
             }
 
 
@@ -211,7 +211,7 @@ public class LevelManager : MonoBehaviour
             }
         }
     }
-    IEnumerator PlayPrologueScript()
+    private IEnumerator PlayPrologueScript()
     {
         while (ScenarioManager.scenarioManager.isLockedToRead) yield return null; //wait until monologue read ends.
         //phantom with command order.
@@ -253,12 +253,51 @@ public class LevelManager : MonoBehaviour
 
         InputManager.inputManager.isPlayingScript = false;
     }
-    IEnumerator PlayEventScript()
+    private IEnumerator PlayEventScript()
     {
-        while (IsPlayerAtNearGoal() && !TurnManager.turnManager.CLOCK && !PlayerController.playerController.isTimeRewinding) yield return null;
+        while (!IsPlayerAtNearGoal() || TurnManager.turnManager.CLOCK || PlayerController.playerController.isTimeRewinding) 
+        {
+            LetCameraChasePlayer();
+            yield return null;
+        };
         InputManager.inputManager.isPlayingScript = true; //input lock
-
-        GameObject.Find("psuedoTile").gameObject.SetActive(false);
+        GameObject.Find("wrongPath0").SetActive(false); //wrong path
+        SoundManager.soundManager.PlaySound3D("bell", player.transform, 0.4f);
+        yield return new WaitForSeconds(2.0f);
+        StartCoroutine(MoveCameraWithTransition());
+        InputManager.inputManager.OnTimeRewindModeToggle?.Invoke();
+        GameObject.Find("wrongPath1").SetActive(false);
+        SoundManager.soundManager.PlaySound3D("bell", player.transform, 0.3f);
+        yield return new WaitForSeconds(1.3f);
+        GameObject.Find("wrongPath2").SetActive(false);
+        GameObject.Find("wrongPath3").SetActive(false);
+        int length = player.commandIterator.GetCurrentIndex();
+        float time = 0.11f;
+        for (int i = 0; i < length; i++)
+        {
+            time += i/length; 
+            InputManager.inputManager.OnTimeRewindControl?.Invoke("q");
+            SoundManager.soundManager.PlaySound3D("bell", player.transform, 0.55f);
+            yield return new WaitForSeconds(time);
+        }
+        InputManager.inputManager.OnTimeRewindModeToggle?.Invoke();
+        SoundManager.soundManager.PlaySound3D("bell", player.transform, 0.3f);
+        GameObject.Find("GoalTile").gameObject.transform.position = new Vector3(19, -0.2f, 17);
+        currentGoal.position = GameObject.Find("GoalTile").gameObject.transform.position; //move goaltile
+        GameObject.Find("shortcut0").gameObject.transform.GetChild(0).gameObject.SetActive(true); //new path
+        SoundManager.soundManager.PlaySound3D("magic", player.transform, 0.9f);
+        yield return new WaitForSeconds(0.4f);
+        GameObject.Find("shortcut1").gameObject.transform.GetChild(0).gameObject.SetActive(true);
+        SoundManager.soundManager.PlaySound3D("magic", player.transform, 0.8f);
+        yield return new WaitForSeconds(0.4f);
+        GameObject.Find("shortcut2").gameObject.transform.GetChild(0).gameObject.SetActive(true);
+        SoundManager.soundManager.PlaySound3D("magic", player.transform, 0.7f);
+        yield return new WaitForSeconds(0.6f);
+        GameObject.Find("shortcut3").gameObject.transform.GetChild(0).gameObject.SetActive(true);
+        SoundManager.soundManager.PlaySound3D("magic", player.transform, 0.6f);
+        yield return new WaitForSeconds(1.1f);
+        GameObject.Find("shortcut4").gameObject.transform.GetChild(0).gameObject.SetActive(true);
+        SoundManager.soundManager.PlaySound3D("magic", player.transform, 0.5f);
         InputManager.inputManager.isPlayingScript = false;
     }
     private bool IsPlayerAtNearGoal()
@@ -324,6 +363,27 @@ public class LevelManager : MonoBehaviour
             Scene sceneToUnload = SceneManager.GetSceneByName(levelScenes[previousLevelIndex]);
             if (sceneToUnload.isLoaded) yield return SceneManager.UnloadSceneAsync(sceneToUnload);
             previousLevelIndex = -1; // Reset previousLevelIndex after unloading
+        }
+    }
+    private void LetCameraChasePlayer()
+    {
+        Vector3 targetPosition = player.transform.position + new Vector3(4.0f, 4.0f, 0.0f);
+        Quaternion targetRotation = Quaternion.Euler(45, -45, 0);
+        Vector3 vec = Vector3.zero;
+        if (Vector3.Distance(mainCamera.transform.position, targetPosition) > 0.1f ||
+            Quaternion.Angle(mainCamera.transform.rotation, targetRotation) > 0.1f)
+        {
+            mainCamera.transform.position = Vector3.SmoothDamp(
+                mainCamera.transform.position,
+                targetPosition,
+                ref vec,
+                0.1f
+            );
+            mainCamera.transform.rotation = Quaternion.Lerp(
+                    mainCamera.transform.rotation,
+                    targetRotation,
+                    Time.deltaTime * 1.0f
+                );
         }
     }
 }
