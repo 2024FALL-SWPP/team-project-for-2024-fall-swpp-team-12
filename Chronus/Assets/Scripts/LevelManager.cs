@@ -39,6 +39,7 @@ public class LevelManager : MonoBehaviour
         {
             levelScenes = new string[]
             {
+                "Prologue",
                 "L-001-1",
                 "L-001-2",
                 "L-001-3",
@@ -52,9 +53,11 @@ public class LevelManager : MonoBehaviour
                 "L-003-2",
                 "L-003-3",
                 "L-003-4",
+                "Event",
                 "L-004-1",
                 "L-004-2",
-                "L-004-3"
+                "L-004-3",
+                "Epilogue"
             };
         }
     }
@@ -73,9 +76,9 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
-        else currentLevelIndex = 0;
-        //currentLevelIndex = 0; //need for test.
+        //if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
+        //else currentLevelIndex = 0;
+        currentLevelIndex = 0; //need for test.
 
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
@@ -160,6 +163,7 @@ public class LevelManager : MonoBehaviour
                 StartCoroutine(MoveCameraWithTransition());
             }
 
+
             // Dynamic tile detection for tutorialTile, lever and box
             GameObject tutorialTile = GameObject.FindWithTag("TutorialTile");
             GameObject lever = GameObject.FindWithTag("Lever");
@@ -195,7 +199,73 @@ public class LevelManager : MonoBehaviour
 
             TurnManager.turnManager.InitializeObjectLists();
             ResetLevel();
+
+            if (currentLevelIndex == 0)
+            {
+                InputManager.inputManager.isPlayingScript = true; //input lock
+                StartCoroutine("PlayPrologueScript");
+            }
+            else if (currentLevelIndex == 14)
+            {
+                StartCoroutine("PlayEventScript");
+            }
         }
+    }
+    IEnumerator PlayPrologueScript()
+    {
+        while (ScenarioManager.scenarioManager.isLockedToRead) yield return null; //wait until monologue read ends.
+        //phantom with command order.
+        PhantomController.phantomController.transform.position = new Vector3(5,17,21);
+        PhantomController.phantomController.transform.rotation = Quaternion.Euler(0,180,0);
+        PhantomController.phantomController.playerCurPos = PhantomController.phantomController.transform.position;
+        PhantomController.phantomController.playerCurRot = PhantomController.phantomController.transform.rotation;
+        PhantomController.phantomController.gameObject.SetActive(true);
+        PhantomController.phantomController.isPhantomExisting = true;
+        PhantomController.phantomController.positionIterator.SetCurrent((PhantomController.phantomController.playerCurPos, PhantomController.phantomController.playerCurRot, true));
+        PhantomController.phantomController.commandIterator.Clear();
+        PhantomController.phantomController.commandIterator.Add("");
+        PhantomController.phantomController.commandIterator.Add("r");
+        PhantomController.phantomController.commandIterator.Add("s");
+        PhantomController.phantomController.commandIterator.Add("s");
+        PhantomController.phantomController.commandIterator.Add("s");
+        PhantomController.phantomController.commandIterator.Add("s");
+        PhantomController.phantomController.commandIterator.Add("r");
+        PhantomController.phantomController.commandIterator.Add("w");
+        PhantomController.phantomController.commandIterator.ResetToStart();
+        //player r spamming automatically.
+        yield return new WaitForSeconds(1.5f);
+        InputManager.inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1.5f);
+        InputManager.inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1.0f);
+        InputManager.inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1.0f);
+        InputManager.inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1.5f);
+        InputManager.inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(1.5f);
+        InputManager.inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(3.0f);
+        InputManager.inputManager.OnMovementControl?.Invoke("r");
+        yield return new WaitForSeconds(2.5f);
+        GameObject.Find("psuedoTile").gameObject.SetActive(false);
+        InputManager.inputManager.OnMovementControl?.Invoke("r");
+
+        InputManager.inputManager.isPlayingScript = false;
+    }
+    IEnumerator PlayEventScript()
+    {
+        while (IsPlayerAtNearGoal() && !TurnManager.turnManager.CLOCK && !PlayerController.playerController.isTimeRewinding) yield return null;
+        InputManager.inputManager.isPlayingScript = true; //input lock
+
+        GameObject.Find("psuedoTile").gameObject.SetActive(false);
+        InputManager.inputManager.isPlayingScript = false;
+    }
+    private bool IsPlayerAtNearGoal()
+    {
+        return Mathf.Approximately(player.transform.position.x, currentGoal.position.x) &&
+            Mathf.Approximately(player.transform.position.y, currentGoal.position.y + playerTileDiff) &&
+            Mathf.Approximately(player.transform.position.z, currentGoal.position.z - 2.0f); //right behind 1 grid
     }
 
     private void ResetLevel()
