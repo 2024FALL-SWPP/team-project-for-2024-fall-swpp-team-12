@@ -97,7 +97,7 @@ public class Button : MonoBehaviour
                     willKeepPress = true;
                 }
             }
-            
+
             if (remainingTurns <= 0) ResetButton();
             if (!willKeepPress) remainingTurns--;
             else willKeepPress = false;
