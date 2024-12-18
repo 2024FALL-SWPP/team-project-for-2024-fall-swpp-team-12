@@ -18,6 +18,8 @@ public class TurnLogIterator<T>
     public bool HasNext() => currentIndex < log.Count - 1;
     public bool HasPrevious() => currentIndex > 0;
 
+    public bool InBoundary() => currentIndex <= log.Count - 1;
+
     public T Next()
     {
         if (HasNext())

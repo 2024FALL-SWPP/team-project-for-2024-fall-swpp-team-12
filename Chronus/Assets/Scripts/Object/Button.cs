@@ -19,6 +19,7 @@ public class Button : MonoBehaviour
     private int remainingTurns = 0;
     public bool isMoveComplete = false;
     private bool willKeepPress = false;
+    private Collider tempCollider;
     public TurnLogIterator<(Vector3, bool, int)> stateIterator;
     private void Start()
     {
@@ -46,11 +47,17 @@ public class Button : MonoBehaviour
         RestoreState();
     }
 
-    private void BePressedByObjects(Collider other)
+    private void BePressedByObjects(Collider other, bool willKeepPress = false)
     {
         if (!TurnManager.turnManager.CLOCK) return;
         if (other.CompareTag("Player") || other.CompareTag("Box"))
         {
+            if (other.name == "Phantom")
+            {
+                tempCollider = other;
+                Debug.Log("temp!");
+            }
+            if (willKeepPress) this.willKeepPress = true;
             PressButton();
         }
     }
@@ -61,11 +68,11 @@ public class Button : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        willKeepPress = true;
-        BePressedByObjects(other);
+        BePressedByObjects(other, true);
     }
     private void OnTriggerExit(Collider other)
     {
+        willKeepPress = false;
         remainingTurns--; //reason: (because of stay(->turncount reset), turncount don't decrease by itself, so when exit decrease.)
     }
 
@@ -74,8 +81,26 @@ public class Button : MonoBehaviour
         if (!gameObject.activeSelf) { isMoveComplete = true; return; }
         if (isPressed)
         {
+            if (tempCollider != null && !tempCollider.gameObject.GetComponent<PhantomController>().commandIterator.InBoundary())
+            {
+                willKeepPress = false;
+                tempCollider = null;
+            }
+            else
+            {
+                if (remainingTurns == resetTurnCount &&
+                PlayerController.playerController.curKey == "r" &&
+            (!PhantomController.phantomController.isPhantomExisting ||
+            (PhantomController.phantomController.isPhantomExisting && (!PhantomController.phantomController.commandIterator.InBoundary() ||
+            PhantomController.phantomController.commandIterator.Current == "r"))))
+                {
+                    willKeepPress = true;
+                }
+            }
+            
             if (remainingTurns <= 0) ResetButton();
             if (!willKeepPress) remainingTurns--;
+            else willKeepPress = false;
             isMoveComplete = true;
         }
         else
