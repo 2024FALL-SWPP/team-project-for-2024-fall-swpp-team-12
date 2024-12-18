@@ -76,9 +76,11 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        //if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
-        //else currentLevelIndex = 0;
-        currentLevelIndex = 15; //need for test.
+        if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
+        else currentLevelIndex = 0;
+        //currentLevelIndex = 12; //need for test.
+        //PlayerPrefs.SetInt("SavedLevelIndex", 0); //also for test and save initialize.
+        //PlayerPrefs.Save();
 
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
@@ -105,7 +107,6 @@ public class LevelManager : MonoBehaviour
     {
         if (player != null && currentGoal != null && IsPlayerAtGoal())
         {
-            SoundManager.soundManager.PlaySound2D("ui_levelClear", 0.25f);
             StartCoroutine(FinishLevel());
         }
     }
@@ -115,13 +116,32 @@ public class LevelManager : MonoBehaviour
         Destroy(GameObject.Find("CameraOffsetAnchor"));
 
         if (currentLevelIndex > 0) previousLevelIndex = currentLevelIndex - 1;
-        currentLevelIndex++;
-        PlayerPrefs.SetInt("SavedLevelIndex", currentLevelIndex);
-        PlayerPrefs.Save();
-        LoadLevel(currentLevelIndex);
+        if (currentLevelIndex <= 19) currentLevelIndex++;
+        if (currentLevelIndex == 19)
+        {
+            SoundManager.soundManager.PlaySound2D("ui_levelClear", 0.25f);
+            PlayerPrefs.SetInt("SavedLevelIndex", 0);
+            PlayerPrefs.Save();
+            if (ScenarioManager.scenarioManager != null)
+            {
+                ScenarioManager.scenarioManager.StartMonologue(currentLevelIndex);
+            }
+            yield return null; //THE END
+        }
+        else if (currentLevelIndex > 19)
+        {
+            //do nothing.
+        }
+        else
+        {
+            SoundManager.soundManager.PlaySound2D("ui_levelClear", 0.25f);
+            PlayerPrefs.SetInt("SavedLevelIndex", currentLevelIndex);
+            PlayerPrefs.Save();
+            LoadLevel(currentLevelIndex);
 
-        // Wait until the next level is fully loaded
-        yield return new WaitUntil(() => SceneManager.GetSceneByName(levelScenes[currentLevelIndex]).isLoaded);
+            // Wait until the next level is fully loaded
+            yield return new WaitUntil(() => SceneManager.GetSceneByName(levelScenes[currentLevelIndex]).isLoaded);
+        }
     }
 
     private void LoadLevel(int index)
@@ -209,7 +229,18 @@ public class LevelManager : MonoBehaviour
             {
                 StartCoroutine("PlayEventScript");
             }
+            else if (currentLevelIndex == 18)
+            {
+                StartCoroutine("PlayEpilogueScript");
+            }
         }
+    }
+    private IEnumerator PlayEpilogueScript()
+    {
+        while (ScenarioManager.scenarioManager.isLockedToRead) yield return null; //wait until monologue read ends.
+        yield return new WaitForSeconds(3.0f);
+        GameObject.Find("SpotLight").gameObject.GetComponent<Light>().intensity = 2.0f;
+        SoundManager.soundManager.PlaySound2D("ui_monologue_startend", 0.5f);
     }
     private IEnumerator PlayPrologueScript()
     {
@@ -384,5 +415,10 @@ public class LevelManager : MonoBehaviour
                     Time.deltaTime * 1.0f
                 );
         }
+    }
+
+    public int GetCurrentLevelIndex()
+    {
+        return currentLevelIndex;
     }
 }
