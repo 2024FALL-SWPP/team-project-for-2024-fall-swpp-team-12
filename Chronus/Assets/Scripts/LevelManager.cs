@@ -78,9 +78,13 @@ public class LevelManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
-        //currentLevelIndex = 12; //need for test.
+        //currentLevelIndex = 0; //need for test.
         //PlayerPrefs.SetInt("SavedLevelIndex", 0); //also for test and save initialize.
         //PlayerPrefs.Save();
+
+        if (currentLevelIndex >= 6 && currentLevelIndex <= 9) SoundManager.soundManager.PlaySound2D("lucytheme", 0.2f, true, SoundType.BGM);
+        else if (currentLevelIndex >= 10 && currentLevelIndex <= 13) SoundManager.soundManager.PlaySound2D("earthdowntheme", 0.2f, true, SoundType.BGM);
+        else if (currentLevelIndex >= 15 && currentLevelIndex <= 17) SoundManager.soundManager.PlaySound2D("chronostheme", 0.2f, true, SoundType.BGM);
 
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
@@ -211,6 +215,24 @@ public class LevelManager : MonoBehaviour
                     tutorialManager.ClearTargetObject();
                 }
             }
+
+            if (currentLevelIndex == 6)
+            {
+                SoundManager.soundManager.StopAllLoopSound();
+                SoundManager.soundManager.PlaySound2D("lucytheme", 0.2f, true, SoundType.BGM);
+            }
+            else if (currentLevelIndex == 10)
+            {
+                SoundManager.soundManager.StopAllLoopSound();
+                SoundManager.soundManager.PlaySound2D("earthdowntheme", 0.2f, true, SoundType.BGM);
+            }
+            else if (currentLevelIndex == 14) SoundManager.soundManager.StopAllLoopSound();
+            else if (currentLevelIndex == 15)
+            {
+                SoundManager.soundManager.StopAllLoopSound();
+                SoundManager.soundManager.PlaySound2D("chronostheme", 0.2f, true, SoundType.BGM);
+            }
+            else if (currentLevelIndex == 18) SoundManager.soundManager.StopAllLoopSound();
 
             if (ScenarioManager.scenarioManager != null)
             {
