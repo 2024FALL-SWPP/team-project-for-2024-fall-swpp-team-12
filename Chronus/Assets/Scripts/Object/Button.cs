@@ -18,6 +18,7 @@ public class Button : MonoBehaviour
     public int resetTurnCount = 1; //treated as constant (hyperparameter)
     private int remainingTurns = 0;
     public bool isMoveComplete = false;
+    private bool willKeepPress = false;
     public TurnLogIterator<(Vector3, bool, int)> stateIterator;
     private void Start()
     {
@@ -60,6 +61,7 @@ public class Button : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
+        willKeepPress = true;
         BePressedByObjects(other);
     }
     private void OnTriggerExit(Collider other)
@@ -73,7 +75,7 @@ public class Button : MonoBehaviour
         if (isPressed)
         {
             if (remainingTurns <= 0) ResetButton();
-            remainingTurns--;
+            if (!willKeepPress) remainingTurns--;
             isMoveComplete = true;
         }
         else
@@ -90,6 +92,7 @@ public class Button : MonoBehaviour
             isPressed ||
             TurnManager.turnManager.CheckCharactersActionComplete()
         );
+        willKeepPress = false;
         isMoveComplete = true;
     }
 
