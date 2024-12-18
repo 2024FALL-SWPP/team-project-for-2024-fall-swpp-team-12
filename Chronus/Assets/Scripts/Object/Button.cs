@@ -55,7 +55,6 @@ public class Button : MonoBehaviour
             if (other.name == "Phantom")
             {
                 tempCollider = other;
-                Debug.Log("temp!");
             }
             if (willKeepPress) this.willKeepPress = true;
             PressButton();

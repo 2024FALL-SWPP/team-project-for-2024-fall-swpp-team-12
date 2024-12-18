@@ -284,11 +284,15 @@ public class PlayerController : CharacterBase
         if (!isTimeRewinding)
         {
             SoundManager.soundManager.PlaySound2D("timeRewind_enter", 0.1f);
+            SoundManager.soundManager.SetVolume(SoundType.BGM, -80.0f);
+            SoundManager.soundManager.PlaySound2D("timerewindingtheme", 0.33f, true, SoundType.AMBIENT);
             TurnManager.turnManager.EnterTimeRewind();
         }
         else
         {
             SoundManager.soundManager.PlaySound2D("timeRewind_exit", 0.1f);
+            SoundManager.soundManager.StopLoopSound("timerewindingtheme");
+            SoundManager.soundManager.SetVolume(SoundType.BGM, 2.0f);
             TurnManager.turnManager.LeaveTimeRewind();
         }
     }

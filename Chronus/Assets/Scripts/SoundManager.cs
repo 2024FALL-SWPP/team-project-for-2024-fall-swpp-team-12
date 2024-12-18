@@ -8,6 +8,7 @@ public enum SoundType
 {
     BGM,
     SFX,
+    AMBIENT
 }
 
 public class SoundManager : MonoBehaviour
@@ -18,8 +19,9 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioMixer mAudioMixer;
 
     //Volume
-    private float mCurrentBGMVolume = 16.0f;
+    private float mCurrentBGMVolume = 2.0f;
     private float mCurrentSFXVolume = 20.0f;
+    private float mCurrentAMBIENTVolume = 2.0f;
 
     //Sound Clips
     private Dictionary<string, AudioClip> mClipsDictionary;
@@ -43,7 +45,7 @@ public class SoundManager : MonoBehaviour
 
         mInstantiatedSounds = new List<TemporarySoundPlayer>();
 
-        InitVolumes(mCurrentBGMVolume, mCurrentSFXVolume);
+        InitVolumes(mCurrentBGMVolume, mCurrentSFXVolume, mCurrentAMBIENTVolume);
     }
 
     private AudioClip GetClip(string clipName)
@@ -75,6 +77,17 @@ public class SoundManager : MonoBehaviour
 
         Debug.LogWarning(clipName + "cannot be found");
     }
+    public void StopAllLoopSound()
+    {
+        foreach (TemporarySoundPlayer audioPlayer in mInstantiatedSounds)
+        {
+            if (audioPlayer.IsLooping)
+            {
+                mInstantiatedSounds.Remove(audioPlayer);
+                Destroy(audioPlayer.gameObject);
+            }
+        }
+    }
     public void PlaySound2D(string clipName, float volume = 1.0f, bool isLoop = false, SoundType type = SoundType.SFX)
     {
         GameObject obj = new GameObject("TemporarySoundPlayer 2D");
@@ -102,10 +115,11 @@ public class SoundManager : MonoBehaviour
     }
 
     //VOLUME SET when scene load
-    public void InitVolumes(float bgm, float effect)
+    public void InitVolumes(float bgm, float effect, float ambient)
     {
         SetVolume(SoundType.BGM, bgm);
         SetVolume(SoundType.SFX, effect);
+        SetVolume(SoundType.AMBIENT, ambient);
     }
     public void SetVolume(SoundType type, float value)
     {
