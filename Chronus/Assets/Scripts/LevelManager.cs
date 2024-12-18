@@ -246,8 +246,8 @@ public class LevelManager : MonoBehaviour
     {
         while (ScenarioManager.scenarioManager.isLockedToRead) yield return null; //wait until monologue read ends.
         //phantom with command order.
-        PhantomController.phantomController.transform.position = new Vector3(5,17,21);
-        PhantomController.phantomController.transform.rotation = Quaternion.Euler(0,180,0);
+        PhantomController.phantomController.transform.position = new Vector3(5, 17, 21);
+        PhantomController.phantomController.transform.rotation = Quaternion.Euler(0, 180, 0);
         PhantomController.phantomController.playerCurPos = PhantomController.phantomController.transform.position;
         PhantomController.phantomController.playerCurRot = PhantomController.phantomController.transform.rotation;
         PhantomController.phantomController.gameObject.SetActive(true);
@@ -286,7 +286,7 @@ public class LevelManager : MonoBehaviour
     }
     private IEnumerator PlayEventScript()
     {
-        while (!IsPlayerAtNearGoal() || TurnManager.turnManager.CLOCK || PlayerController.playerController.isTimeRewinding) 
+        while (!IsPlayerAtNearGoal() || TurnManager.turnManager.CLOCK || PlayerController.playerController.isTimeRewinding)
         {
             LetCameraChasePlayer();
             yield return null;
@@ -306,7 +306,7 @@ public class LevelManager : MonoBehaviour
         float time = 0.11f;
         for (int i = 0; i < length; i++)
         {
-            time += i/length; 
+            time += i / length;
             InputManager.inputManager.OnTimeRewindControl?.Invoke("q");
             SoundManager.soundManager.PlaySound3D("bell", player.transform, 0.55f);
             yield return new WaitForSeconds(time);
