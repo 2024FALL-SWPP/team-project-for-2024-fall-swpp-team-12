@@ -123,17 +123,20 @@ public class Box : MonoBehaviour
         }
     }
 
+    public void StopFallBox()
+    {
+        rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+        willDropDeath = false;
+        isFallComplete = true;
+    }
+
     public void DropKillBox()
     {
         if (!gameObject.activeSelf) return; //if setactive false: don't need to kill box.
 
-        rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
-        willDropDeath = false;
-        isFallComplete = true;
-
+        StopFallBox();
         gameObject.SetActive(false);
         if (TurnManager.turnManager.CLOCK && isWaitingToCheckFall) isMoveComplete = true;
-        //some particle effect and sound effect
     }
     public void AdvanceFall() //can refactor with characterbase.advancefall()
     {

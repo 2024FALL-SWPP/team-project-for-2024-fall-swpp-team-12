@@ -318,7 +318,10 @@ public class TurnManager : MonoBehaviour
             //freeze y pos and bool variables of fall condition reset
             if (!PhantomController.phantomController.isFallComplete) PhantomController.phantomController.KillCharacter(); //intercept during fall
             else PhantomController.phantomController.KillPhantom(); //just normal kill
-            boxList.ForEach(box => box.DropKillBox());
+            foreach (Box box in boxList)
+            {
+                if (box.gameObject.activeSelf && box.willDropDeath) box.StopFallBox();
+            }
 
 
             GoToThePast();
