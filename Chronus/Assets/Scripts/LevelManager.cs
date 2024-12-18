@@ -78,7 +78,7 @@ public class LevelManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
-        //currentLevelIndex = 0; //need for test.
+        //currentLevelIndex = 12; //need for test.
         //PlayerPrefs.SetInt("SavedLevelIndex", 0); //also for test and save initialize.
         //PlayerPrefs.Save();
 
