@@ -190,8 +190,12 @@ public class TurnManager : MonoBehaviour
 
         rewindTurnCount = 0; //always starts at 0.
         // kill already existing phantom, if not ended
-        if (phantom.willDropDeath) phantom.KillCharacter(); //intercept during death fall
-        else phantom.KillPhantom(); //just normal kill
+        if (phantom.gameObject.activeSelf)
+        {
+            if (phantom.willDropDeath) phantom.KillCharacter(); //intercept during death fall
+            else phantom.KillPhantom(); //just normal kill
+            SoundManager.soundManager.PlaySound3D("phantom_terminate", phantom.transform, 0.07f);
+        }
         rewindUI?.EnterRewindMode(player.listCommandLog);
         rewindToggleEffect?.EnterRewindMode();
         timeRewindEffect?.EnterRewindMode();
