@@ -42,16 +42,15 @@ public class InputManager : MonoBehaviour
             {
                 if (ScenarioManager.scenarioManager.isReadingMonologue)
                 {
-                    if (!ScenarioManager.scenarioManager.isLockedToRead)
+                    if (!(LevelManager.levelManager.GetCurrentLevelIndex() == 0 || LevelManager.levelManager.GetCurrentLevelIndex() == 14 ||
+                    LevelManager.levelManager.GetCurrentLevelIndex() == 18 || LevelManager.levelManager.GetCurrentLevelIndex() == 19))
                     {
-                        ScenarioManager.scenarioManager.isReadingMonologue = false; //skip
+                        if (ScenarioManager.scenarioManager.isLockedToRead) ScenarioManager.scenarioManager.isLockedToRead = false; //skip
+                        ScenarioManager.scenarioManager.isReadingMonologue = false;
                         keyAction.Value.Invoke();
                     }
                 }
-                else
-                {
-                    keyAction.Value.Invoke();
-                }
+                else keyAction.Value.Invoke();
             }
         }
     }

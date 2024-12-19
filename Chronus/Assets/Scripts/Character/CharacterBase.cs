@@ -150,14 +150,12 @@ public abstract class CharacterBase : MonoBehaviour
             }
             else
             {
-                if (willDropDeath)
+                if (transform.position.y < -maxFallHeight) //fall to the void -> Drop Death
                 {
-                    if (transform.position.y < -maxFallHeight) //fall to the void -> Drop Death
-                    {
-                        if (this.gameObject.name == "Player") SoundManager.soundManager.PlaySound3D("rabbit_gameover_normal", this.gameObject.transform, 0.3f);
-                        else if (this.gameObject.name == "Phantom") SoundManager.soundManager.PlaySound3D("phantom_terminate", this.gameObject.transform, 0.07f);
-                        KillCharacter();
-                    }
+                    if (this.gameObject.name == "Player") SoundManager.soundManager.PlaySound3D("rabbit_gameover_normal", this.gameObject.transform, 0.3f);
+                    else if (this.gameObject.name == "Phantom") SoundManager.soundManager.PlaySound3D("phantom_terminate", this.gameObject.transform, 0.07f);
+                    KillCharacter();
+                    isMoveComplete = true;
                 }
             }
         }

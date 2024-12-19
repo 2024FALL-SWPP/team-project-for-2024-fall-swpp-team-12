@@ -33,10 +33,7 @@ public class SoundManager : MonoBehaviour
     private void Awake()
     {
         if (soundManager == null) { soundManager = this; }
-    }
 
-    private void Start()
-    {
         mClipsDictionary = new Dictionary<string, AudioClip>();
         foreach (AudioClip clip in mPreloadClips)
         {
@@ -44,7 +41,10 @@ public class SoundManager : MonoBehaviour
         }
 
         mInstantiatedSounds = new List<TemporarySoundPlayer>();
+    }
 
+    private void Start()
+    {
         InitVolumes(mCurrentBGMVolume, mCurrentSFXVolume, mCurrentAMBIENTVolume);
     }
 
@@ -65,6 +65,7 @@ public class SoundManager : MonoBehaviour
     //START or STOP PLAYING
     public void StopLoopSound(string clipName)
     {
+        if (mInstantiatedSounds == null) return;
         foreach (TemporarySoundPlayer audioPlayer in mInstantiatedSounds)
         {
             if (audioPlayer.ClipName == clipName)
@@ -79,13 +80,13 @@ public class SoundManager : MonoBehaviour
     }
     public void StopAllLoopSound()
     {
-        foreach (TemporarySoundPlayer audioPlayer in mInstantiatedSounds)
+        if (mInstantiatedSounds == null) return;
+        TemporarySoundPlayer audioPlayer;
+        for (int i = mInstantiatedSounds.Count - 1; i >= 0; i--)
         {
-            if (audioPlayer.IsLooping)
-            {
-                mInstantiatedSounds.Remove(audioPlayer);
-                Destroy(audioPlayer.gameObject);
-            }
+            audioPlayer = mInstantiatedSounds[i];
+            mInstantiatedSounds.Remove(audioPlayer);
+            Destroy(audioPlayer.gameObject);
         }
     }
     public void PlaySound2D(string clipName, float volume = 1.0f, bool isLoop = false, SoundType type = SoundType.SFX)

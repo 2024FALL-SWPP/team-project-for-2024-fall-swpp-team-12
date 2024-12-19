@@ -26,7 +26,7 @@ public class Button : MonoBehaviour
         plateOffPosition = transform.GetChild(1).transform.position;
         plateOnPosition = plateOffPosition + new Vector3(0, -0.15f, 0);
 
-        InitializeLog();
+        if (stateIterator == null) InitializeLog();
     }
 
     public void InitializeLog()

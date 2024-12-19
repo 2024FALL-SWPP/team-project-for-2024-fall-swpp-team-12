@@ -78,13 +78,13 @@ public class LevelManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
         else currentLevelIndex = 0;
-        //currentLevelIndex = 6; //need for test.
+        //currentLevelIndex = 0; //need for test.
         //PlayerPrefs.SetInt("SavedLevelIndex", 0); //also for test and save initialize.
         //PlayerPrefs.Save();
 
-        //if (currentLevelIndex >= 6 && currentLevelIndex <= 9) SoundManager.soundManager.PlaySound2D("lucytheme", 0.2f, true, SoundType.BGM);
-        //else if (currentLevelIndex >= 10 && currentLevelIndex <= 13) SoundManager.soundManager.PlaySound2D("earthdowntheme", 0.2f, true, SoundType.BGM);
-        //else if (currentLevelIndex >= 15 && currentLevelIndex <= 17) SoundManager.soundManager.PlaySound2D("chronostheme", 0.2f, true, SoundType.BGM);
+        if (currentLevelIndex >= 6 && currentLevelIndex <= 9) SoundManager.soundManager.PlaySound2D("lucytheme", 0.2f, true, SoundType.BGM);
+        else if (currentLevelIndex >= 10 && currentLevelIndex <= 13) SoundManager.soundManager.PlaySound2D("earthdowntheme", 0.2f, true, SoundType.BGM);
+        else if (currentLevelIndex >= 15 && currentLevelIndex <= 17) SoundManager.soundManager.PlaySound2D("chronostheme", 0.2f, true, SoundType.BGM);
 
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name != baseSceneName) SceneManager.LoadScene(baseSceneName);
@@ -361,6 +361,14 @@ public class LevelManager : MonoBehaviour
 
     private void ResetLevel()
     {
+        if (player.willDropDeath)
+        {
+            player.StopFallCharacter();
+        }
+        foreach (Box box in TurnManager.turnManager.boxList)
+        {
+            if (box.gameObject.activeSelf && box.willDropDeath) box.StopFallBox();
+        }
         // Place player at the start point
         player.transform.position = new Vector3(
             currentStart.position.x,
