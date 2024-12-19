@@ -125,13 +125,28 @@ public class ScenarioManager : MonoBehaviour
 
     IEnumerator Typing(int index)
     {
-        SoundManager.soundManager.PlaySound2D("ui_monologue_startend", 0.3f);
-        yield return new WaitForSeconds(typeSpeedStartOffset / 3);
-        monologuePaper.text = baseText;
-        SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.2f);
-        yield return new WaitForSeconds(typeSpeedStartOffset * 2 / 3);
+
+        if (isLockedToRead) SoundManager.soundManager.PlaySound2D("ui_monologue_startend", 0.3f);
+        if (isLockedToRead) yield return new WaitForSeconds(typeSpeedStartOffset / 3);
+        if (isLockedToRead)
+        {
+            monologuePaper.text = baseText;
+            SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.2f);
+        }
+        float autoSkip0 = 0.0f;
+        while ((autoSkip0 < typeSpeedStartOffset * 2 / 3) && isLockedToRead)
+        {
+            autoSkip0 += Time.deltaTime;
+            yield return null;
+        }
+        if (!isLockedToRead) monologuePaper.text = "";
         for (int i = 0; i < monologue.Length; i++)
         {
+            if (!isLockedToRead)
+            {
+                monologuePaper.text = "";
+                break;
+            }
             monologuePaper.text = baseText + monologue.Substring(0, i + 1);
             if (i == monologue.Length - 1) yield return null;
             else
@@ -163,10 +178,15 @@ public class ScenarioManager : MonoBehaviour
                         typeSpeed = typeSpeedDefault;
                         break;
                 }
-                yield return new WaitForSeconds(typeSpeed);
+                float autoSkip1 = 0.0f;
+                while ((autoSkip1 < typeSpeed) && isLockedToRead)
+                {
+                    autoSkip1 += Time.deltaTime;
+                    yield return null;
+                }
             }
         }
-        isLockedToRead = false;
+        if (isLockedToRead) isLockedToRead = false;
         if (index < 18) StartCoroutine(MakeSceneBrightAgain());
         float autoSkip = 0.0f;
         while ((autoSkip < typeSpeedEndOffset) && isReadingMonologue)

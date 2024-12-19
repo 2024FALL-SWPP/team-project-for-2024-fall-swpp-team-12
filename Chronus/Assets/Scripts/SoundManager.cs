@@ -41,13 +41,11 @@ public class SoundManager : MonoBehaviour
         }
 
         mInstantiatedSounds = new List<TemporarySoundPlayer>();
-
-        InitVolumes(mCurrentBGMVolume, mCurrentSFXVolume, mCurrentAMBIENTVolume);
     }
 
     private void Start()
     {
-        
+        InitVolumes(mCurrentBGMVolume, mCurrentSFXVolume, mCurrentAMBIENTVolume);
     }
 
     private AudioClip GetClip(string clipName)

@@ -42,16 +42,10 @@ public class InputManager : MonoBehaviour
             {
                 if (ScenarioManager.scenarioManager.isReadingMonologue)
                 {
-                    if (!ScenarioManager.scenarioManager.isLockedToRead)
-                    {
-                        ScenarioManager.scenarioManager.isReadingMonologue = false; //skip
-                        keyAction.Value.Invoke();
-                    }
+                    if (ScenarioManager.scenarioManager.isLockedToRead) ScenarioManager.scenarioManager.isLockedToRead = false; //skip
+                    ScenarioManager.scenarioManager.isReadingMonologue = false;
                 }
-                else
-                {
-                    keyAction.Value.Invoke();
-                }
+                keyAction.Value.Invoke();
             }
         }
     }
