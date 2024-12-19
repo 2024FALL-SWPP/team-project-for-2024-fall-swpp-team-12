@@ -29,7 +29,7 @@ public class Box : MonoBehaviour
         rb.useGravity = true;
         rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
 
-        InitializeLog();
+        if (positionIterator == null) InitializeLog();
     }
 
     public void InitializeLog()
@@ -153,20 +153,6 @@ public class Box : MonoBehaviour
         }
         if (!willDropDeath)
         {
-            /*
-            int layermask;
-            float fallHeightCheck;
-            if (isBeingPushed) //don't detect other boxes
-            {
-                if (boxLayer == 0) layermask = layerMask;
-                else layermask = layerMaskFall;
-                fallHeightCheck = maxFallHeight + boxLayer;
-            }
-            else //normal raycast.
-            {
-                layermask = layerMask;
-                fallHeightCheck = maxFallHeight;
-            }*/
             // If no tile is detected, allow the box to fall
             if (Physics.Raycast(transform.position - new Vector3(0, checkDistance + boxLayer - 0.1f, 0), Vector3.down, out RaycastHit hit1, 0.11f, layerMaskFall))
             {

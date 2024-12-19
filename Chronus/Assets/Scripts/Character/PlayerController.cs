@@ -220,17 +220,6 @@ public class PlayerController : CharacterBase
         isBlinking = true; //switch on before coroutine.
         StartCoroutine(HandleBlinkAndReset());
     }
-    /*
-    public void StartBlinking()
-    {
-        if (playerRenderers == null || playerRenderers.Length == 0) return;
-
-        if (blinkCoroutine != null)
-        {
-            StopCoroutine(blinkCoroutine);
-        }
-        blinkCoroutine = StartCoroutine(PlayBlinkEffect());
-    }*/
 
     // Coroutine to handle blinking effect
     private IEnumerator PlayBlinkEffect(int blinkCount)

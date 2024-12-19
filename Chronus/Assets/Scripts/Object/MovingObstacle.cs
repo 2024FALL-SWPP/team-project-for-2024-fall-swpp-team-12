@@ -24,7 +24,7 @@ public class MovingObstacle : MonoBehaviour
     private void Start()
     {
         hiddenPosition = transform.position;
-        InitializeLog();
+        if (positionIterator == null) InitializeLog();
         if (hiddenPosition != originalHiddenPosition)
         {
             visiblePosition += hiddenPosition - originalHiddenPosition; // adding offset
