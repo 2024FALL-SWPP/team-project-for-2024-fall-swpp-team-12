@@ -221,6 +221,7 @@ public class ScenarioManager : MonoBehaviour
 
             progress += delta;
             light.intensity += defaultLightIntensity / typeSpeedEndOffset * delta;
+            if (light.intensity > defaultLightIntensity) light.intensity = defaultLightIntensity;
             yield return null;
         }
         light.intensity = defaultLightIntensity;
