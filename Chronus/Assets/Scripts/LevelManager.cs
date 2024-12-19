@@ -76,11 +76,11 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        //if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
-        //else currentLevelIndex = 0;
-        currentLevelIndex = 13; //need for test.
-        PlayerPrefs.SetInt("SavedLevelIndex", 0); //also for test and save initialize.
-        PlayerPrefs.Save();
+        if (PlayerPrefs.HasKey("SavedLevelIndex")) currentLevelIndex = PlayerPrefs.GetInt("SavedLevelIndex");
+        else currentLevelIndex = 0;
+        //currentLevelIndex = 0; //need for test.
+        //PlayerPrefs.SetInt("SavedLevelIndex", 0); //also for test and save initialize.
+        //PlayerPrefs.Save();
 
         if (currentLevelIndex >= 6 && currentLevelIndex <= 9) SoundManager.soundManager.PlaySound2D("lucytheme", 0.2f, true, SoundType.BGM);
         else if (currentLevelIndex >= 10 && currentLevelIndex <= 13) SoundManager.soundManager.PlaySound2D("earthdowntheme", 0.2f, true, SoundType.BGM);

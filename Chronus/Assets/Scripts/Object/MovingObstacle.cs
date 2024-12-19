@@ -79,8 +79,9 @@ public class MovingObstacle : MonoBehaviour
     // check if the target position overlaps with a character's target position. if so, push it.
     {
         Vector3 targetTranslation = character.targetTranslation;
-        if (targetTranslation.x == targetPosition.x && targetTranslation.z == targetPosition.z &&
-            targetTranslation.y >= targetPosition.y - 1 && targetTranslation.y <= targetPosition.y + 1)
+        if (targetTranslation.x >= Mathf.Min(transform.position.x + direction.x, targetPosition.x) && targetTranslation.x <= Mathf.Max(transform.position.x + direction.x, targetPosition.x) &&
+            targetTranslation.z >= Mathf.Min(transform.position.z + direction.z, targetPosition.z) && targetTranslation.z <= Mathf.Max(transform.position.z + direction.z, targetPosition.z) &&
+            (targetTranslation.y >= targetPosition.y - 1 && targetTranslation.y <= targetPosition.y + 1))
         {
             character.pushDirection = direction;
             character.pushSpeed = moveSpeed;
