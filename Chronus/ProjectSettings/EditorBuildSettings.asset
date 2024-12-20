@@ -4,5 +4,68 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/LevelBaseScene.unity
+    guid: 388a43714c3fe54408772b8f9c869a53
+  - enabled: 1
+    path: Assets/Scenes/Testing/TestField.unity
+    guid: a60391e5f24f19c47938e58e09967625
+  - enabled: 1
+    path: Assets/Scenes/L-001/L-001-1.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/L-001/L-001-2.unity
+    guid: 4b128f1afa019c348946e8c7136f22d0
+  - enabled: 1
+    path: Assets/Scenes/L-001/L-001-3.unity
+    guid: eb96a291b935fd440ae1ea6522222c7f
+  - enabled: 1
+    path: Assets/Scenes/L-001/L-001-4.unity
+    guid: 2b992111f64c6a246a3868bd40f81c56
+  - enabled: 1
+    path: Assets/Scenes/L-001/L-001-5.unity
+    guid: 563fd7b2a1e104340bc9af35ee49672d
+  - enabled: 1
+    path: Assets/Scenes/L-002/L-002-1.unity
+    guid: 3a59ddbee1e349d499da96eb5325da1a
+  - enabled: 1
+    path: Assets/Scenes/L-002/L-002-2.unity
+    guid: 751da20b239d5b348a674f6dd1cc9b3d
+  - enabled: 1
+    path: Assets/Scenes/L-002/L-002-3.unity
+    guid: 376f36735ed96bd48a0245e4f0f1f245
+  - enabled: 1
+    path: Assets/Scenes/L-002/L-002-4.unity
+    guid: 947dfae666a2b244b87ceffe69c9e843
+  - enabled: 1
+    path: Assets/Scenes/L-003/L-003-1.unity
+    guid: ae75df4513c2a48439dc77db3dd47fe3
+  - enabled: 1
+    path: Assets/Scenes/L-003/L-003-2.unity
+    guid: daafc53cbcf74d34cb9c2557d85d8bff
+  - enabled: 1
+    path: Assets/Scenes/L-003/L-003-3.unity
+    guid: fd92d26695da0c54d84426859867e593
+  - enabled: 1
+    path: Assets/Scenes/L-003/L-003-4.unity
+    guid: 1306c568f3a0d374eadc070e96915fb7
+  - enabled: 1
+    path: Assets/Scenes/L-004/L-004-1.unity
+    guid: 74c0a596f6cf33a44bedf9e9002e4a98
+  - enabled: 1
+    path: Assets/Scenes/L-004/L-004-2.unity
+    guid: 77420b6ace30a4312b1f13c1c9f8b907
+  - enabled: 1
+    path: Assets/Scenes/L-004/L-004-3.unity
+    guid: 03479aac8f3cc4c9c88e9e1d0ec58f55
+  - enabled: 1
+    path: Assets/Scenes/ScriptScenes/Prologue.unity
+    guid: 2d573e422712de84495ddeb4a725f836
+  - enabled: 1
+    path: Assets/Scenes/ScriptScenes/Event.unity
+    guid: 3697b0552967f7648b488249707a011b
+  - enabled: 1
+    path: Assets/Scenes/ScriptScenes/Epilogue.unity
+    guid: 78eceba5f2efb5241829a2ca4acd7f08
   m_configObjects: {}

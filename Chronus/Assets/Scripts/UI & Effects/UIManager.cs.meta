@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Chronus/Assets/Scripts/Object/Laser.cs.meta
+guid: c5779a42ddad146b2bd23a475d9f9062
+========
+guid: d4ef91cbf6ce528439609f96d1802ded
+>>>>>>>> e35c0973 (added pause, undo, reset):Chronus/Assets/Scripts/UIManager.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

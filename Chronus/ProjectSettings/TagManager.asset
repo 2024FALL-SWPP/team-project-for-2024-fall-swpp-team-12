@@ -3,17 +3,29 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Button
+  - Box
+  - Obstacle
+  - GroundFloor
+  - FirstFloor
+  - Lever
+  - MovingObstacle
+  - GoalTile
+  - StartTile
+  - Wall
+  - TutorialTile
+  - Laser
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Lever
+  - LeverStick
+  - Box
   - 
   - 
   - 

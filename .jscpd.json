@@ -1,0 +1,5 @@
+{
+  "threshold": 18,
+  "mode": "strict",
+  "ignore": ["**/*.meta"]
+}
