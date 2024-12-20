@@ -50,7 +50,7 @@ public class ScenarioManager : MonoBehaviour
             "내가 서 있을 발판을 새로 찾아 떠나리라.\n\'벽\'에 가로막혀도, 필시 길은 있을 것이다.",
             "모델 크로노스에겐 또 다른 이름을 붙였었다.\n루시...\n서로에게 \'기대다가\' 결국 길이 갈렸는가.",
             "루시, \'도움닫기\'를 해서라도 너의 길을 찾아가렴.",
-            "그 기계가 뿜던 \'뜨거운 빛줄기\'는 투지와도 같았다.\n소규모 구동 장치가 답임을 깨달을 땐 곁에 몇 명 남지 않았다.",
+            "그 기계가 뿜던 \'뜨거운 빛줄기\'는 투지와도 같았다.\n소규모 구동 장치가 답임을 깨달을 땐\n곁에 몇 명 남지 않았다.",
             "이제는 고개를 돌려 아래로 향할 때이다.\n\'가혹한 선택의 갈림길\'은 그 깊이를 더해준다.",
             "\"도통 원리를 알 수가 없구려.\n땅은 대체 왜 꺼지며, 이따금씩 되살아나는 것이오?\"",
             "\"거 잠시 쉽시다. \'셋\'이서 이야기나 나눠보죠.\"\n\"마침 넓고 아늑하니,\n그런데 \'셋\'이라, 지금 둘 밖에 없지 않소?\"",
@@ -125,13 +125,28 @@ public class ScenarioManager : MonoBehaviour
 
     IEnumerator Typing(int index)
     {
-        SoundManager.soundManager.PlaySound2D("ui_monologue_startend", 0.3f);
-        yield return new WaitForSeconds(typeSpeedStartOffset / 3);
-        monologuePaper.text = baseText;
-        SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.2f);
-        yield return new WaitForSeconds(typeSpeedStartOffset * 2 / 3);
+
+        if (isLockedToRead) SoundManager.soundManager.PlaySound2D("ui_monologue_startend", 0.3f);
+        if (isLockedToRead) yield return new WaitForSeconds(typeSpeedStartOffset / 3);
+        if (isLockedToRead)
+        {
+            monologuePaper.text = baseText;
+            SoundManager.soundManager.PlaySound2D("ui_monologue_type", 0.2f);
+        }
+        float autoSkip0 = 0.0f;
+        while ((autoSkip0 < typeSpeedStartOffset * 2 / 3) && isLockedToRead)
+        {
+            autoSkip0 += Time.deltaTime;
+            yield return null;
+        }
+        if (!isLockedToRead) monologuePaper.text = "";
         for (int i = 0; i < monologue.Length; i++)
         {
+            if (!isLockedToRead)
+            {
+                monologuePaper.text = "";
+                break;
+            }
             monologuePaper.text = baseText + monologue.Substring(0, i + 1);
             if (i == monologue.Length - 1) yield return null;
             else
@@ -163,10 +178,15 @@ public class ScenarioManager : MonoBehaviour
                         typeSpeed = typeSpeedDefault;
                         break;
                 }
-                yield return new WaitForSeconds(typeSpeed);
+                float autoSkip1 = 0.0f;
+                while ((autoSkip1 < typeSpeed) && isLockedToRead)
+                {
+                    autoSkip1 += Time.deltaTime;
+                    yield return null;
+                }
             }
         }
-        isLockedToRead = false;
+        if (isLockedToRead) isLockedToRead = false;
         if (index < 18) StartCoroutine(MakeSceneBrightAgain());
         float autoSkip = 0.0f;
         while ((autoSkip < typeSpeedEndOffset) && isReadingMonologue)
@@ -201,6 +221,7 @@ public class ScenarioManager : MonoBehaviour
 
             progress += delta;
             light.intensity += defaultLightIntensity / typeSpeedEndOffset * delta;
+            if (light.intensity > defaultLightIntensity) light.intensity = defaultLightIntensity;
             yield return null;
         }
         light.intensity = defaultLightIntensity;

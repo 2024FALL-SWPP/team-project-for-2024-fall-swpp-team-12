@@ -14,8 +14,8 @@ public class TemporarySoundPlayer : MonoBehaviour
             return mAudioSource.clip.name;
         }
     }
-    public bool IsLooping 
-    { 
+    public bool IsLooping
+    {
         get
         {
             return mAudioSource.loop;

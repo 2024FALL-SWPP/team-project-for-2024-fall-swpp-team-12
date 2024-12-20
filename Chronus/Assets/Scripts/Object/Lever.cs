@@ -17,7 +17,7 @@ public class Lever : MonoBehaviour
 
     private void Start()
     {
-        InitializeLog();
+        if (stateIterator == null) InitializeLog();
     }
 
     public void InitializeLog()
