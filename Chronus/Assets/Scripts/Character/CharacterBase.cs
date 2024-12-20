@@ -189,7 +189,20 @@ public abstract class CharacterBase : MonoBehaviour
             // If no tile is detected, allow the box to fall
             if (Physics.Raycast(playerCurPos, Vector3.down, out RaycastHit hit1, rayDistance, layerMask))
             {
-                isMoveComplete = true; //bypass fall.
+                if (hit1.collider.CompareTag("Box") && !hit1.collider.GetComponent<Box>().isFallComplete)
+                {
+                    if (hit1.collider.GetComponent<Box>().willDropDeath)
+                    {
+                        willDropDeath = true;
+                        isMoveComplete = true;
+                    }
+                    rb.constraints = RigidbodyConstraints.FreezeRotation;
+                    isFallComplete = false;
+                }
+                else
+                {
+                    isMoveComplete = true; //bypass fall.
+                }
             }
             else
             {
